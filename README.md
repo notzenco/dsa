@@ -57,8 +57,8 @@ dsa/
 ### Heaps
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Binary Heap | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Priority Queue | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Binary Heap | [x] | [ ] | [ ] | [ ] | [ ] |
+| Priority Queue | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### Graphs
 | Structure | Python | C | C++ | Rust | Go |

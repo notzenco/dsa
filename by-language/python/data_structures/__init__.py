@@ -12,6 +12,7 @@ from .stack import Stack, MinStack, MaxStack
 from .queue import Queue, CircularQueue, Deque, MonotonicQueue
 from .binary_search_tree import BinarySearchTree, TreeNode
 from .hash_table import HashTableChaining, HashTableOpenAddressing, HashMap, HashSet
+from .heap import MinHeap, MaxHeap, PriorityQueue
 
 __all__ = [
     # Arrays
@@ -38,4 +39,8 @@ __all__ = [
     "HashTableOpenAddressing",
     "HashMap",
     "HashSet",
+    # Heaps
+    "MinHeap",
+    "MaxHeap",
+    "PriorityQueue",
 ]
