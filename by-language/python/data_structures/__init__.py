@@ -11,6 +11,7 @@ from .doubly_linked_list import DoublyLinkedList, DNode
 from .stack import Stack, MinStack, MaxStack
 from .queue import Queue, CircularQueue, Deque, MonotonicQueue
 from .binary_search_tree import BinarySearchTree, TreeNode
+from .hash_table import HashTableChaining, HashTableOpenAddressing, HashMap, HashSet
 
 __all__ = [
     # Arrays
@@ -32,4 +33,9 @@ __all__ = [
     # Trees
     "BinarySearchTree",
     "TreeNode",
+    # Hash Tables
+    "HashTableChaining",
+    "HashTableOpenAddressing",
+    "HashMap",
+    "HashSet",
 ]

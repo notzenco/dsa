@@ -51,7 +51,7 @@ dsa/
 ### Hashing
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Hash Table | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Hash Table | [x] | [ ] | [ ] | [ ] | [ ] |
 | Bloom Filter | [ ] | [ ] | [ ] | [ ] | [ ] |
 
 ### Heaps
