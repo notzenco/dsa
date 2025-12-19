@@ -52,7 +52,7 @@ dsa/
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | Hash Table | [x] | [ ] | [ ] | [ ] | [ ] |
-| Bloom Filter | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Bloom Filter | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### Heaps
 | Structure | Python | C | C++ | Rust | Go |
@@ -72,7 +72,7 @@ dsa/
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | LRU Cache | [x] | [ ] | [ ] | [ ] | [ ] |
 | LFU Cache | [x] | [ ] | [ ] | [ ] | [ ] |
-| Skip List | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Skip List | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ## Algorithms
 

@@ -19,6 +19,7 @@ from .union_find import UnionFind, UnionFindArray, WeightedUnionFind, Persistent
 from .lru_cache import LRUCache, LRUCacheSimple, LFUCache, TTLCache
 from .avl_tree import AVLTree, AVLTreeMap
 from .segment_tree import SegmentTree, SegmentTreeLazy, FenwickTree, FenwickTree2D
+from .bloom_filter import BloomFilter, CountingBloomFilter, ScalableBloomFilter, SkipList
 
 __all__ = [
     # Arrays
@@ -74,4 +75,9 @@ __all__ = [
     "SegmentTreeLazy",
     "FenwickTree",
     "FenwickTree2D",
+    # Probabilistic Data Structures
+    "BloomFilter",
+    "CountingBloomFilter",
+    "ScalableBloomFilter",
+    "SkipList",
 ]
