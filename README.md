@@ -111,12 +111,12 @@ dsa/
 ### Dynamic Programming
 | Problem | Python | C | C++ | Rust | Go |
 |---------|:------:|:-:|:---:|:----:|:--:|
-| Fibonacci | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Knapsack | [ ] | [ ] | [ ] | [ ] | [ ] |
-| LCS | [ ] | [ ] | [ ] | [ ] | [ ] |
-| LIS | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Edit Distance | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Coin Change | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Fibonacci | [x] | [ ] | [ ] | [ ] | [ ] |
+| Knapsack | [x] | [ ] | [ ] | [ ] | [ ] |
+| LCS | [x] | [ ] | [ ] | [ ] | [ ] |
+| LIS | [x] | [ ] | [ ] | [ ] | [ ] |
+| Edit Distance | [x] | [ ] | [ ] | [ ] | [ ] |
+| Coin Change | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### String
 | Algorithm | Python | C | C++ | Rust | Go |
