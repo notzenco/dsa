@@ -100,6 +100,35 @@ from .dynamic_programming import (
     min_path_sum,
 )
 
+from .string_algorithms import (
+    # Naive
+    naive_search,
+    # KMP
+    compute_lps,
+    kmp_search,
+    kmp_search_first,
+    # Rabin-Karp
+    rabin_karp_search,
+    rabin_karp_multiple,
+    # Z-Algorithm
+    compute_z_array,
+    z_algorithm_search,
+    # Manacher
+    manacher,
+    longest_palindrome_manacher,
+    count_palindromic_substrings,
+    # Suffix Array
+    build_suffix_array,
+    build_suffix_array_optimized,
+    build_lcp_array,
+    search_with_suffix_array,
+    # Utilities
+    longest_common_prefix,
+    repeated_substring_pattern,
+    shortest_palindrome,
+    longest_happy_prefix,
+)
+
 __all__ = [
     # Comparison sorts
     "bubble_sort",
@@ -186,4 +215,30 @@ __all__ = [
     "word_break",
     "unique_paths",
     "min_path_sum",
+    # String Algorithms - Naive
+    "naive_search",
+    # String Algorithms - KMP
+    "compute_lps",
+    "kmp_search",
+    "kmp_search_first",
+    # String Algorithms - Rabin-Karp
+    "rabin_karp_search",
+    "rabin_karp_multiple",
+    # String Algorithms - Z-Algorithm
+    "compute_z_array",
+    "z_algorithm_search",
+    # String Algorithms - Manacher
+    "manacher",
+    "longest_palindrome_manacher",
+    "count_palindromic_substrings",
+    # String Algorithms - Suffix Array
+    "build_suffix_array",
+    "build_suffix_array_optimized",
+    "build_lcp_array",
+    "search_with_suffix_array",
+    # String Algorithms - Utilities
+    "longest_common_prefix",
+    "repeated_substring_pattern",
+    "shortest_palindrome",
+    "longest_happy_prefix",
 ]

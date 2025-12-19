@@ -121,9 +121,9 @@ dsa/
 ### String
 | Algorithm | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| KMP | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Rabin-Karp | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Z-Algorithm | [ ] | [ ] | [ ] | [ ] | [ ] |
+| KMP | [x] | [ ] | [ ] | [ ] | [ ] |
+| Rabin-Karp | [x] | [ ] | [ ] | [ ] | [ ] |
+| Z-Algorithm | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ## Quick Start
 
