@@ -91,9 +91,9 @@ dsa/
 ### Searching
 | Algorithm | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Binary Search | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Two Pointers | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Sliding Window | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Binary Search | [x] | [ ] | [ ] | [ ] | [ ] |
+| Two Pointers | [x] | [ ] | [ ] | [ ] | [ ] |
+| Sliding Window | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### Graph
 | Algorithm | Python | C | C++ | Rust | Go |
