@@ -15,6 +15,7 @@ from .hash_table import HashTableChaining, HashTableOpenAddressing, HashMap, Has
 from .heap import MinHeap, MaxHeap, PriorityQueue
 from .graph import Graph
 from .trie import Trie, TrieMap, WordDictionary, CompressedTrie
+from .union_find import UnionFind, UnionFindArray, WeightedUnionFind, PersistentUnionFind
 
 __all__ = [
     # Arrays
@@ -52,4 +53,9 @@ __all__ = [
     "TrieMap",
     "WordDictionary",
     "CompressedTrie",
+    # Union-Find
+    "UnionFind",
+    "UnionFindArray",
+    "WeightedUnionFind",
+    "PersistentUnionFind",
 ]

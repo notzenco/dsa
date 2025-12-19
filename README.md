@@ -65,7 +65,7 @@ dsa/
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | Adjacency List | [x] | [ ] | [ ] | [ ] | [ ] |
 | Adjacency Matrix | [x] | [ ] | [ ] | [ ] | [ ] |
-| Union-Find | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Union-Find | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### Advanced
 | Structure | Python | C | C++ | Rust | Go |
