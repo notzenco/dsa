@@ -70,7 +70,8 @@ dsa/
 ### Advanced
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| LRU Cache | [ ] | [ ] | [ ] | [ ] | [ ] |
+| LRU Cache | [x] | [ ] | [ ] | [ ] | [ ] |
+| LFU Cache | [x] | [ ] | [ ] | [ ] | [ ] |
 | Skip List | [ ] | [ ] | [ ] | [ ] | [ ] |
 
 ## Algorithms

@@ -16,6 +16,7 @@ from .heap import MinHeap, MaxHeap, PriorityQueue
 from .graph import Graph
 from .trie import Trie, TrieMap, WordDictionary, CompressedTrie
 from .union_find import UnionFind, UnionFindArray, WeightedUnionFind, PersistentUnionFind
+from .lru_cache import LRUCache, LRUCacheSimple, LFUCache, TTLCache
 
 __all__ = [
     # Arrays
@@ -58,4 +59,9 @@ __all__ = [
     "UnionFindArray",
     "WeightedUnionFind",
     "PersistentUnionFind",
+    # Caches
+    "LRUCache",
+    "LRUCacheSimple",
+    "LFUCache",
+    "TTLCache",
 ]
