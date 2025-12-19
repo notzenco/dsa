@@ -102,11 +102,11 @@ dsa/
 | DFS | [x] | [ ] | [ ] | [ ] | [ ] |
 | Dijkstra | [x] | [ ] | [ ] | [ ] | [ ] |
 | Bellman-Ford | [x] | [ ] | [ ] | [ ] | [ ] |
-| Floyd-Warshall | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Prim's MST | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Kruskal's MST | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Floyd-Warshall | [x] | [ ] | [ ] | [ ] | [ ] |
+| Prim's MST | [x] | [ ] | [ ] | [ ] | [ ] |
+| Kruskal's MST | [x] | [ ] | [ ] | [ ] | [ ] |
 | Topological Sort | [x] | [ ] | [ ] | [ ] | [ ] |
-| Tarjan's SCC | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Tarjan's SCC | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### Dynamic Programming
 | Problem | Python | C | C++ | Rust | Go |

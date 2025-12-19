@@ -433,3 +433,206 @@ class TestEdgeCases:
         s = repr(g)
         assert "Undirected" in s
         assert "vertices=2" in s
+
+
+class TestMinimumSpanningTree:
+    """Test MST algorithms."""
+
+    def setup_method(self):
+        """Set up test graph for MST."""
+        # Create weighted undirected graph:
+        #       4
+        #   A -------- B
+        #   |\ 8     / |
+        # 2 | \    / 2 | 7
+        #   |  \ /     |
+        #   C --D------E
+        #     3    9
+        self.g = Graph()
+        self.g.add_edge('A', 'B', 4)
+        self.g.add_edge('A', 'C', 2)
+        self.g.add_edge('A', 'D', 8)
+        self.g.add_edge('B', 'D', 2)
+        self.g.add_edge('B', 'E', 7)
+        self.g.add_edge('C', 'D', 3)
+        self.g.add_edge('D', 'E', 9)
+
+    def test_prim_mst(self):
+        """Test Prim's algorithm."""
+        edges, total_weight = self.g.prim_mst()
+
+        # MST should have V-1 = 4 edges
+        assert len(edges) == 4
+
+        # Optimal MST weight: A-C(2) + C-D(3) + D-B(2) + B-E(7) = 14
+        # or A-C(2) + A-B(4) + B-D(2) + B-E(7) = 15
+        # Actually: A-C(2) + B-D(2) + C-D(3) + B-E(7) = 14
+        assert total_weight == 14
+
+    def test_kruskal_mst(self):
+        """Test Kruskal's algorithm."""
+        edges, total_weight = self.g.kruskal_mst()
+
+        assert len(edges) == 4
+        assert total_weight == 14
+
+    def test_mst_same_result(self):
+        """Both algorithms should produce same total weight."""
+        prim_edges, prim_weight = self.g.prim_mst()
+        kruskal_edges, kruskal_weight = self.g.kruskal_mst()
+
+        assert prim_weight == kruskal_weight
+
+    def test_mst_empty_graph(self):
+        """Test MST on empty graph."""
+        g = Graph()
+        edges, weight = g.prim_mst()
+        assert edges == []
+        assert weight == 0.0
+
+    def test_mst_single_vertex(self):
+        """Test MST with single vertex."""
+        g = Graph()
+        g.add_vertex(1)
+        edges, weight = g.prim_mst()
+        assert edges == []
+        assert weight == 0.0
+
+    def test_mst_directed_error(self):
+        """Test that MST raises error for directed graph."""
+        g = Graph(directed=True)
+        g.add_edge(1, 2, 1.0)
+
+        with pytest.raises(ValueError):
+            g.prim_mst()
+
+        with pytest.raises(ValueError):
+            g.kruskal_mst()
+
+
+class TestFloydWarshall:
+    """Test Floyd-Warshall algorithm."""
+
+    def test_floyd_warshall_basic(self):
+        """Test basic Floyd-Warshall."""
+        g = Graph(directed=True)
+        g.add_edge(1, 2, 3)
+        g.add_edge(2, 3, 1)
+        g.add_edge(1, 3, 7)
+
+        vertices, dist, pred = g.floyd_warshall()
+        idx = {v: i for i, v in enumerate(vertices)}
+
+        assert dist[idx[1]][idx[2]] == 3
+        assert dist[idx[1]][idx[3]] == 4  # 1 -> 2 -> 3 = 4, not direct 7
+        assert dist[idx[2]][idx[3]] == 1
+
+    def test_floyd_warshall_path(self):
+        """Test Floyd-Warshall path reconstruction."""
+        g = Graph()
+        g.add_edge('A', 'B', 1)
+        g.add_edge('B', 'C', 2)
+        g.add_edge('A', 'C', 10)
+
+        result = g.floyd_warshall_path('A', 'C')
+        assert result is not None
+        distance, path = result
+        assert distance == 3  # A -> B -> C
+        assert path == ['A', 'B', 'C']
+
+    def test_floyd_warshall_no_path(self):
+        """Test Floyd-Warshall when no path exists."""
+        g = Graph(directed=True)
+        g.add_edge(1, 2, 1)
+        g.add_vertex(3)
+
+        result = g.floyd_warshall_path(1, 3)
+        assert result is None
+
+
+class TestStronglyConnectedComponents:
+    """Test SCC algorithms."""
+
+    def setup_method(self):
+        """Set up test graph for SCC."""
+        # Create directed graph with 3 SCCs:
+        #   1 -> 2 -> 3
+        #   ^    |    |
+        #   |    v    v
+        #   4 <- 5    6 -> 7
+        #             ^    |
+        #             +----+
+        self.g = Graph(directed=True)
+        self.g.add_edge(1, 2)
+        self.g.add_edge(2, 3)
+        self.g.add_edge(2, 5)
+        self.g.add_edge(3, 6)
+        self.g.add_edge(5, 4)
+        self.g.add_edge(4, 1)
+        self.g.add_edge(6, 7)
+        self.g.add_edge(7, 6)
+
+    def test_tarjan_scc(self):
+        """Test Tarjan's SCC algorithm."""
+        sccs = self.g.tarjan_scc()
+
+        # Should find 3 SCCs: {1,2,4,5}, {3}, {6,7}
+        assert len(sccs) == 3
+
+        scc_sets = [set(scc) for scc in sccs]
+        assert {1, 2, 4, 5} in scc_sets
+        assert {3} in scc_sets
+        assert {6, 7} in scc_sets
+
+    def test_kosaraju_scc(self):
+        """Test Kosaraju's SCC algorithm."""
+        sccs = self.g.kosaraju_scc()
+
+        assert len(sccs) == 3
+
+        scc_sets = [set(scc) for scc in sccs]
+        assert {1, 2, 4, 5} in scc_sets
+        assert {3} in scc_sets
+        assert {6, 7} in scc_sets
+
+    def test_scc_same_result(self):
+        """Both SCC algorithms should find same components."""
+        tarjan = self.g.tarjan_scc()
+        kosaraju = self.g.kosaraju_scc()
+
+        tarjan_sets = {frozenset(scc) for scc in tarjan}
+        kosaraju_sets = {frozenset(scc) for scc in kosaraju}
+
+        assert tarjan_sets == kosaraju_sets
+
+    def test_scc_undirected(self):
+        """Test SCC on undirected graph (should use connected components)."""
+        g = Graph()
+        g.add_edge(1, 2)
+        g.add_edge(3, 4)
+
+        sccs = g.tarjan_scc()
+        assert len(sccs) == 2
+
+    def test_scc_single_vertex(self):
+        """Test SCC with isolated vertices."""
+        g = Graph(directed=True)
+        g.add_vertex(1)
+        g.add_vertex(2)
+        g.add_edge(3, 4)
+
+        sccs = g.tarjan_scc()
+        # {1}, {2}, {3}, {4} - 4 single-vertex SCCs
+        # Since 3->4 is directed without cycle back, they're separate SCCs
+        assert len(sccs) == 4
+
+    def test_scc_strongly_connected(self):
+        """Test fully strongly connected graph."""
+        g = Graph(directed=True)
+        g.add_edge(1, 2)
+        g.add_edge(2, 3)
+        g.add_edge(3, 1)
+
+        sccs = g.tarjan_scc()
+        assert len(sccs) == 1
+        assert set(sccs[0]) == {1, 2, 3}
