@@ -63,8 +63,8 @@ dsa/
 ### Graphs
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Adjacency List | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Adjacency Matrix | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Adjacency List | [x] | [ ] | [ ] | [ ] | [ ] |
+| Adjacency Matrix | [x] | [ ] | [ ] | [ ] | [ ] |
 | Union-Find | [ ] | [ ] | [ ] | [ ] | [ ] |
 
 ### Advanced
@@ -97,14 +97,14 @@ dsa/
 ### Graph
 | Algorithm | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| BFS | [ ] | [ ] | [ ] | [ ] | [ ] |
-| DFS | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Dijkstra | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Bellman-Ford | [ ] | [ ] | [ ] | [ ] | [ ] |
+| BFS | [x] | [ ] | [ ] | [ ] | [ ] |
+| DFS | [x] | [ ] | [ ] | [ ] | [ ] |
+| Dijkstra | [x] | [ ] | [ ] | [ ] | [ ] |
+| Bellman-Ford | [x] | [ ] | [ ] | [ ] | [ ] |
 | Floyd-Warshall | [ ] | [ ] | [ ] | [ ] | [ ] |
 | Prim's MST | [ ] | [ ] | [ ] | [ ] | [ ] |
 | Kruskal's MST | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Topological Sort | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Topological Sort | [x] | [ ] | [ ] | [ ] | [ ] |
 | Tarjan's SCC | [ ] | [ ] | [ ] | [ ] | [ ] |
 
 ### Dynamic Programming
