@@ -61,8 +61,12 @@ test-queue: $(BUILD_DIR) $(BUILD_DIR)/ds_queue.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_queue.c $(BUILD_DIR)/ds_queue.o -o $(BUILD_DIR)/test_queue $(LDFLAGS)
 	./$(BUILD_DIR)/test_queue
 
+test-bst: $(BUILD_DIR) $(BUILD_DIR)/ds_binary_search_tree.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_bst.c $(BUILD_DIR)/ds_binary_search_tree.o -o $(BUILD_DIR)/test_bst $(LDFLAGS)
+	./$(BUILD_DIR)/test_bst
+
 # Run all tests
-test: test-da
+test: test-da test-sll test-dll test-stack test-queue test-bst
 
 clean:
 	rm -rf $(BUILD_DIR)
