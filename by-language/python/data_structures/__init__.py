@@ -20,6 +20,8 @@ from .lru_cache import LRUCache, LRUCacheSimple, LFUCache, TTLCache
 from .avl_tree import AVLTree, AVLTreeMap
 from .segment_tree import SegmentTree, SegmentTreeLazy, FenwickTree, FenwickTree2D
 from .bloom_filter import BloomFilter, CountingBloomFilter, ScalableBloomFilter, SkipList
+from .red_black_tree import RedBlackTree, RBNode, Color
+from .btree import BTree, BTreeNode
 
 __all__ = [
     # Arrays
@@ -80,4 +82,10 @@ __all__ = [
     "CountingBloomFilter",
     "ScalableBloomFilter",
     "SkipList",
+    # Trees (Self-Balancing)
+    "RedBlackTree",
+    "RBNode",
+    "Color",
+    "BTree",
+    "BTreeNode",
 ]
