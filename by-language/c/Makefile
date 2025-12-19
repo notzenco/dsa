@@ -53,8 +53,8 @@ test-dll: $(BUILD_DIR) $(BUILD_DIR)/ds_doubly_linked_list.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_doubly_linked_list.c $(BUILD_DIR)/ds_doubly_linked_list.o -o $(BUILD_DIR)/test_dll $(LDFLAGS)
 	./$(BUILD_DIR)/test_dll
 
-test-stack: $(BUILD_DIR) $(BUILD_DIR)/ds_stack.o $(BUILD_DIR)/ds_dynamic_array.o
-	$(CC) $(CFLAGS) $(TEST_DIR)/test_stack.c $(BUILD_DIR)/ds_stack.o $(BUILD_DIR)/ds_dynamic_array.o -o $(BUILD_DIR)/test_stack $(LDFLAGS)
+test-stack: $(BUILD_DIR) $(BUILD_DIR)/ds_stack.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_stack.c $(BUILD_DIR)/ds_stack.o -o $(BUILD_DIR)/test_stack $(LDFLAGS)
 	./$(BUILD_DIR)/test_stack
 
 test-queue: $(BUILD_DIR) $(BUILD_DIR)/ds_queue.o $(BUILD_DIR)/ds_dynamic_array.o
