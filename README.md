@@ -28,19 +28,19 @@ dsa/
 ### Linear
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Dynamic Array | [x] | [ ] | [ ] | [ ] | [ ] |
-| Singly Linked List | [x] | [ ] | [ ] | [ ] | [ ] |
-| Doubly Linked List | [x] | [ ] | [ ] | [ ] | [ ] |
-| Stack | [x] | [ ] | [ ] | [ ] | [ ] |
-| Queue | [x] | [ ] | [ ] | [ ] | [ ] |
-| Deque | [x] | [ ] | [ ] | [ ] | [ ] |
-| Circular Queue | [x] | [ ] | [ ] | [ ] | [ ] |
-| Min/Max Stack | [x] | [ ] | [ ] | [ ] | [ ] |
+| Dynamic Array | [x] | [x] | [ ] | [ ] | [ ] |
+| Singly Linked List | [x] | [x] | [ ] | [ ] | [ ] |
+| Doubly Linked List | [x] | [x] | [ ] | [ ] | [ ] |
+| Stack | [x] | [x] | [ ] | [ ] | [ ] |
+| Queue | [x] | [x] | [ ] | [ ] | [ ] |
+| Deque | [x] | [x] | [ ] | [ ] | [ ] |
+| Circular Queue | [x] | [x] | [ ] | [ ] | [ ] |
+| Min/Max Stack | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### Trees
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Binary Search Tree | [x] | [ ] | [ ] | [ ] | [ ] |
+| Binary Search Tree | [x] | [x] | [ ] | [ ] | [ ] |
 | AVL Tree | [x] | [ ] | [ ] | [ ] | [ ] |
 | Red-Black Tree | [x] | [ ] | [ ] | [ ] | [ ] |
 | B-Tree | [x] | [ ] | [ ] | [ ] | [ ] |
