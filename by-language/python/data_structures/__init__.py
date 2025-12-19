@@ -14,6 +14,7 @@ from .binary_search_tree import BinarySearchTree, TreeNode
 from .hash_table import HashTableChaining, HashTableOpenAddressing, HashMap, HashSet
 from .heap import MinHeap, MaxHeap, PriorityQueue
 from .graph import Graph
+from .trie import Trie, TrieMap, WordDictionary, CompressedTrie
 
 __all__ = [
     # Arrays
@@ -46,4 +47,9 @@ __all__ = [
     "PriorityQueue",
     # Graphs
     "Graph",
+    # Tries
+    "Trie",
+    "TrieMap",
+    "WordDictionary",
+    "CompressedTrie",
 ]
