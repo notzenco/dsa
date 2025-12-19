@@ -17,6 +17,7 @@ from .graph import Graph
 from .trie import Trie, TrieMap, WordDictionary, CompressedTrie
 from .union_find import UnionFind, UnionFindArray, WeightedUnionFind, PersistentUnionFind
 from .lru_cache import LRUCache, LRUCacheSimple, LFUCache, TTLCache
+from .avl_tree import AVLTree, AVLTreeMap
 
 __all__ = [
     # Arrays
@@ -64,4 +65,7 @@ __all__ = [
     "LRUCacheSimple",
     "LFUCache",
     "TTLCache",
+    # Trees (Balanced)
+    "AVLTree",
+    "AVLTreeMap",
 ]

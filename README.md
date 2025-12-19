@@ -41,7 +41,7 @@ dsa/
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | Binary Search Tree | [x] | [ ] | [ ] | [ ] | [ ] |
-| AVL Tree | [ ] | [ ] | [ ] | [ ] | [ ] |
+| AVL Tree | [x] | [ ] | [ ] | [ ] | [ ] |
 | Red-Black Tree | [ ] | [ ] | [ ] | [ ] | [ ] |
 | B-Tree | [ ] | [ ] | [ ] | [ ] | [ ] |
 | Trie | [x] | [ ] | [ ] | [ ] | [ ] |
