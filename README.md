@@ -45,8 +45,8 @@ dsa/
 | Red-Black Tree | [ ] | [ ] | [ ] | [ ] | [ ] |
 | B-Tree | [ ] | [ ] | [ ] | [ ] | [ ] |
 | Trie | [x] | [ ] | [ ] | [ ] | [ ] |
-| Segment Tree | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Fenwick Tree | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Segment Tree | [x] | [ ] | [ ] | [ ] | [ ] |
+| Fenwick Tree | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### Hashing
 | Structure | Python | C | C++ | Rust | Go |

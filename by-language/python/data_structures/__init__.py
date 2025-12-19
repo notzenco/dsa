@@ -18,6 +18,7 @@ from .trie import Trie, TrieMap, WordDictionary, CompressedTrie
 from .union_find import UnionFind, UnionFindArray, WeightedUnionFind, PersistentUnionFind
 from .lru_cache import LRUCache, LRUCacheSimple, LFUCache, TTLCache
 from .avl_tree import AVLTree, AVLTreeMap
+from .segment_tree import SegmentTree, SegmentTreeLazy, FenwickTree, FenwickTree2D
 
 __all__ = [
     # Arrays
@@ -68,4 +69,9 @@ __all__ = [
     # Trees (Balanced)
     "AVLTree",
     "AVLTreeMap",
+    # Trees (Range Query)
+    "SegmentTree",
+    "SegmentTreeLazy",
+    "FenwickTree",
+    "FenwickTree2D",
 ]
