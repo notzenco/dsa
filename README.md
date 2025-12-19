@@ -78,14 +78,14 @@ dsa/
 ### Sorting
 | Algorithm | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Bubble Sort | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Selection Sort | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Insertion Sort | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Merge Sort | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Quick Sort | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Heap Sort | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Counting Sort | [ ] | [ ] | [ ] | [ ] | [ ] |
-| Radix Sort | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Bubble Sort | [x] | [ ] | [ ] | [ ] | [ ] |
+| Selection Sort | [x] | [ ] | [ ] | [ ] | [ ] |
+| Insertion Sort | [x] | [ ] | [ ] | [ ] | [ ] |
+| Merge Sort | [x] | [ ] | [ ] | [ ] | [ ] |
+| Quick Sort | [x] | [ ] | [ ] | [ ] | [ ] |
+| Heap Sort | [x] | [ ] | [ ] | [ ] | [ ] |
+| Counting Sort | [x] | [ ] | [ ] | [ ] | [ ] |
+| Radix Sort | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### Searching
 | Algorithm | Python | C | C++ | Rust | Go |
