@@ -4,6 +4,7 @@
 
 #include "test_framework.h"
 #include "../algorithms/sorting.h"
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 
