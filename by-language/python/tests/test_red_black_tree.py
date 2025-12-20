@@ -5,7 +5,7 @@ Tests for Red-Black Tree and B-Tree.
 import pytest
 import random
 from data_structures.red_black_tree import RedBlackTree, Color
-from data_structures.btree import BTree
+from data_structures.b_tree import BTree
 
 
 class TestRedBlackTreeBasics:

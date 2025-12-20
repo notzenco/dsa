@@ -21,7 +21,8 @@ from .avl_tree import AVLTree, AVLTreeMap
 from .segment_tree import SegmentTree, SegmentTreeLazy, FenwickTree, FenwickTree2D
 from .bloom_filter import BloomFilter, CountingBloomFilter, ScalableBloomFilter, SkipList
 from .red_black_tree import RedBlackTree, RBNode, Color
-from .btree import BTree, BTreeNode
+from .b_tree import BTree, BTreeNode
+from .adjacency_matrix import AdjacencyMatrix
 
 __all__ = [
     # Arrays
@@ -88,4 +89,6 @@ __all__ = [
     "Color",
     "BTree",
     "BTreeNode",
+    # Graphs
+    "AdjacencyMatrix",
 ]
