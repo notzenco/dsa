@@ -256,4 +256,155 @@ int sqrt_binary(int n);
  */
 int kth_missing(const int *arr, size_t n, int k);
 
+/* ============== Two Pointers Techniques ============== */
+
+/**
+ * Two Sum (sorted array) - O(n)
+ * Find two numbers that sum to target.
+ * @param arr Sorted array
+ * @param n Size of array
+ * @param target Target sum
+ * @param i_out Index of first number
+ * @param j_out Index of second number
+ * @return true if pair found
+ */
+bool two_sum_sorted(const int *arr, size_t n, int target, size_t *i_out, size_t *j_out);
+
+/**
+ * Three Sum - O(n²)
+ * Find all unique triplets that sum to target.
+ * @param arr Array (will be sorted in place)
+ * @param n Size of array
+ * @param target Target sum
+ * @param triplets Output array of [i,j,k] indices (caller allocates)
+ * @param max_triplets Maximum triplets to find
+ * @return Number of triplets found
+ */
+size_t three_sum(int *arr, size_t n, int target, int (*triplets)[3], size_t max_triplets);
+
+/**
+ * Remove duplicates from sorted array - O(n)
+ * Modifies array in place.
+ * @param arr Sorted array
+ * @param n Size of array
+ * @return New length after removing duplicates
+ */
+size_t remove_duplicates(int *arr, size_t n);
+
+/**
+ * Move zeros to end - O(n)
+ * Modifies array in place, preserving relative order.
+ * @param arr Array
+ * @param n Size of array
+ */
+void move_zeros(int *arr, size_t n);
+
+/**
+ * Container with most water - O(n)
+ * Find max area formed by two lines.
+ * @param heights Array of heights
+ * @param n Size of array
+ * @return Maximum water that can be contained
+ */
+int max_water_container(const int *heights, size_t n);
+
+/**
+ * Valid palindrome (ignoring non-alphanumeric) - O(n)
+ * @param s String to check
+ * @return true if palindrome
+ */
+bool is_palindrome_str(const char *s);
+
+/**
+ * Reverse array in place - O(n)
+ * @param arr Array to reverse
+ * @param n Size of array
+ */
+void reverse_array(int *arr, size_t n);
+
+/**
+ * Dutch National Flag / Sort Colors - O(n)
+ * Sort array containing only 0, 1, 2.
+ * @param arr Array to sort
+ * @param n Size of array
+ */
+void sort_colors(int *arr, size_t n);
+
+/**
+ * Partition array around pivot - O(n)
+ * @param arr Array to partition
+ * @param n Size of array
+ * @param pivot Pivot value
+ * @return Index where pivot would be
+ */
+size_t partition_array(int *arr, size_t n, int pivot);
+
+/* ============== Sliding Window Techniques ============== */
+
+/**
+ * Maximum sum subarray of size k - O(n)
+ * @param arr Array
+ * @param n Size of array
+ * @param k Window size
+ * @return Maximum sum of any k consecutive elements
+ */
+int max_sum_subarray_k(const int *arr, size_t n, size_t k);
+
+/**
+ * Minimum size subarray with sum >= target - O(n)
+ * @param arr Array of positive integers
+ * @param n Size of array
+ * @param target Target sum
+ * @return Minimum length of subarray with sum >= target, or 0 if none exists
+ */
+size_t min_subarray_sum(const int *arr, size_t n, int target);
+
+/**
+ * Longest substring without repeating characters - O(n)
+ * @param s String
+ * @return Length of longest substring with unique characters
+ */
+size_t longest_unique_substring(const char *s);
+
+/**
+ * Count subarrays with sum equal to k - O(n)
+ * @param arr Array
+ * @param n Size of array
+ * @param k Target sum
+ * @return Number of subarrays with sum equal to k
+ */
+size_t count_subarrays_sum(const int *arr, size_t n, int k);
+
+/**
+ * Maximum of all subarrays of size k - O(n)
+ * Uses deque-based sliding window.
+ * @param arr Array
+ * @param n Size of array
+ * @param k Window size
+ * @param result Output array (size n-k+1, caller allocates)
+ * @return Number of maximums written
+ */
+size_t sliding_window_max(const int *arr, size_t n, size_t k, int *result);
+
+/**
+ * Find all anagrams of pattern in string - O(n)
+ * @param s String to search in
+ * @param p Pattern to find anagrams of
+ * @param indices Output array for starting indices (caller allocates)
+ * @param max_indices Maximum indices to return
+ * @return Number of anagram positions found
+ */
+size_t find_anagrams(const char *s, const char *p, size_t *indices, size_t max_indices);
+
+/**
+ * Minimum window substring - O(n)
+ * Find minimum window in s containing all characters of t.
+ * @param s Source string
+ * @param t Target characters
+ * @param start_out Starting index of minimum window
+ * @param len_out Length of minimum window
+ * @return true if window found
+ */
+bool min_window_substring(const char *s, const char *t, size_t *start_out, size_t *len_out);
+
 #endif /* SEARCHING_H */

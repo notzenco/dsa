@@ -351,6 +351,150 @@ TEST(kth_missing_past_array) {
     ASSERT_EQ(5, kth_missing(arr, 3, 2));
 }
 
+/* ============== Two Pointers Tests ============== */
+
+TEST(two_sum_sorted_found) {
+    int arr[] = {1, 2, 3, 4, 5, 6};
+    size_t i, j;
+    ASSERT_TRUE(two_sum_sorted(arr, 6, 9, &i, &j));
+    ASSERT_EQ(arr[i] + arr[j], 9);
+}
+
+TEST(two_sum_sorted_not_found) {
+    int arr[] = {1, 2, 3, 4, 5};
+    size_t i, j;
+    ASSERT_FALSE(two_sum_sorted(arr, 5, 100, &i, &j));
+}
+
+TEST(three_sum_basic) {
+    int arr[] = {-1, 0, 1, 2, -1, -4};
+    int triplets[10][3];
+    size_t count = three_sum(arr, 6, 0, triplets, 10);
+    ASSERT_TRUE(count >= 1);  /* At least one triplet */
+}
+
+TEST(remove_duplicates_basic) {
+    int arr[] = {1, 1, 2, 2, 2, 3, 4, 4, 5};
+    size_t new_len = remove_duplicates(arr, 9);
+    ASSERT_EQ(5, new_len);
+    ASSERT_EQ(1, arr[0]);
+    ASSERT_EQ(2, arr[1]);
+    ASSERT_EQ(3, arr[2]);
+    ASSERT_EQ(4, arr[3]);
+    ASSERT_EQ(5, arr[4]);
+}
+
+TEST(move_zeros_basic) {
+    int arr[] = {0, 1, 0, 3, 12};
+    move_zeros(arr, 5);
+    ASSERT_EQ(1, arr[0]);
+    ASSERT_EQ(3, arr[1]);
+    ASSERT_EQ(12, arr[2]);
+    ASSERT_EQ(0, arr[3]);
+    ASSERT_EQ(0, arr[4]);
+}
+
+TEST(max_water_container_basic) {
+    int heights[] = {1, 8, 6, 2, 5, 4, 8, 3, 7};
+    ASSERT_EQ(49, max_water_container(heights, 9));
+}
+
+TEST(is_palindrome_str_basic) {
+    ASSERT_TRUE(is_palindrome_str("A man, a plan, a canal: Panama"));
+    ASSERT_TRUE(is_palindrome_str("racecar"));
+    ASSERT_FALSE(is_palindrome_str("hello"));
+}
+
+TEST(reverse_array_basic) {
+    int arr[] = {1, 2, 3, 4, 5};
+    reverse_array(arr, 5);
+    ASSERT_EQ(5, arr[0]);
+    ASSERT_EQ(4, arr[1]);
+    ASSERT_EQ(3, arr[2]);
+    ASSERT_EQ(2, arr[3]);
+    ASSERT_EQ(1, arr[4]);
+}
+
+TEST(sort_colors_basic) {
+    int arr[] = {2, 0, 2, 1, 1, 0};
+    sort_colors(arr, 6);
+    ASSERT_EQ(0, arr[0]);
+    ASSERT_EQ(0, arr[1]);
+    ASSERT_EQ(1, arr[2]);
+    ASSERT_EQ(1, arr[3]);
+    ASSERT_EQ(2, arr[4]);
+    ASSERT_EQ(2, arr[5]);
+}
+
+TEST(partition_array_basic) {
+    int arr[] = {3, 1, 4, 1, 5, 9, 2, 6};
+    size_t pivot_idx = partition_array(arr, 8, 4);
+    /* All elements before pivot_idx should be < 4 */
+    for (size_t i = 0; i < pivot_idx; i++) {
+        ASSERT_TRUE(arr[i] < 4);
+    }
+}
+
+/* ============== Sliding Window Tests ============== */
+
+TEST(max_sum_subarray_k_basic) {
+    int arr[] = {1, 4, 2, 10, 23, 3, 1, 0, 20};
+    ASSERT_EQ(39, max_sum_subarray_k(arr, 9, 4)); /* [4,2,10,23] = 39 */
+}
+
+TEST(min_subarray_sum_basic) {
+    int arr[] = {2, 3, 1, 2, 4, 3};
+    ASSERT_EQ(2, min_subarray_sum(arr, 6, 7)); /* [4,3] = 7 */
+}
+
+TEST(min_subarray_sum_not_found) {
+    int arr[] = {1, 1, 1};
+    ASSERT_EQ(0, min_subarray_sum(arr, 3, 100));
+}
+
+TEST(longest_unique_substring_basic) {
+    ASSERT_EQ(3, longest_unique_substring("abcabcbb")); /* "abc" */
+    ASSERT_EQ(1, longest_unique_substring("bbbbb"));    /* "b" */
+    ASSERT_EQ(3, longest_unique_substring("pwwkew"));   /* "wke" */
+}
+
+TEST(count_subarrays_sum_basic) {
+    int arr[] = {1, 1, 1};
+    ASSERT_EQ(2, count_subarrays_sum(arr, 3, 2)); /* [1,1] appears twice */
+}
+
+TEST(sliding_window_max_basic) {
+    int arr[] = {1, 3, -1, -3, 5, 3, 6, 7};
+    int result[6];
+    size_t count = sliding_window_max(arr, 8, 3, result);
+    ASSERT_EQ(6, count);
+    ASSERT_EQ(3, result[0]);
+    ASSERT_EQ(3, result[1]);
+    ASSERT_EQ(5, result[2]);
+    ASSERT_EQ(5, result[3]);
+    ASSERT_EQ(6, result[4]);
+    ASSERT_EQ(7, result[5]);
+}
+
+TEST(find_anagrams_basic) {
+    size_t indices[10];
+    size_t count = find_anagrams("cbaebabacd", "abc", indices, 10);
+    ASSERT_EQ(2, count);
+    ASSERT_EQ(0, indices[0]); /* "cba" */
+    ASSERT_EQ(6, indices[1]); /* "bac" */
+}
+
+TEST(min_window_substring_basic) {
+    size_t start, len;
+    ASSERT_TRUE(min_window_substring("ADOBECODEBANC", "ABC", &start, &len));
+    ASSERT_EQ(4, len);  /* "BANC" */
+}
+
+TEST(min_window_substring_not_found) {
+    size_t start, len;
+    ASSERT_FALSE(min_window_substring("a", "aa", &start, &len));
+}
+
 /* ============== NULL Safety Tests ============== */
 
 TEST(null_safety) {
@@ -437,6 +581,29 @@ int main(void) {
     RUN_TEST(kth_missing_basic);
     RUN_TEST(kth_missing_at_start);
     RUN_TEST(kth_missing_past_array);
+
+    /* Two Pointers */
+    RUN_TEST(two_sum_sorted_found);
+    RUN_TEST(two_sum_sorted_not_found);
+    RUN_TEST(three_sum_basic);
+    RUN_TEST(remove_duplicates_basic);
+    RUN_TEST(move_zeros_basic);
+    RUN_TEST(max_water_container_basic);
+    RUN_TEST(is_palindrome_str_basic);
+    RUN_TEST(reverse_array_basic);
+    RUN_TEST(sort_colors_basic);
+    RUN_TEST(partition_array_basic);
+
+    /* Sliding Window */
+    RUN_TEST(max_sum_subarray_k_basic);
+    RUN_TEST(min_subarray_sum_basic);
+    RUN_TEST(min_subarray_sum_not_found);
+    RUN_TEST(longest_unique_substring_basic);
+    RUN_TEST(count_subarrays_sum_basic);
+    RUN_TEST(sliding_window_max_basic);
+    RUN_TEST(find_anagrams_basic);
+    RUN_TEST(min_window_substring_basic);
+    RUN_TEST(min_window_substring_not_found);
 
     /* NULL Safety */
     RUN_TEST(null_safety);
