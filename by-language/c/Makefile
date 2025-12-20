@@ -25,7 +25,7 @@ ALG_SOURCES = $(wildcard $(SRC_ALG)/*.c)
 DS_OBJECTS = $(patsubst $(SRC_DS)/%.c,$(BUILD_DIR)/ds_%.o,$(DS_SOURCES))
 ALG_OBJECTS = $(patsubst $(SRC_ALG)/%.c,$(BUILD_DIR)/alg_%.o,$(ALG_SOURCES))
 
-.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache
+.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache test-range test-bloom test-skiplist
 
 all: $(BUILD_DIR) $(DS_OBJECTS) $(ALG_OBJECTS)
 
@@ -105,8 +105,20 @@ test-cache: $(BUILD_DIR) $(BUILD_DIR)/ds_lru_cache.o $(BUILD_DIR)/ds_lfu_cache.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_cache.c $(BUILD_DIR)/ds_lru_cache.o $(BUILD_DIR)/ds_lfu_cache.o -o $(BUILD_DIR)/test_cache $(LDFLAGS)
 	./$(BUILD_DIR)/test_cache
 
+test-range: $(BUILD_DIR) $(BUILD_DIR)/ds_segment_tree.o $(BUILD_DIR)/ds_fenwick_tree.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_range_trees.c $(BUILD_DIR)/ds_segment_tree.o $(BUILD_DIR)/ds_fenwick_tree.o -o $(BUILD_DIR)/test_range $(LDFLAGS)
+	./$(BUILD_DIR)/test_range
+
+test-bloom: $(BUILD_DIR) $(BUILD_DIR)/ds_bloom_filter.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_bloom.c $(BUILD_DIR)/ds_bloom_filter.o -o $(BUILD_DIR)/test_bloom $(LDFLAGS) -lm
+	./$(BUILD_DIR)/test_bloom
+
+test-skiplist: $(BUILD_DIR) $(BUILD_DIR)/ds_skip_list.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_skiplist.c $(BUILD_DIR)/ds_skip_list.o -o $(BUILD_DIR)/test_skiplist $(LDFLAGS)
+	./$(BUILD_DIR)/test_skiplist
+
 # Run all tests
-test: test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache
+test: test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache test-range test-bloom test-skiplist
 
 clean:
 	rm -rf $(BUILD_DIR)

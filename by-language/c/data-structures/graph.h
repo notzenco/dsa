@@ -231,6 +231,29 @@ ShortestPathResult *graph_bellman_ford(const Graph *g, int source);
 void shortest_path_result_free(ShortestPathResult *result);
 
 /**
+ * Floyd-Warshall algorithm for all-pairs shortest paths.
+ * Returns 2D distance matrix and next-hop matrix for path reconstruction.
+ * @param g Graph
+ * @param dist_out 2D array to store distances (caller allocates V*V ints)
+ * @param next_out 2D array for path reconstruction (caller allocates V*V ints, can be NULL)
+ * @return true on success, false if negative cycle detected
+ */
+bool graph_floyd_warshall(const Graph *g, int **dist_out, int **next_out);
+
+/**
+ * Get path between two vertices using Floyd-Warshall next matrix.
+ * @param next Next-hop matrix from Floyd-Warshall
+ * @param n Number of vertices
+ * @param src Source vertex
+ * @param dest Destination vertex
+ * @param path_out Array to store path (caller allocates)
+ * @param path_len_out Pointer to store path length
+ * @return true if path exists
+ */
+bool graph_floyd_warshall_path(int **next, int n, int src, int dest,
+                                int *path_out, int *path_len_out);
+
+/**
  * Reconstruct path from source to destination.
  * @param result Shortest path result
  * @param dest Destination vertex

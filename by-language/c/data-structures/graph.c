@@ -638,6 +638,94 @@ bool shortest_path_reconstruct(const ShortestPathResult *result, int dest,
     return true;
 }
 
+/* ============== Floyd-Warshall ============== */
+
+bool graph_floyd_warshall(const Graph *g, int **dist, int **next) {
+    if (g == NULL || dist == NULL) return false;
+
+    int n = g->num_vertices;
+
+    /* Initialize distance matrix */
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == j) {
+                dist[i][j] = 0;
+            } else {
+                dist[i][j] = GRAPH_INF;
+            }
+            if (next != NULL) {
+                next[i][j] = -1;
+            }
+        }
+    }
+
+    /* Set distances from adjacency list */
+    for (int u = 0; u < n; u++) {
+        for (Edge *e = g->adj_list[u]; e != NULL; e = e->next) {
+            dist[u][e->dest] = e->weight;
+            if (next != NULL) {
+                next[u][e->dest] = e->dest;
+            }
+        }
+    }
+
+    /* Floyd-Warshall main loop */
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dist[i][k] != GRAPH_INF && dist[k][j] != GRAPH_INF) {
+                    int new_dist = dist[i][k] + dist[k][j];
+                    if (new_dist < dist[i][j]) {
+                        dist[i][j] = new_dist;
+                        if (next != NULL) {
+                            next[i][j] = next[i][k];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /* Check for negative cycles (diagonal should be 0 or negative) */
+    for (int i = 0; i < n; i++) {
+        if (dist[i][i] < 0) {
+            return false;  /* Negative cycle detected */
+        }
+    }
+
+    return true;
+}
+
+bool graph_floyd_warshall_path(int **next, int n, int src, int dest,
+                                int *path_out, int *path_len_out) {
+    if (next == NULL || path_out == NULL || path_len_out == NULL) {
+        return false;
+    }
+    if (src < 0 || src >= n || dest < 0 || dest >= n) {
+        return false;
+    }
+    if (next[src][dest] == -1) {
+        *path_len_out = 0;
+        return false;  /* No path */
+    }
+
+    int len = 0;
+    int current = src;
+    path_out[len++] = current;
+
+    while (current != dest) {
+        current = next[current][dest];
+        if (current == -1 || len >= n) {
+            *path_len_out = 0;
+            return false;
+        }
+        path_out[len++] = current;
+    }
+
+    *path_len_out = len;
+    return true;
+}
+
 /* ============== Topological Sort (Kahn's) ============== */
 
 TopoSortResult *graph_topo_sort_kahn(const Graph *g) {
