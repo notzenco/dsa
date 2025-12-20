@@ -51,21 +51,21 @@ dsa/
 ### Hashing
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Hash Table | [x] | [ ] | [ ] | [ ] | [ ] |
+| Hash Table | [x] | [x] | [ ] | [ ] | [ ] |
 | Bloom Filter | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### Heaps
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Binary Heap | [x] | [ ] | [ ] | [ ] | [ ] |
-| Priority Queue | [x] | [ ] | [ ] | [ ] | [ ] |
+| Binary Heap | [x] | [x] | [ ] | [ ] | [ ] |
+| Priority Queue | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### Graphs
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Adjacency List | [x] | [ ] | [ ] | [ ] | [ ] |
+| Adjacency List | [x] | [x] | [ ] | [ ] | [ ] |
 | Adjacency Matrix | [x] | [ ] | [ ] | [ ] | [ ] |
-| Union-Find | [x] | [ ] | [ ] | [ ] | [ ] |
+| Union-Find | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### Advanced
 | Structure | Python | C | C++ | Rust | Go |
@@ -79,34 +79,34 @@ dsa/
 ### Sorting
 | Algorithm | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Bubble Sort | [x] | [ ] | [ ] | [ ] | [ ] |
-| Selection Sort | [x] | [ ] | [ ] | [ ] | [ ] |
-| Insertion Sort | [x] | [ ] | [ ] | [ ] | [ ] |
-| Merge Sort | [x] | [ ] | [ ] | [ ] | [ ] |
-| Quick Sort | [x] | [ ] | [ ] | [ ] | [ ] |
-| Heap Sort | [x] | [ ] | [ ] | [ ] | [ ] |
-| Counting Sort | [x] | [ ] | [ ] | [ ] | [ ] |
-| Radix Sort | [x] | [ ] | [ ] | [ ] | [ ] |
+| Bubble Sort | [x] | [x] | [ ] | [ ] | [ ] |
+| Selection Sort | [x] | [x] | [ ] | [ ] | [ ] |
+| Insertion Sort | [x] | [x] | [ ] | [ ] | [ ] |
+| Merge Sort | [x] | [x] | [ ] | [ ] | [ ] |
+| Quick Sort | [x] | [x] | [ ] | [ ] | [ ] |
+| Heap Sort | [x] | [x] | [ ] | [ ] | [ ] |
+| Counting Sort | [x] | [x] | [ ] | [ ] | [ ] |
+| Radix Sort | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### Searching
 | Algorithm | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| Binary Search | [x] | [ ] | [ ] | [ ] | [ ] |
+| Binary Search | [x] | [x] | [ ] | [ ] | [ ] |
 | Two Pointers | [x] | [ ] | [ ] | [ ] | [ ] |
 | Sliding Window | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ### Graph
 | Algorithm | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| BFS | [x] | [ ] | [ ] | [ ] | [ ] |
-| DFS | [x] | [ ] | [ ] | [ ] | [ ] |
-| Dijkstra | [x] | [ ] | [ ] | [ ] | [ ] |
-| Bellman-Ford | [x] | [ ] | [ ] | [ ] | [ ] |
+| BFS | [x] | [x] | [ ] | [ ] | [ ] |
+| DFS | [x] | [x] | [ ] | [ ] | [ ] |
+| Dijkstra | [x] | [x] | [ ] | [ ] | [ ] |
+| Bellman-Ford | [x] | [x] | [ ] | [ ] | [ ] |
 | Floyd-Warshall | [x] | [ ] | [ ] | [ ] | [ ] |
-| Prim's MST | [x] | [ ] | [ ] | [ ] | [ ] |
-| Kruskal's MST | [x] | [ ] | [ ] | [ ] | [ ] |
-| Topological Sort | [x] | [ ] | [ ] | [ ] | [ ] |
-| Tarjan's SCC | [x] | [ ] | [ ] | [ ] | [ ] |
+| Prim's MST | [x] | [x] | [ ] | [ ] | [ ] |
+| Kruskal's MST | [x] | [x] | [ ] | [ ] | [ ] |
+| Topological Sort | [x] | [x] | [ ] | [ ] | [ ] |
+| Tarjan's SCC | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### Dynamic Programming
 | Problem | Python | C | C++ | Rust | Go |
