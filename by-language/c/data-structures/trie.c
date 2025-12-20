@@ -3,6 +3,8 @@
  * See trie.h for documentation
  */
 
+#define _POSIX_C_SOURCE 200809L
+
 #include "trie.h"
 #include <stdlib.h>
 #include <string.h>

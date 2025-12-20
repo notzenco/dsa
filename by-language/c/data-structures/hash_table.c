@@ -3,6 +3,8 @@
  * See hash_table.h for documentation
  */
 
+#define _POSIX_C_SOURCE 200809L
+
 #include "hash_table.h"
 #include <stdio.h>
 #include <stdlib.h>
