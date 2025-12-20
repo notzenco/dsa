@@ -45,14 +45,14 @@ dsa/
 | Red-Black Tree | [x] | [ ] | [ ] | [ ] | [ ] |
 | B-Tree | [x] | [ ] | [ ] | [ ] | [ ] |
 | Trie | [x] | [x] | [ ] | [ ] | [ ] |
-| Segment Tree | [x] | [ ] | [ ] | [ ] | [ ] |
-| Fenwick Tree | [x] | [ ] | [ ] | [ ] | [ ] |
+| Segment Tree | [x] | [x] | [ ] | [ ] | [ ] |
+| Fenwick Tree | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### Hashing
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | Hash Table | [x] | [x] | [ ] | [ ] | [ ] |
-| Bloom Filter | [x] | [ ] | [ ] | [ ] | [ ] |
+| Bloom Filter | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### Heaps
 | Structure | Python | C | C++ | Rust | Go |
@@ -72,7 +72,7 @@ dsa/
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | LRU Cache | [x] | [x] | [ ] | [ ] | [ ] |
 | LFU Cache | [x] | [x] | [ ] | [ ] | [ ] |
-| Skip List | [x] | [ ] | [ ] | [ ] | [ ] |
+| Skip List | [x] | [x] | [ ] | [ ] | [ ] |
 
 ## Algorithms
 
@@ -102,7 +102,7 @@ dsa/
 | DFS | [x] | [x] | [ ] | [ ] | [ ] |
 | Dijkstra | [x] | [x] | [ ] | [ ] | [ ] |
 | Bellman-Ford | [x] | [x] | [ ] | [ ] | [ ] |
-| Floyd-Warshall | [x] | [ ] | [ ] | [ ] | [ ] |
+| Floyd-Warshall | [x] | [x] | [ ] | [ ] | [ ] |
 | Prim's MST | [x] | [x] | [ ] | [ ] | [ ] |
 | Kruskal's MST | [x] | [x] | [ ] | [ ] | [ ] |
 | Topological Sort | [x] | [x] | [ ] | [ ] | [ ] |
