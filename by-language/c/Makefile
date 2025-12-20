@@ -25,7 +25,7 @@ ALG_SOURCES = $(wildcard $(SRC_ALG)/*.c)
 DS_OBJECTS = $(patsubst $(SRC_DS)/%.c,$(BUILD_DIR)/ds_%.o,$(DS_SOURCES))
 ALG_OBJECTS = $(patsubst $(SRC_ALG)/%.c,$(BUILD_DIR)/alg_%.o,$(ALG_SOURCES))
 
-.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-sort
+.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-sort test-graph
 
 all: $(BUILD_DIR) $(DS_OBJECTS) $(ALG_OBJECTS)
 
@@ -77,8 +77,12 @@ test-sort: $(BUILD_DIR) $(BUILD_DIR)/alg_sorting.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_sorting.c $(BUILD_DIR)/alg_sorting.o -o $(BUILD_DIR)/test_sort $(LDFLAGS)
 	./$(BUILD_DIR)/test_sort
 
+test-graph: $(BUILD_DIR) $(BUILD_DIR)/ds_graph.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_graph.c $(BUILD_DIR)/ds_graph.o -o $(BUILD_DIR)/test_graph $(LDFLAGS)
+	./$(BUILD_DIR)/test_graph
+
 # Run all tests
-test: test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap test-sort
+test: test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap test-sort test-graph
 
 clean:
 	rm -rf $(BUILD_DIR)
