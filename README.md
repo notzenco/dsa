@@ -42,8 +42,8 @@ dsa/
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | Binary Search Tree | [x] | [x] | [ ] | [ ] | [ ] |
 | AVL Tree | [x] | [x] | [ ] | [ ] | [ ] |
-| Red-Black Tree | [x] | [ ] | [ ] | [ ] | [ ] |
-| B-Tree | [x] | [ ] | [ ] | [ ] | [ ] |
+| Red-Black Tree | [x] | [x] | [ ] | [ ] | [ ] |
+| B-Tree | [x] | [x] | [ ] | [ ] | [ ] |
 | Trie | [x] | [x] | [ ] | [ ] | [ ] |
 | Segment Tree | [x] | [x] | [ ] | [ ] | [ ] |
 | Fenwick Tree | [x] | [x] | [ ] | [ ] | [ ] |
@@ -64,7 +64,7 @@ dsa/
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | Adjacency List | [x] | [x] | [ ] | [ ] | [ ] |
-| Adjacency Matrix | [x] | [ ] | [ ] | [ ] | [ ] |
+| Adjacency Matrix | [x] | [x] | [ ] | [ ] | [ ] |
 | Union-Find | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### Advanced
@@ -92,8 +92,8 @@ dsa/
 | Algorithm | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | Binary Search | [x] | [x] | [ ] | [ ] | [ ] |
-| Two Pointers | [x] | [ ] | [ ] | [ ] | [ ] |
-| Sliding Window | [x] | [ ] | [ ] | [ ] | [ ] |
+| Two Pointers | [x] | [x] | [ ] | [ ] | [ ] |
+| Sliding Window | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### Graph
 | Algorithm | Python | C | C++ | Rust | Go |
