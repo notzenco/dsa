@@ -25,7 +25,7 @@ ALG_SOURCES = $(wildcard $(SRC_ALG)/*.c)
 DS_OBJECTS = $(patsubst $(SRC_DS)/%.c,$(BUILD_DIR)/ds_%.o,$(DS_SOURCES))
 ALG_OBJECTS = $(patsubst $(SRC_ALG)/%.c,$(BUILD_DIR)/alg_%.o,$(ALG_SOURCES))
 
-.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache test-range test-bloom test-skiplist test-rb test-btree test-adjmat
+.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache test-range test-bloom test-skiplist test-rb test-btree test-adjmat test-uf
 
 all: $(BUILD_DIR) $(DS_OBJECTS) $(ALG_OBJECTS)
 
@@ -129,8 +129,12 @@ test-adjmat: $(BUILD_DIR) $(BUILD_DIR)/ds_adjacency_matrix.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_adjmat.c $(BUILD_DIR)/ds_adjacency_matrix.o -o $(BUILD_DIR)/test_adjmat $(LDFLAGS)
 	./$(BUILD_DIR)/test_adjmat
 
+test-uf: $(BUILD_DIR) $(BUILD_DIR)/ds_union_find.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_union_find.c $(BUILD_DIR)/ds_union_find.o -o $(BUILD_DIR)/test_uf $(LDFLAGS)
+	./$(BUILD_DIR)/test_uf
+
 # Run all tests
-test: test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache test-range test-bloom test-skiplist test-rb test-btree test-adjmat
+test: test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache test-range test-bloom test-skiplist test-rb test-btree test-adjmat test-uf
 
 clean:
 	rm -rf $(BUILD_DIR)
