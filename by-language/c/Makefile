@@ -65,8 +65,12 @@ test-bst: $(BUILD_DIR) $(BUILD_DIR)/ds_binary_search_tree.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_bst.c $(BUILD_DIR)/ds_binary_search_tree.o -o $(BUILD_DIR)/test_bst $(LDFLAGS)
 	./$(BUILD_DIR)/test_bst
 
+test-ht: $(BUILD_DIR) $(BUILD_DIR)/ds_hash_table.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_hash_table.c $(BUILD_DIR)/ds_hash_table.o -o $(BUILD_DIR)/test_ht $(LDFLAGS)
+	./$(BUILD_DIR)/test_ht
+
 # Run all tests
-test: test-da test-sll test-dll test-stack test-queue test-bst
+test: test-da test-sll test-dll test-stack test-queue test-bst test-ht
 
 clean:
 	rm -rf $(BUILD_DIR)
