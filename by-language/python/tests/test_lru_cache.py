@@ -4,9 +4,8 @@ Tests for LRU Cache implementations.
 
 import pytest
 import time
-from data_structures.lru_cache import (
-    LRUCache, LRUCacheSimple, LFUCache, TTLCache
-)
+from data_structures.lru_cache import LRUCache, LRUCacheSimple, LFUCache
+from data_structures.ttl_cache import TTLCache
 
 
 class TestLRUCacheBasics:

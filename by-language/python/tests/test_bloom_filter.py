@@ -4,9 +4,9 @@ Tests for Bloom Filter and Skip List.
 
 import pytest
 from data_structures.bloom_filter import (
-    BloomFilter, CountingBloomFilter, ScalableBloomFilter,
-    SkipList
+    BloomFilter, CountingBloomFilter, ScalableBloomFilter
 )
+from data_structures.skip_list import SkipList
 
 
 class TestBloomFilter:

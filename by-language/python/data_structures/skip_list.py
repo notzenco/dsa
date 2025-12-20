@@ -118,6 +118,29 @@ class SkipList(Generic[K, V]):
         """String representation."""
         return f"SkipList(size={self._size}, level={self._level})"
 
+    def __getitem__(self, key: K) -> V:
+        """Get value by key, raises KeyError if not found."""
+        result = self.search(key)
+        if result is None:
+            # Check if key exists with None value
+            if not self.contains(key):
+                raise KeyError(key)
+        return result  # type: ignore
+
+    def __setitem__(self, key: K, value: V) -> None:
+        """Set value by key."""
+        self.insert(key, value)
+
+    def __delitem__(self, key: K) -> None:
+        """Delete by key, raises KeyError if not found."""
+        if not self.delete(key):
+            raise KeyError(key)
+
+    @property
+    def level(self) -> int:
+        """Return current highest level (0-indexed)."""
+        return self._level - 1
+
     @property
     def size(self) -> int:
         """Return number of elements."""
@@ -454,3 +477,25 @@ class SkipList(Generic[K, V]):
             List of (key, value) tuples in sorted order.
         """
         return list(self.items())
+
+    def display(self) -> str:
+        """
+        Return visual representation of skip list.
+
+        Returns:
+            Multi-line string showing all levels.
+        """
+        if self._size == 0:
+            return "Empty SkipList"
+
+        lines = []
+        for i in range(self._level - 1, -1, -1):
+            line = f"L{i}: HEAD"
+            current = self._head.forward[i]
+            while current is not None:
+                line += f" -> {current.key}"
+                current = current.forward[i]
+            line += " -> NIL"
+            lines.append(line)
+
+        return "\n".join(lines)
