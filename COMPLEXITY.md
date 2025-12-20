@@ -3,6 +3,7 @@
 A comprehensive reference for choosing the right data structure or algorithm for your problem.
 
 ## Table of Contents
+
 - [Data Structures](#data-structures)
   - [Linear Structures](#linear-structures)
   - [Trees](#trees)
@@ -25,6 +26,7 @@ A comprehensive reference for choosing the right data structure or algorithm for
 ### Linear Structures
 
 #### Array / Dynamic Array
+
 ```
 ┌─────────────┬─────────┬─────────┬─────────┐
 │ Operation   │ Average │ Worst   │ Space   │
@@ -40,12 +42,14 @@ A comprehensive reference for choosing the right data structure or algorithm for
 ```
 
 **When to Use:**
+
 - Need O(1) random access by index
 - Data size is known or changes infrequently
 - Memory locality matters (cache-friendly)
 - Implementing other data structures (heaps, hash tables)
 
 **When NOT to Use:**
+
 - Frequent insertions/deletions in the middle
 - Unknown or highly variable size
 - Need to frequently search for values
@@ -53,6 +57,7 @@ A comprehensive reference for choosing the right data structure or algorithm for
 ---
 
 #### Linked List (Singly/Doubly)
+
 ```
 ┌─────────────┬─────────┬─────────┬─────────┐
 │ Operation   │ Singly  │ Doubly  │ Space   │
@@ -70,6 +75,7 @@ A comprehensive reference for choosing the right data structure or algorithm for
 ```
 
 **When to Use:**
+
 - Frequent insertions/deletions at ends
 - Don't need random access
 - Implementing stacks, queues
@@ -77,6 +83,7 @@ A comprehensive reference for choosing the right data structure or algorithm for
 - Need to splice/merge lists efficiently
 
 **When NOT to Use:**
+
 - Need random access
 - Memory is constrained (pointer overhead)
 - Cache performance is critical
@@ -84,6 +91,7 @@ A comprehensive reference for choosing the right data structure or algorithm for
 ---
 
 #### Stack (LIFO)
+
 ```
 ┌─────────────┬─────────┬─────────┐
 │ Operation   │ Time    │ Space   │
@@ -96,6 +104,7 @@ A comprehensive reference for choosing the right data structure or algorithm for
 ```
 
 **When to Use:**
+
 - Undo/Redo functionality
 - Expression evaluation & parsing
 - Backtracking algorithms (DFS, maze solving)
@@ -104,11 +113,13 @@ A comprehensive reference for choosing the right data structure or algorithm for
 - Browser history (back button)
 
 **Variants:**
+
 - **Min/Max Stack**: Track min/max in O(1) with extra O(n) space
 
 ---
 
 #### Queue (FIFO)
+
 ```
 ┌─────────────┬─────────┬─────────┐
 │ Operation   │ Time    │ Space   │
@@ -121,6 +132,7 @@ A comprehensive reference for choosing the right data structure or algorithm for
 ```
 
 **When to Use:**
+
 - BFS traversal
 - Task scheduling
 - Buffering (I/O, print queues)
@@ -128,6 +140,7 @@ A comprehensive reference for choosing the right data structure or algorithm for
 - Rate limiting
 
 **Variants:**
+
 - **Deque**: O(1) operations at both ends
 - **Circular Queue**: Fixed-size buffer, wraps around
 - **Priority Queue**: See Heap section
@@ -137,6 +150,7 @@ A comprehensive reference for choosing the right data structure or algorithm for
 ### Trees
 
 #### Binary Search Tree (BST)
+
 ```
 ┌─────────────┬─────────┬─────────┬─────────┐
 │ Operation   │ Average │ Worst   │ Space   │
@@ -150,18 +164,21 @@ Worst case occurs with skewed tree (sorted input)
 ```
 
 **When to Use:**
+
 - Need sorted data with dynamic updates
 - In-order traversal needed
 - Simple implementation acceptable
 - Data is reasonably random
 
 **When NOT to Use:**
+
 - Data is sorted or nearly sorted (use balanced tree)
 - Need guaranteed O(log n) operations
 
 ---
 
 #### AVL Tree
+
 ```
 ┌─────────────┬─────────┬─────────┬─────────┐
 │ Operation   │ Average │ Worst   │ Space   │
@@ -174,17 +191,20 @@ Height: ≤ 1.44 * log(n)
 ```
 
 **When to Use:**
+
 - Read-heavy workloads (lookups frequent)
 - Need strict balance guarantees
 - Height must be minimal
 
 **When NOT to Use:**
+
 - Write-heavy workloads (many inserts/deletes)
 - Simpler solution acceptable
 
 ---
 
 #### Red-Black Tree
+
 ```
 ┌─────────────┬─────────┬─────────┬─────────┐
 │ Operation   │ Average │ Worst   │ Space   │
@@ -197,11 +217,13 @@ Height: ≤ 2 * log(n+1)
 ```
 
 **When to Use:**
+
 - Write-heavy workloads
 - Need guaranteed O(log n) with fewer rotations
 - Implementing ordered map/set (std::map, TreeMap)
 
 **AVL vs Red-Black:**
+
 | Aspect | AVL | Red-Black |
 |--------|-----|-----------|
 | Balance | Stricter | Looser |
@@ -213,6 +235,7 @@ Height: ≤ 2 * log(n+1)
 ---
 
 #### B-Tree
+
 ```
 ┌─────────────┬─────────────────┬─────────────┐
 │ Operation   │ Time            │ Disk I/O    │
@@ -225,18 +248,21 @@ t = minimum degree (branching factor)
 ```
 
 **When to Use:**
+
 - Database indexing
 - File systems
 - Disk-based storage (minimize I/O)
 - Large datasets that don't fit in memory
 
 **When NOT to Use:**
+
 - In-memory only operations
 - Small datasets
 
 ---
 
 #### Trie (Prefix Tree)
+
 ```
 ┌─────────────┬─────────┬─────────┐
 │ Operation   │ Time    │ Space   │
@@ -250,6 +276,7 @@ m = key length, n = number of keys
 ```
 
 **When to Use:**
+
 - Autocomplete/typeahead
 - Spell checkers
 - IP routing tables
@@ -257,6 +284,7 @@ m = key length, n = number of keys
 - Prefix-based searching
 
 **When NOT to Use:**
+
 - Memory constrained
 - Keys are very long
 - No prefix-based operations needed
@@ -264,6 +292,7 @@ m = key length, n = number of keys
 ---
 
 #### Segment Tree
+
 ```
 ┌─────────────┬─────────┬─────────┐
 │ Operation   │ Time    │ Space   │
@@ -275,6 +304,7 @@ m = key length, n = number of keys
 ```
 
 **When to Use:**
+
 - Range queries (sum, min, max, GCD)
 - Range updates (with lazy propagation)
 - Competitive programming
@@ -283,6 +313,7 @@ m = key length, n = number of keys
 ---
 
 #### Fenwick Tree (Binary Indexed Tree)
+
 ```
 ┌─────────────┬─────────┬─────────┐
 │ Operation   │ Time    │ Space   │
@@ -294,6 +325,7 @@ m = key length, n = number of keys
 ```
 
 **Segment Tree vs Fenwick Tree:**
+
 | Aspect | Segment Tree | Fenwick Tree |
 |--------|--------------|--------------|
 | Space | 4n | n |
@@ -306,6 +338,7 @@ m = key length, n = number of keys
 ### Hash-Based
 
 #### Hash Table
+
 ```
 ┌─────────────┬─────────┬─────────┬─────────┐
 │ Operation   │ Average │ Worst   │ Space   │
@@ -318,6 +351,7 @@ Worst case with poor hash function or many collisions
 ```
 
 **When to Use:**
+
 - Need O(1) average lookup/insert/delete
 - Key-value associations
 - Counting occurrences
@@ -325,17 +359,20 @@ Worst case with poor hash function or many collisions
 - Caching
 
 **When NOT to Use:**
+
 - Need sorted order
 - Need range queries
 - Keys aren't hashable
 
 **Collision Resolution:**
+
 - **Chaining**: Linked list at each bucket, better for high load
 - **Open Addressing**: Probe sequence, better cache performance
 
 ---
 
 #### Bloom Filter
+
 ```
 ┌─────────────┬─────────┬─────────┐
 │ Operation   │ Time    │ Space   │
@@ -349,6 +386,7 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 ```
 
 **When to Use:**
+
 - Membership testing with space constraints
 - Cache before expensive lookups
 - Duplicate detection
@@ -356,6 +394,7 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 - Spell checkers
 
 **Key Properties:**
+
 - **No false negatives**: If says "not in set", definitely not
 - **Possible false positives**: If says "in set", might be wrong
 - **Cannot delete**: Use Counting Bloom Filter for deletions
@@ -365,6 +404,7 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 ### Graphs
 
 #### Adjacency List vs Matrix
+
 ```
 ┌─────────────────┬─────────────────┬─────────────────┐
 │ Operation       │ Adjacency List  │ Adjacency Matrix│
@@ -379,11 +419,13 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 ```
 
 **Use Adjacency List when:**
+
 - Sparse graph (E << V²)
 - Need to iterate neighbors frequently
 - Memory is constrained
 
 **Use Adjacency Matrix when:**
+
 - Dense graph (E ≈ V²)
 - Need O(1) edge existence checks
 - Graph is small
@@ -391,6 +433,7 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 ---
 
 #### Union-Find (Disjoint Set)
+
 ```
 ┌─────────────┬───────────────────┐
 │ Operation   │ Time (amortized)  │
@@ -403,6 +446,7 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 ```
 
 **When to Use:**
+
 - Dynamic connectivity
 - Kruskal's MST algorithm
 - Cycle detection
@@ -414,6 +458,7 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 ### Advanced
 
 #### Heap / Priority Queue
+
 ```
 ┌─────────────┬─────────┬─────────┐
 │ Operation   │ Time    │ Space   │
@@ -427,6 +472,7 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 ```
 
 **When to Use:**
+
 - Priority scheduling
 - Dijkstra's algorithm
 - Finding k smallest/largest elements
@@ -436,6 +482,7 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 ---
 
 #### LRU Cache
+
 ```
 ┌─────────────┬─────────┬─────────┐
 │ Operation   │ Time    │ Space   │
@@ -447,6 +494,7 @@ Implementation: Hash Map + Doubly Linked List
 ```
 
 **When to Use:**
+
 - Caching with memory limit
 - Page replacement
 - Database query caching
@@ -454,6 +502,7 @@ Implementation: Hash Map + Doubly Linked List
 ---
 
 #### Skip List
+
 ```
 ┌─────────────┬───────────┬─────────┐
 │ Operation   │ Expected  │ Worst   │
@@ -465,6 +514,7 @@ Implementation: Hash Map + Doubly Linked List
 ```
 
 **When to Use:**
+
 - Alternative to balanced trees
 - Lock-free concurrent data structures
 - Range queries needed
@@ -524,6 +574,7 @@ i = position of target
 ```
 
 **Binary Search Variants:**
+
 - **Lower Bound**: First element ≥ target
 - **Upper Bound**: First element > target
 - **Search in Rotated Array**: Modified binary search
@@ -576,6 +627,7 @@ i = position of target
 | Matrix Chain | O(n³) | O(n²) | Interval DP |
 
 **DP Patterns:**
+
 1. **Linear DP**: Fibonacci, Climbing Stairs
 2. **Knapsack**: 0/1, Unbounded, Bounded
 3. **Grid DP**: Unique Paths, Min Path Sum
