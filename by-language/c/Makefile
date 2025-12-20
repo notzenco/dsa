@@ -25,7 +25,7 @@ ALG_SOURCES = $(wildcard $(SRC_ALG)/*.c)
 DS_OBJECTS = $(patsubst $(SRC_DS)/%.c,$(BUILD_DIR)/ds_%.o,$(DS_SOURCES))
 ALG_OBJECTS = $(patsubst $(SRC_ALG)/%.c,$(BUILD_DIR)/alg_%.o,$(ALG_SOURCES))
 
-.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-sort test-graph test-search test-dp test-string test-trie test-avl
+.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache
 
 all: $(BUILD_DIR) $(DS_OBJECTS) $(ALG_OBJECTS)
 
@@ -101,8 +101,12 @@ test-avl: $(BUILD_DIR) $(BUILD_DIR)/ds_avl_tree.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_avl.c $(BUILD_DIR)/ds_avl_tree.o -o $(BUILD_DIR)/test_avl $(LDFLAGS)
 	./$(BUILD_DIR)/test_avl
 
+test-cache: $(BUILD_DIR) $(BUILD_DIR)/ds_lru_cache.o $(BUILD_DIR)/ds_lfu_cache.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_cache.c $(BUILD_DIR)/ds_lru_cache.o $(BUILD_DIR)/ds_lfu_cache.o -o $(BUILD_DIR)/test_cache $(LDFLAGS)
+	./$(BUILD_DIR)/test_cache
+
 # Run all tests
-test: test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap test-sort test-graph test-search test-dp test-string test-trie test-avl
+test: test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache
 
 clean:
 	rm -rf $(BUILD_DIR)
