@@ -7,6 +7,7 @@ A queue is a First-In-First-Out (FIFO) data structure where elements are added a
 | Structure | Python | C |
 |-----------|--------|---|
 | Queue | [queue.py](../../by-language/python/data_structures/queue.py) | [queue.c](../../by-language/c/data-structures/queue.c) |
+| Monotonic Queue | [queue.py](../../by-language/python/data_structures/queue.py) | [monotonic_queue.c](../../by-language/c/data-structures/monotonic_queue.c) |
 
 ## Complexity
 

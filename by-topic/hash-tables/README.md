@@ -10,6 +10,7 @@ Hash tables provide O(1) average-case lookup, insertion, and deletion by mapping
 | Bloom Filter | [bloom_filter.py](../../by-language/python/data_structures/bloom_filter.py) | [bloom_filter.c](../../by-language/c/data-structures/bloom_filter.c) |
 | LRU Cache | [lru_cache.py](../../by-language/python/data_structures/lru_cache.py) | [lru_cache.c](../../by-language/c/data-structures/lru_cache.c) |
 | LFU Cache | [lfu_cache.py](../../by-language/python/data_structures/lfu_cache.py) | [lfu_cache.c](../../by-language/c/data-structures/lfu_cache.c) |
+| TTL Cache | [lru_cache.py](../../by-language/python/data_structures/lru_cache.py) | [ttl_cache.c](../../by-language/c/data-structures/ttl_cache.c) |
 
 ## Complexity
 

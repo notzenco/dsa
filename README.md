@@ -83,7 +83,9 @@ dsa/
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | LRU Cache | [x] | [x] | [ ] | [ ] | [ ] |
 | LFU Cache | [x] | [x] | [ ] | [ ] | [ ] |
+| TTL Cache | [x] | [x] | [ ] | [ ] | [ ] |
 | Skip List | [x] | [x] | [ ] | [ ] | [ ] |
+| Monotonic Queue | [x] | [x] | [ ] | [ ] | [ ] |
 
 ## Algorithms
 

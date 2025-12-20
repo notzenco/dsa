@@ -86,7 +86,7 @@ USE CASES:
 - K-way merge
 """
 
-from typing import TypeVar, Generic, Iterator, Optional, List, Callable, Tuple
+from typing import TypeVar, Generic, Iterator, Optional, List, Callable, Tuple, Any
 
 T = TypeVar('T')
 
@@ -560,7 +560,7 @@ class PriorityQueue(Generic[T]):
     Supports custom priority functions.
     """
 
-    def __init__(self, key: Optional[Callable[[T], any]] = None) -> None:
+    def __init__(self, key: Optional[Callable[[T], Any]] = None) -> None:
         """
         Initialize priority queue.
 
@@ -568,7 +568,7 @@ class PriorityQueue(Generic[T]):
             key: Optional function to extract priority from elements.
                  If None, elements themselves are used as priorities.
         """
-        self._heap: List[Tuple[any, int, T]] = []
+        self._heap: List[Tuple[Any, int, T]] = []
         self._key = key if key else lambda x: x
         self._counter = 0  # For stable ordering of equal priorities
 
