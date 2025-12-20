@@ -1,6 +1,6 @@
 # Data Structures & Algorithms
 
-A comprehensive collection of data structures and algorithms implemented in **5 languages**: C, C++, Rust, Python, and Go.
+A comprehensive collection of data structures and algorithms implemented in **C** and **Python**.
 
 Each implementation includes:
 - Detailed ASCII visual diagrams
@@ -8,16 +8,20 @@ Each implementation includes:
 - LeetCode problem mappings
 - Comprehensive unit tests
 
+## Language Requirements
+
+| Language | Version | Build Tool |
+|----------|---------|------------|
+| C | C11 | gcc/make |
+| Python | 3.10+ | pytest |
+
 ## Repository Structure
 
 ```
 dsa/
 ├── by-language/          # Implementations organized by language
 │   ├── c/                # Complete C implementations
-│   ├── python/           # Complete Python implementations
-│   ├── cpp/              # (Planned)
-│   ├── rust/             # (Planned)
-│   └── go/               # (Planned)
+│   └── python/           # Complete Python implementations
 ├── by-topic/             # Cross-reference index by topic
 │   ├── arrays/           # Dynamic arrays, two pointers, sliding window
 │   ├── linked-lists/     # Singly/doubly linked lists
@@ -37,134 +41,118 @@ dsa/
 ## Data Structures
 
 ### Linear
-| Structure | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| Dynamic Array | [x] | [x] | [ ] | [ ] | [ ] |
-| Singly Linked List | [x] | [x] | [ ] | [ ] | [ ] |
-| Doubly Linked List | [x] | [x] | [ ] | [ ] | [ ] |
-| Stack | [x] | [x] | [ ] | [ ] | [ ] |
-| Queue | [x] | [x] | [ ] | [ ] | [ ] |
-| Deque | [x] | [x] | [ ] | [ ] | [ ] |
-| Circular Queue | [x] | [x] | [ ] | [ ] | [ ] |
-| Min/Max Stack | [x] | [x] | [ ] | [ ] | [ ] |
+| Structure | Python | C |
+|-----------|:------:|:-:|
+| Dynamic Array | ✓ | ✓ |
+| Singly Linked List | ✓ | ✓ |
+| Doubly Linked List | ✓ | ✓ |
+| Stack | ✓ | ✓ |
+| Queue | ✓ | ✓ |
+| Deque | ✓ | ✓ |
+| Circular Queue | ✓ | ✓ |
+| Min/Max Stack | ✓ | ✓ |
+| Monotonic Queue | ✓ | ✓ |
 
 ### Trees
-| Structure | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| Binary Search Tree | [x] | [x] | [ ] | [ ] | [ ] |
-| AVL Tree | [x] | [x] | [ ] | [ ] | [ ] |
-| Red-Black Tree | [x] | [x] | [ ] | [ ] | [ ] |
-| B-Tree | [x] | [x] | [ ] | [ ] | [ ] |
-| Trie | [x] | [x] | [ ] | [ ] | [ ] |
-| Segment Tree | [x] | [x] | [ ] | [ ] | [ ] |
-| Fenwick Tree | [x] | [x] | [ ] | [ ] | [ ] |
+| Structure | Python | C |
+|-----------|:------:|:-:|
+| Binary Search Tree | ✓ | ✓ |
+| AVL Tree | ✓ | ✓ |
+| Red-Black Tree | ✓ | ✓ |
+| B-Tree | ✓ | ✓ |
+| Trie | ✓ | ✓ |
+| Segment Tree | ✓ | ✓ |
+| Fenwick Tree | ✓ | ✓ |
 
 ### Hashing
-| Structure | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| Hash Table | [x] | [x] | [ ] | [ ] | [ ] |
-| Bloom Filter | [x] | [x] | [ ] | [ ] | [ ] |
+| Structure | Python | C |
+|-----------|:------:|:-:|
+| Hash Table | ✓ | ✓ |
+| Bloom Filter | ✓ | ✓ |
 
 ### Heaps
-| Structure | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| Binary Heap | [x] | [x] | [ ] | [ ] | [ ] |
-| Priority Queue | [x] | [x] | [ ] | [ ] | [ ] |
+| Structure | Python | C |
+|-----------|:------:|:-:|
+| Binary Heap | ✓ | ✓ |
+| Priority Queue | ✓ | ✓ |
 
 ### Graphs
-| Structure | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| Adjacency List | [x] | [x] | [ ] | [ ] | [ ] |
-| Adjacency Matrix | [x] | [x] | [ ] | [ ] | [ ] |
-| Union-Find | [x] | [x] | [ ] | [ ] | [ ] |
+| Structure | Python | C |
+|-----------|:------:|:-:|
+| Adjacency List | ✓ | ✓ |
+| Adjacency Matrix | ✓ | ✓ |
+| Union-Find | ✓ | ✓ |
+
+### Caches
+| Structure | Python | C |
+|-----------|:------:|:-:|
+| LRU Cache | ✓ | ✓ |
+| LFU Cache | ✓ | ✓ |
+| TTL Cache | ✓ | ✓ |
 
 ### Advanced
-| Structure | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| LRU Cache | [x] | [x] | [ ] | [ ] | [ ] |
-| LFU Cache | [x] | [x] | [ ] | [ ] | [ ] |
-| TTL Cache | [x] | [x] | [ ] | [ ] | [ ] |
-| Skip List | [x] | [x] | [ ] | [ ] | [ ] |
-| Monotonic Queue | [x] | [x] | [ ] | [ ] | [ ] |
+| Structure | Python | C |
+|-----------|:------:|:-:|
+| Skip List | ✓ | ✓ |
 
 ## Algorithms
 
 ### Sorting
-| Algorithm | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| Bubble Sort | [x] | [x] | [ ] | [ ] | [ ] |
-| Selection Sort | [x] | [x] | [ ] | [ ] | [ ] |
-| Insertion Sort | [x] | [x] | [ ] | [ ] | [ ] |
-| Merge Sort | [x] | [x] | [ ] | [ ] | [ ] |
-| Quick Sort | [x] | [x] | [ ] | [ ] | [ ] |
-| Heap Sort | [x] | [x] | [ ] | [ ] | [ ] |
-| Counting Sort | [x] | [x] | [ ] | [ ] | [ ] |
-| Radix Sort | [x] | [x] | [ ] | [ ] | [ ] |
+| Algorithm | Python | C |
+|-----------|:------:|:-:|
+| Bubble Sort | ✓ | ✓ |
+| Selection Sort | ✓ | ✓ |
+| Insertion Sort | ✓ | ✓ |
+| Merge Sort | ✓ | ✓ |
+| Quick Sort | ✓ | ✓ |
+| Heap Sort | ✓ | ✓ |
+| Counting Sort | ✓ | ✓ |
+| Radix Sort | ✓ | ✓ |
 
 ### Searching
-| Algorithm | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| Binary Search | [x] | [x] | [ ] | [ ] | [ ] |
-| Two Pointers | [x] | [x] | [ ] | [ ] | [ ] |
-| Sliding Window | [x] | [x] | [ ] | [ ] | [ ] |
+| Algorithm | Python | C |
+|-----------|:------:|:-:|
+| Binary Search | ✓ | ✓ |
+| Two Pointers | ✓ | ✓ |
+| Sliding Window | ✓ | ✓ |
 
 ### Graph
-| Algorithm | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| BFS | [x] | [x] | [ ] | [ ] | [ ] |
-| DFS | [x] | [x] | [ ] | [ ] | [ ] |
-| Dijkstra | [x] | [x] | [ ] | [ ] | [ ] |
-| Bellman-Ford | [x] | [x] | [ ] | [ ] | [ ] |
-| Floyd-Warshall | [x] | [x] | [ ] | [ ] | [ ] |
-| Prim's MST | [x] | [x] | [ ] | [ ] | [ ] |
-| Kruskal's MST | [x] | [x] | [ ] | [ ] | [ ] |
-| Topological Sort | [x] | [x] | [ ] | [ ] | [ ] |
-| Tarjan's SCC | [x] | [x] | [ ] | [ ] | [ ] |
+| Algorithm | Python | C |
+|-----------|:------:|:-:|
+| BFS | ✓ | ✓ |
+| DFS | ✓ | ✓ |
+| Dijkstra | ✓ | ✓ |
+| Bellman-Ford | ✓ | ✓ |
+| Floyd-Warshall | ✓ | ✓ |
+| Prim's MST | ✓ | ✓ |
+| Kruskal's MST | ✓ | ✓ |
+| Topological Sort | ✓ | ✓ |
+| Tarjan's SCC | ✓ | ✓ |
 
 ### Dynamic Programming
-| Problem | Python | C | C++ | Rust | Go |
-|---------|:------:|:-:|:---:|:----:|:--:|
-| Fibonacci | [x] | [x] | [ ] | [ ] | [ ] |
-| Knapsack | [x] | [x] | [ ] | [ ] | [ ] |
-| LCS | [x] | [x] | [ ] | [ ] | [ ] |
-| LIS | [x] | [x] | [ ] | [ ] | [ ] |
-| Edit Distance | [x] | [x] | [ ] | [ ] | [ ] |
-| Coin Change | [x] | [x] | [ ] | [ ] | [ ] |
+| Problem | Python | C |
+|---------|:------:|:-:|
+| Fibonacci | ✓ | ✓ |
+| Knapsack | ✓ | ✓ |
+| LCS | ✓ | ✓ |
+| LIS | ✓ | ✓ |
+| Edit Distance | ✓ | ✓ |
+| Coin Change | ✓ | ✓ |
 
 ### String
-| Algorithm | Python | C | C++ | Rust | Go |
-|-----------|:------:|:-:|:---:|:----:|:--:|
-| KMP | [x] | [x] | [ ] | [ ] | [ ] |
-| Rabin-Karp | [x] | [x] | [ ] | [ ] | [ ] |
-| Z-Algorithm | [x] | [x] | [ ] | [ ] | [ ] |
+| Algorithm | Python | C |
+|-----------|:------:|:-:|
+| KMP | ✓ | ✓ |
+| Rabin-Karp | ✓ | ✓ |
+| Z-Algorithm | ✓ | ✓ |
 
 ## Quick Start
 
 ### Python
 ```bash
 cd by-language/python
-pip install -e ".[dev]"
+pip install pytest
 pytest tests/
-```
-
-### Rust
-```bash
-cd by-language/rust
-cargo test
-```
-
-### Go
-```bash
-cd by-language/go
-go test ./...
-```
-
-### C++
-```bash
-cd by-language/cpp
-mkdir build && cd build
-cmake .. && make
-ctest
 ```
 
 ### C

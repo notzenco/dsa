@@ -16,10 +16,12 @@ from .heap import MinHeap, MaxHeap, PriorityQueue
 from .graph import Graph
 from .trie import Trie, TrieMap, WordDictionary, CompressedTrie
 from .union_find import UnionFind, UnionFindArray, WeightedUnionFind, PersistentUnionFind
-from .lru_cache import LRUCache, LRUCacheSimple, LFUCache, TTLCache
+from .lru_cache import LRUCache, LRUCacheSimple, LFUCache
+from .ttl_cache import TTLCache
 from .avl_tree import AVLTree, AVLTreeMap
 from .segment_tree import SegmentTree, SegmentTreeLazy, FenwickTree, FenwickTree2D
-from .bloom_filter import BloomFilter, CountingBloomFilter, ScalableBloomFilter, SkipList
+from .bloom_filter import BloomFilter, CountingBloomFilter, ScalableBloomFilter
+from .skip_list import SkipList
 from .red_black_tree import RedBlackTree, RBNode, Color
 from .b_tree import BTree, BTreeNode
 from .adjacency_matrix import AdjacencyMatrix

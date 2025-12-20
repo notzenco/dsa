@@ -75,7 +75,7 @@ typedef struct {
 } MQEntry;
 
 /**
- * Monotonic Queue structure using circular buffer
+ * Monotonic Queue structure using circular buffer (maintains decreasing order)
  */
 typedef struct {
     MQEntry *data;
@@ -84,6 +84,17 @@ typedef struct {
     size_t size;
     size_t capacity;
 } MonotonicQueue;
+
+/**
+ * Monotonic Queue Min structure (maintains increasing order for minimum queries)
+ */
+typedef struct {
+    MQEntry *data;
+    size_t front;
+    size_t rear;
+    size_t size;
+    size_t capacity;
+} MonotonicQueueMin;
 
 /* ============== Creation and Destruction ============== */
 
@@ -192,5 +203,83 @@ int *mq_sliding_window_max(const int *nums, size_t n, size_t k, size_t *result_s
  *         Caller is responsible for freeing the returned array.
  */
 int *mq_sliding_window_min(const int *nums, size_t n, size_t k, size_t *result_size);
+
+/* ============== MonotonicQueueMin (Increasing Order) ============== */
+
+/**
+ * Create a new empty monotonic queue for minimum queries.
+ * @return Pointer to new queue, or NULL on allocation failure
+ */
+MonotonicQueueMin *mqmin_create(void);
+
+/**
+ * Create a new monotonic min queue with specified capacity.
+ * @param capacity Initial capacity
+ * @return Pointer to new queue, or NULL on allocation failure
+ */
+MonotonicQueueMin *mqmin_create_with_capacity(size_t capacity);
+
+/**
+ * Destroy queue and free all memory.
+ * @param mq Queue to destroy
+ */
+void mqmin_destroy(MonotonicQueueMin *mq);
+
+/**
+ * Remove all elements from queue.
+ * @param mq Queue to clear
+ */
+void mqmin_clear(MonotonicQueueMin *mq);
+
+/**
+ * Push a new element onto the queue.
+ * Removes all elements from the rear that are larger than the new value
+ * to maintain the monotonically increasing property.
+ *
+ * @param mq Queue to push to
+ * @param index Index of the element (for window tracking)
+ * @param value Value to push
+ * @return true on success, false on allocation failure
+ */
+bool mqmin_push(MonotonicQueueMin *mq, int index, int value);
+
+/**
+ * Pop element from front if its index matches.
+ * Used to remove elements that fall outside the sliding window.
+ *
+ * @param mq Queue to pop from
+ * @param index Index to match for removal
+ */
+void mqmin_pop(MonotonicQueueMin *mq, int index);
+
+/**
+ * Get the minimum value (front of queue).
+ * @param mq Queue to query
+ * @param value Output parameter for the minimum value
+ * @return true if queue is not empty, false otherwise
+ */
+bool mqmin_get_min(const MonotonicQueueMin *mq, int *value);
+
+/**
+ * Get the index of the minimum value.
+ * @param mq Queue to query
+ * @param index Output parameter for the index
+ * @return true if queue is not empty, false otherwise
+ */
+bool mqmin_get_min_index(const MonotonicQueueMin *mq, int *index);
+
+/**
+ * Check if queue is empty.
+ * @param mq Queue to check
+ * @return true if empty, false otherwise
+ */
+bool mqmin_is_empty(const MonotonicQueueMin *mq);
+
+/**
+ * Get number of elements in queue.
+ * @param mq Queue to query
+ * @return Number of elements
+ */
+size_t mqmin_size(const MonotonicQueueMin *mq);
 
 #endif /* MONOTONIC_QUEUE_H */
