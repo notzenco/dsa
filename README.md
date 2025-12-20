@@ -41,10 +41,10 @@ dsa/
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
 | Binary Search Tree | [x] | [x] | [ ] | [ ] | [ ] |
-| AVL Tree | [x] | [ ] | [ ] | [ ] | [ ] |
+| AVL Tree | [x] | [x] | [ ] | [ ] | [ ] |
 | Red-Black Tree | [x] | [ ] | [ ] | [ ] | [ ] |
 | B-Tree | [x] | [ ] | [ ] | [ ] | [ ] |
-| Trie | [x] | [ ] | [ ] | [ ] | [ ] |
+| Trie | [x] | [x] | [ ] | [ ] | [ ] |
 | Segment Tree | [x] | [ ] | [ ] | [ ] | [ ] |
 | Fenwick Tree | [x] | [ ] | [ ] | [ ] | [ ] |
 
@@ -70,8 +70,8 @@ dsa/
 ### Advanced
 | Structure | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| LRU Cache | [x] | [ ] | [ ] | [ ] | [ ] |
-| LFU Cache | [x] | [ ] | [ ] | [ ] | [ ] |
+| LRU Cache | [x] | [x] | [ ] | [ ] | [ ] |
+| LFU Cache | [x] | [x] | [ ] | [ ] | [ ] |
 | Skip List | [x] | [ ] | [ ] | [ ] | [ ] |
 
 ## Algorithms
@@ -111,19 +111,19 @@ dsa/
 ### Dynamic Programming
 | Problem | Python | C | C++ | Rust | Go |
 |---------|:------:|:-:|:---:|:----:|:--:|
-| Fibonacci | [x] | [ ] | [ ] | [ ] | [ ] |
-| Knapsack | [x] | [ ] | [ ] | [ ] | [ ] |
-| LCS | [x] | [ ] | [ ] | [ ] | [ ] |
-| LIS | [x] | [ ] | [ ] | [ ] | [ ] |
-| Edit Distance | [x] | [ ] | [ ] | [ ] | [ ] |
-| Coin Change | [x] | [ ] | [ ] | [ ] | [ ] |
+| Fibonacci | [x] | [x] | [ ] | [ ] | [ ] |
+| Knapsack | [x] | [x] | [ ] | [ ] | [ ] |
+| LCS | [x] | [x] | [ ] | [ ] | [ ] |
+| LIS | [x] | [x] | [ ] | [ ] | [ ] |
+| Edit Distance | [x] | [x] | [ ] | [ ] | [ ] |
+| Coin Change | [x] | [x] | [ ] | [ ] | [ ] |
 
 ### String
 | Algorithm | Python | C | C++ | Rust | Go |
 |-----------|:------:|:-:|:---:|:----:|:--:|
-| KMP | [x] | [ ] | [ ] | [ ] | [ ] |
-| Rabin-Karp | [x] | [ ] | [ ] | [ ] | [ ] |
-| Z-Algorithm | [x] | [ ] | [ ] | [ ] | [ ] |
+| KMP | [x] | [x] | [ ] | [ ] | [ ] |
+| Rabin-Karp | [x] | [x] | [ ] | [ ] | [ ] |
+| Z-Algorithm | [x] | [x] | [ ] | [ ] | [ ] |
 
 ## Quick Start
 
