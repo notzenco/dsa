@@ -2,9 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -25,21 +23,14 @@ htmlcov/
 .venv/
 venv/
 
-# Rust
-target/
-Cargo.lock
-
-# Go
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-
-# C/C++
+# C
 *.o
 *.a
 *.out
+*.so
+*.dll
+*.dylib
+*.exe
 build/
 
 # IDE
