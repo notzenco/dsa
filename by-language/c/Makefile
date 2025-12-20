@@ -69,8 +69,12 @@ test-ht: $(BUILD_DIR) $(BUILD_DIR)/ds_hash_table.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_hash_table.c $(BUILD_DIR)/ds_hash_table.o -o $(BUILD_DIR)/test_ht $(LDFLAGS)
 	./$(BUILD_DIR)/test_ht
 
+test-heap: $(BUILD_DIR) $(BUILD_DIR)/ds_heap.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_heap.c $(BUILD_DIR)/ds_heap.o -o $(BUILD_DIR)/test_heap $(LDFLAGS)
+	./$(BUILD_DIR)/test_heap
+
 # Run all tests
-test: test-da test-sll test-dll test-stack test-queue test-bst test-ht
+test: test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap
 
 clean:
 	rm -rf $(BUILD_DIR)
