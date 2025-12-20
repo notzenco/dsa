@@ -77,8 +77,15 @@ test-sort: $(BUILD_DIR) $(BUILD_DIR)/alg_sorting.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_sorting.c $(BUILD_DIR)/alg_sorting.o -o $(BUILD_DIR)/test_sort $(LDFLAGS)
 	./$(BUILD_DIR)/test_sort
 
-test-graph: $(BUILD_DIR) $(BUILD_DIR)/ds_graph.o
-	$(CC) $(CFLAGS) $(TEST_DIR)/test_graph.c $(BUILD_DIR)/ds_graph.o -o $(BUILD_DIR)/test_graph $(LDFLAGS)
+# Graph is split into core and algorithms
+$(BUILD_DIR)/ds_graph_core.o: $(SRC_DS)/graph_core.c $(SRC_DS)/graph_core.h | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/ds_graph_algorithms.o: $(SRC_DS)/graph_algorithms.c $(SRC_DS)/graph_algorithms.h $(SRC_DS)/graph_core.h | $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+test-graph: $(BUILD_DIR) $(BUILD_DIR)/ds_graph_core.o $(BUILD_DIR)/ds_graph_algorithms.o
+	$(CC) $(CFLAGS) $(TEST_DIR)/test_graph.c $(BUILD_DIR)/ds_graph_core.o $(BUILD_DIR)/ds_graph_algorithms.o -o $(BUILD_DIR)/test_graph $(LDFLAGS)
 	./$(BUILD_DIR)/test_graph
 
 test-search: $(BUILD_DIR) $(BUILD_DIR)/alg_searching.o
