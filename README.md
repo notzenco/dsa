@@ -13,14 +13,25 @@ Each implementation includes:
 ```
 dsa/
 ├── by-language/          # Implementations organized by language
-│   ├── c/
-│   ├── cpp/
-│   ├── rust/
-│   ├── python/
-│   └── go/
+│   ├── c/                # Complete C implementations
+│   ├── python/           # Complete Python implementations
+│   ├── cpp/              # (Planned)
+│   ├── rust/             # (Planned)
+│   └── go/               # (Planned)
 ├── by-topic/             # Cross-reference index by topic
-├── COMPLEXITY.md         # Master complexity cheat sheet
-└── LEETCODE_MAP.md       # DSA to LeetCode mappings
+│   ├── arrays/           # Dynamic arrays, two pointers, sliding window
+│   ├── linked-lists/     # Singly/doubly linked lists
+│   ├── stacks/           # Stack operations, monotonic stacks
+│   ├── queues/           # Queues, deques, circular queues
+│   ├── hash-tables/      # Hash maps, bloom filters, caches
+│   ├── trees/            # BST, AVL, Red-Black, Trie, Segment Tree
+│   ├── heaps/            # Binary heaps, priority queues
+│   ├── graphs/           # Graph representations and algorithms
+│   ├── sorting/          # All sorting algorithms
+│   ├── searching/        # Binary search, two pointers, sliding window
+│   ├── strings/          # KMP, Rabin-Karp, Z-algorithm
+│   └── dynamic-programming/  # DP patterns and problems
+└── COMPLEXITY.md         # Master complexity cheat sheet
 ```
 
 ## Data Structures
@@ -184,6 +195,25 @@ Each implementation follows a consistent format:
  * USE CASES: ...
  */
 ```
+
+## Browse by Topic
+
+Each topic includes complexity analysis, common patterns, implementation tips, and related LeetCode problems:
+
+| Topic | Description |
+|-------|-------------|
+| [Arrays](by-topic/arrays/) | Dynamic arrays, two pointers, sliding window, prefix sums |
+| [Linked Lists](by-topic/linked-lists/) | Singly/doubly linked, fast/slow pointers, reversal |
+| [Stacks](by-topic/stacks/) | LIFO operations, monotonic stacks, expression parsing |
+| [Queues](by-topic/queues/) | FIFO operations, deques, BFS patterns |
+| [Hash Tables](by-topic/hash-tables/) | Hash maps, bloom filters, LRU/LFU caches |
+| [Trees](by-topic/trees/) | BST, AVL, Red-Black, B-Tree, Trie, Segment Tree |
+| [Heaps](by-topic/heaps/) | Binary heaps, priority queues, top-K problems |
+| [Graphs](by-topic/graphs/) | Representations, BFS, DFS, shortest paths, MST |
+| [Sorting](by-topic/sorting/) | Comparison and non-comparison sorting algorithms |
+| [Searching](by-topic/searching/) | Binary search, two pointers, sliding window |
+| [Strings](by-topic/strings/) | KMP, Rabin-Karp, Z-algorithm, pattern matching |
+| [Dynamic Programming](by-topic/dynamic-programming/) | DP patterns: linear, knapsack, string, grid, interval |
 
 ## License
 

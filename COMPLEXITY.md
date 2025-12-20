@@ -769,6 +769,7 @@ Sorting needed?
 
 ## Additional Resources
 
-- **LeetCode Problems**: See [LEETCODE_MAP.md](LEETCODE_MAP.md)
+- **LeetCode Problems**: See topic-specific README files in `by-topic/` (each includes related problems)
 - **Implementations**: See language-specific folders in `by-language/`
 - **Visualizations**: ASCII diagrams in each implementation file
+- **Topic Guides**: Browse `by-topic/` for detailed guides on each data structure and algorithm
