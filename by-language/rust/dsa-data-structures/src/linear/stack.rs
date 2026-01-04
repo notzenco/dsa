@@ -82,7 +82,7 @@
 
 use alloc::vec::Vec;
 
-use dsa_core::{Container, DsaError, Result, Searchable};
+use dsa_core::{Container, Searchable};
 
 /// A LIFO (Last In, First Out) stack implementation.
 ///

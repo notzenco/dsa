@@ -369,7 +369,7 @@ impl FenwickTree2D {
     /// # Time Complexity
     /// O(log(rows) * log(cols))
     #[must_use]
-    pub fn prefix_sum(&self, mut row: usize, mut col: usize) -> i64 {
+    pub fn prefix_sum(&self, mut row: usize, col: usize) -> i64 {
         let mut sum = 0;
         while row > 0 {
             let mut c = col;
