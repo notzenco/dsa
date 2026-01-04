@@ -20,7 +20,7 @@ extern crate alloc;
 pub mod sorting;
 pub mod searching;
 pub mod graph;
-// pub mod dynamic_programming;  // TODO: Phase 8
+pub mod dynamic_programming;
 // pub mod string;               // TODO: Phase 8
 
 pub use dsa_core::{DsaError, Result};
