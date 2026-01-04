@@ -21,6 +21,6 @@ pub mod sorting;
 pub mod searching;
 pub mod graph;
 pub mod dynamic_programming;
-// pub mod string;               // TODO: Phase 8
+pub mod string;
 
 pub use dsa_core::{DsaError, Result};
