@@ -1,0 +1,19 @@
+[package]
+name = "dsa-algorithms"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Algorithm implementations in Rust"
+
+[dependencies]
+dsa-core = { path = "../dsa-core" }
+dsa-data-structures = { path = "../dsa-data-structures" }
+
+[dev-dependencies]
+rand.workspace = true
+
+[features]
+default = ["std"]
+std = ["dsa-core/std", "dsa-data-structures/std"]

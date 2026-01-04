@@ -1,0 +1,18 @@
+[package]
+name = "dsa-data-structures"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Data structure implementations in Rust"
+
+[dependencies]
+dsa-core = { path = "../dsa-core" }
+
+[dev-dependencies]
+rand.workspace = true
+
+[features]
+default = ["std"]
+std = ["dsa-core/std"]

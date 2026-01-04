@@ -1,0 +1,31 @@
+[workspace]
+members = [
+    "dsa-core",
+    "dsa-data-structures",
+    "dsa-algorithms",
+    "dsa-benches",
+]
+resolver = "2"
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.70"
+license = "MIT"
+authors = ["Zenco"]
+description = "Data Structures and Algorithms implementations in Rust"
+repository = "https://github.com/zenco/dsa"
+keywords = ["data-structures", "algorithms", "dsa", "education"]
+categories = ["algorithms", "data-structures"]
+
+[workspace.dependencies]
+thiserror = "1.0"
+criterion = "0.5"
+rand = "0.8"
+
+[profile.release]
+lto = true
+codegen-units = 1
+
+[profile.bench]
+debug = true

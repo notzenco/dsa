@@ -1,0 +1,15 @@
+[package]
+name = "dsa-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Core traits and utilities for DSA implementations"
+
+[dependencies]
+thiserror.workspace = true
+
+[features]
+default = ["std"]
+std = []
