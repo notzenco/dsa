@@ -182,7 +182,10 @@ impl<T: Ord> AVLTree<T> {
 
     /// Right rotation (for LL case).
     fn rotate_right(mut y: Box<Node<T>>) -> Box<Node<T>> {
-        let mut x = y.left.take().expect("Left child must exist for right rotation");
+        let mut x = y
+            .left
+            .take()
+            .expect("Left child must exist for right rotation");
         y.left = x.right.take();
         Self::update_height(&mut y);
         x.right = Some(y);
@@ -192,7 +195,10 @@ impl<T: Ord> AVLTree<T> {
 
     /// Left rotation (for RR case).
     fn rotate_left(mut y: Box<Node<T>>) -> Box<Node<T>> {
-        let mut x = y.right.take().expect("Right child must exist for left rotation");
+        let mut x = y
+            .right
+            .take()
+            .expect("Right child must exist for left rotation");
         y.right = x.left.take();
         Self::update_height(&mut y);
         x.left = Some(y);
@@ -379,20 +385,18 @@ impl<T: Ord> AVLTree<T> {
                             (Some(n), false)
                         }
                     }
-                    Ordering::Equal => {
-                        match (n.left.take(), n.right.take()) {
-                            (None, None) => (None, true),
-                            (Some(left), None) => (Some(left), true),
-                            (None, Some(right)) => (Some(right), true),
-                            (Some(left), Some(right)) => {
-                                let (new_right, successor_val) = Self::extract_min(right);
-                                n.value = successor_val;
-                                n.left = Some(left);
-                                n.right = new_right;
-                                (Some(Self::rebalance(n)), true)
-                            }
+                    Ordering::Equal => match (n.left.take(), n.right.take()) {
+                        (None, None) => (None, true),
+                        (Some(left), None) => (Some(left), true),
+                        (None, Some(right)) => (Some(right), true),
+                        (Some(left), Some(right)) => {
+                            let (new_right, successor_val) = Self::extract_min(right);
+                            n.value = successor_val;
+                            n.left = Some(left);
+                            n.right = new_right;
+                            (Some(Self::rebalance(n)), true)
                         }
-                    }
+                    },
                 }
             }
         }
@@ -479,7 +483,8 @@ impl<T: Ord> AVLTree<T> {
             None => true,
             Some(n) => {
                 let balance = Self::balance_factor(n);
-                balance >= -1 && balance <= 1
+                balance >= -1
+                    && balance <= 1
                     && Self::check_balanced(&n.left)
                     && Self::check_balanced(&n.right)
             }
@@ -529,11 +534,7 @@ impl<T: Ord> AVLTree<T> {
         Self::is_valid_node(&self.root, None, None) && self.is_balanced()
     }
 
-    fn is_valid_node(
-        node: &Option<Box<Node<T>>>,
-        min: Option<&T>,
-        max: Option<&T>,
-    ) -> bool {
+    fn is_valid_node(node: &Option<Box<Node<T>>>, min: Option<&T>, max: Option<&T>) -> bool {
         match node {
             None => true,
             Some(n) => {

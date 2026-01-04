@@ -19,12 +19,12 @@
 
 extern crate alloc;
 
-pub mod linear;
-pub mod trees;
+pub mod advanced;
+pub mod caches;
+pub mod graphs;
 pub mod hashing;
 pub mod heaps;
-pub mod graphs;
-pub mod caches;
-pub mod advanced;
+pub mod linear;
+pub mod trees;
 
 pub use dsa_core::{DsaError, Result};

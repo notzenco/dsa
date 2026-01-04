@@ -194,10 +194,7 @@ impl<K: Hash + Eq + Clone, V: Clone> HashTable<K, V> {
 
         match &self.entries[idx] {
             Entry::Occupied(k, _) if *k == key => {
-                let old = core::mem::replace(
-                    &mut self.entries[idx],
-                    Entry::Occupied(key, value),
-                );
+                let old = core::mem::replace(&mut self.entries[idx], Entry::Occupied(key, value));
                 if let Entry::Occupied(_, v) = old {
                     Some(v)
                 } else {

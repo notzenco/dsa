@@ -463,11 +463,7 @@ impl<T> DoublyLinkedList<T> {
         current_node.borrow_mut().next = None;
 
         self.len -= 1;
-        Ok(Rc::try_unwrap(current_node)
-            .ok()
-            .unwrap()
-            .into_inner()
-            .data)
+        Ok(Rc::try_unwrap(current_node).ok().unwrap().into_inner().data)
     }
 
     /// Clears the list, removing all elements.

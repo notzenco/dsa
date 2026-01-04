@@ -177,7 +177,10 @@ where
 
         // Insert new key with frequency 1
         self.cache.insert(key.clone(), (value, 1));
-        self.freq_to_keys.entry(1).or_insert_with(Vec::new).push(key.clone());
+        self.freq_to_keys
+            .entry(1)
+            .or_insert_with(Vec::new)
+            .push(key.clone());
         let pos = self.freq_to_keys.get(&1).unwrap().len() - 1;
         self.key_to_pos.insert(key, pos);
         self.min_freq = 1;
@@ -224,12 +227,20 @@ where
         self.remove_from_freq_list(key, old_freq);
 
         // Add to new frequency list
-        self.freq_to_keys.entry(new_freq).or_insert_with(Vec::new).push(key.clone());
+        self.freq_to_keys
+            .entry(new_freq)
+            .or_insert_with(Vec::new)
+            .push(key.clone());
         let pos = self.freq_to_keys.get(&new_freq).unwrap().len() - 1;
         self.key_to_pos.insert(key.clone(), pos);
 
         // Update min_freq if needed
-        if old_freq == self.min_freq && self.freq_to_keys.get(&old_freq).map_or(true, |v| v.is_empty()) {
+        if old_freq == self.min_freq
+            && self
+                .freq_to_keys
+                .get(&old_freq)
+                .map_or(true, |v| v.is_empty())
+        {
             self.min_freq = new_freq;
         }
     }
@@ -318,8 +329,8 @@ mod tests {
             let mut cache = LFUCache::new(2);
             cache.put(1, 1);
             cache.put(2, 2);
-            cache.get(&1);  // freq(1) = 2, freq(2) = 1
-            cache.put(3, 3);  // Evicts 2
+            cache.get(&1); // freq(1) = 2, freq(2) = 1
+            cache.put(3, 3); // Evicts 2
 
             assert_eq!(cache.get(&2), None);
             assert_eq!(cache.get(&1), Some(&1));
@@ -332,7 +343,7 @@ mod tests {
             cache.put(1, 1);
             cache.put(2, 2);
             // Both have freq=1, but 1 was added first (LRU)
-            cache.put(3, 3);  // Evicts 1
+            cache.put(3, 3); // Evicts 1
 
             assert_eq!(cache.get(&1), None);
             assert_eq!(cache.get(&2), Some(&2));
@@ -346,15 +357,15 @@ mod tests {
             cache.put(2, 2);
             cache.put(3, 3);
 
-            cache.get(&1);  // freq(1) = 2
-            cache.get(&1);  // freq(1) = 3
-            cache.get(&2);  // freq(2) = 2
+            cache.get(&1); // freq(1) = 2
+            cache.get(&1); // freq(1) = 3
+            cache.get(&2); // freq(2) = 2
 
             assert_eq!(cache.frequency(&1), Some(3));
             assert_eq!(cache.frequency(&2), Some(2));
             assert_eq!(cache.frequency(&3), Some(1));
 
-            cache.put(4, 4);  // Evicts 3 (lowest freq)
+            cache.put(4, 4); // Evicts 3 (lowest freq)
             assert_eq!(cache.get(&3), None);
         }
     }

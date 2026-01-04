@@ -561,7 +561,11 @@ pub fn min_window_substring(s: &str, t: &str) -> Option<String> {
     if min_len == usize::MAX {
         None
     } else {
-        Some(s_chars[result_start..result_start + min_len].iter().collect())
+        Some(
+            s_chars[result_start..result_start + min_len]
+                .iter()
+                .collect(),
+        )
     }
 }
 

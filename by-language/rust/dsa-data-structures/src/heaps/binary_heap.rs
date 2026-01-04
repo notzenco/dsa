@@ -372,10 +372,14 @@ impl<T: Ord> BinaryHeap<T> {
             let right = Self::right_child(i);
             let mut largest = i;
 
-            if left < len && self.compare(&self.data[left], &self.data[largest]) == Ordering::Greater {
+            if left < len
+                && self.compare(&self.data[left], &self.data[largest]) == Ordering::Greater
+            {
                 largest = left;
             }
-            if right < len && self.compare(&self.data[right], &self.data[largest]) == Ordering::Greater {
+            if right < len
+                && self.compare(&self.data[right], &self.data[largest]) == Ordering::Greater
+            {
                 largest = right;
             }
 

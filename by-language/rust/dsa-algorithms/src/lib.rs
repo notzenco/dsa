@@ -17,10 +17,10 @@
 
 extern crate alloc;
 
-pub mod sorting;
-pub mod searching;
-pub mod graph;
 pub mod dynamic_programming;
+pub mod graph;
+pub mod searching;
+pub mod sorting;
 pub mod string;
 
 pub use dsa_core::{DsaError, Result};

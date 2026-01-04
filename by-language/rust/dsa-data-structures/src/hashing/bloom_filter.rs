@@ -64,13 +64,12 @@ impl BloomFilter {
         let fp_rate = false_positive_rate.max(0.0001).min(0.5);
 
         // Optimal number of bits: m = -n * ln(p) / (ln(2)^2)
-        let num_bits = (-(expected_items as f64) * fp_rate.ln() / (2.0_f64.ln().powi(2)))
-            .ceil() as usize;
+        let num_bits =
+            (-(expected_items as f64) * fp_rate.ln() / (2.0_f64.ln().powi(2))).ceil() as usize;
         let num_bits = num_bits.max(64);
 
         // Optimal number of hash functions: k = (m/n) * ln(2)
-        let num_hashes = ((num_bits as f64 / expected_items as f64) * 2.0_f64.ln())
-            .ceil() as usize;
+        let num_hashes = ((num_bits as f64 / expected_items as f64) * 2.0_f64.ln()).ceil() as usize;
         let num_hashes = num_hashes.max(1).min(16);
 
         // Number of u64 words needed
@@ -194,7 +193,9 @@ impl BloomFilter {
     /// // filter.may_contain(&"world") could be true or false
     /// ```
     pub fn may_contain<T: Hash>(&self, item: &T) -> bool {
-        self.get_hash_indices(item).iter().all(|&idx| self.get_bit(idx))
+        self.get_hash_indices(item)
+            .iter()
+            .all(|&idx| self.get_bit(idx))
     }
 
     /// Clears the filter.
@@ -205,7 +206,11 @@ impl BloomFilter {
 
     /// Returns the estimated false positive rate based on current fill.
     pub fn estimated_fp_rate(&self) -> f64 {
-        let ones = self.bits.iter().map(|w| w.count_ones() as usize).sum::<usize>();
+        let ones = self
+            .bits
+            .iter()
+            .map(|w| w.count_ones() as usize)
+            .sum::<usize>();
         let fill_ratio = ones as f64 / self.num_bits as f64;
         fill_ratio.powi(self.num_hashes as i32)
     }

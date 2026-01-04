@@ -388,9 +388,7 @@ impl FenwickTree2D {
     /// O(log(rows) * log(cols))
     #[must_use]
     pub fn range_sum(&self, r1: usize, c1: usize, r2: usize, c2: usize) -> i64 {
-        self.prefix_sum(r2, c2)
-            - self.prefix_sum(r1 - 1, c2)
-            - self.prefix_sum(r2, c1 - 1)
+        self.prefix_sum(r2, c2) - self.prefix_sum(r1 - 1, c2) - self.prefix_sum(r2, c1 - 1)
             + self.prefix_sum(r1 - 1, c1 - 1)
     }
 }
@@ -516,10 +514,10 @@ mod tests {
         fn test_lower_bound() {
             let bit = FenwickTree::from_slice(&[1, 2, 3, 4, 5]);
             // prefix_sum: [1, 3, 6, 10, 15]
-            assert_eq!(bit.lower_bound(1), 1);  // prefix_sum(1) = 1 >= 1
-            assert_eq!(bit.lower_bound(3), 2);  // prefix_sum(2) = 3 >= 3
-            assert_eq!(bit.lower_bound(4), 3);  // prefix_sum(3) = 6 >= 4
-            assert_eq!(bit.lower_bound(6), 3);  // prefix_sum(3) = 6 >= 6
+            assert_eq!(bit.lower_bound(1), 1); // prefix_sum(1) = 1 >= 1
+            assert_eq!(bit.lower_bound(3), 2); // prefix_sum(2) = 3 >= 3
+            assert_eq!(bit.lower_bound(4), 3); // prefix_sum(3) = 6 >= 4
+            assert_eq!(bit.lower_bound(6), 3); // prefix_sum(3) = 6 >= 6
             assert_eq!(bit.lower_bound(15), 5); // prefix_sum(5) = 15 >= 15
         }
 
@@ -580,11 +578,7 @@ mod tests {
 
         #[test]
         fn test_from_matrix() {
-            let matrix = vec![
-                vec![1, 2, 3],
-                vec![4, 5, 6],
-                vec![7, 8, 9],
-            ];
+            let matrix = vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]];
             let bit = FenwickTree2D::from_matrix(&matrix);
             assert_eq!(bit.prefix_sum(3, 3), 45);
         }
@@ -599,11 +593,7 @@ mod tests {
 
         #[test]
         fn test_range_sum_2d() {
-            let matrix = vec![
-                vec![1, 2, 3],
-                vec![4, 5, 6],
-                vec![7, 8, 9],
-            ];
+            let matrix = vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]];
             let bit = FenwickTree2D::from_matrix(&matrix);
             // Sum of center element
             assert_eq!(bit.range_sum(2, 2, 2, 2), 5);

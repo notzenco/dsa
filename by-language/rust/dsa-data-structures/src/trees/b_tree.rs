@@ -255,7 +255,9 @@ impl<T: Ord + Clone> BTree<T> {
 
         // Insert median key into parent
         self.nodes[parent_idx].keys.insert(child_pos, median_key);
-        self.nodes[parent_idx].children.insert(child_pos + 1, new_idx);
+        self.nodes[parent_idx]
+            .children
+            .insert(child_pos + 1, new_idx);
     }
 
     /// Returns the minimum key.

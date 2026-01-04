@@ -413,12 +413,7 @@ impl<T: Ord> BinarySearchTree<T> {
     fn node_height(node: &Option<Box<Node<T>>>) -> usize {
         match node {
             None => 0,
-            Some(n) => {
-                1 + core::cmp::max(
-                    Self::node_height(&n.left),
-                    Self::node_height(&n.right),
-                )
-            }
+            Some(n) => 1 + core::cmp::max(Self::node_height(&n.left), Self::node_height(&n.right)),
         }
     }
 
@@ -487,9 +482,7 @@ impl<T: Ord> BinarySearchTree<T> {
                 match value.cmp(&n.value) {
                     Ordering::Equal => Some(&n.value),
                     Ordering::Less => Self::find_floor(&n.left, value),
-                    Ordering::Greater => {
-                        Self::find_floor(&n.right, value).or(Some(&n.value))
-                    }
+                    Ordering::Greater => Self::find_floor(&n.right, value).or(Some(&n.value)),
                 }
             }
         }
@@ -509,9 +502,7 @@ impl<T: Ord> BinarySearchTree<T> {
                 match value.cmp(&n.value) {
                     Ordering::Equal => Some(&n.value),
                     Ordering::Greater => Self::find_ceiling(&n.right, value),
-                    Ordering::Less => {
-                        Self::find_ceiling(&n.left, value).or(Some(&n.value))
-                    }
+                    Ordering::Less => Self::find_ceiling(&n.left, value).or(Some(&n.value)),
                 }
             }
         }
@@ -534,11 +525,7 @@ impl<T: Ord> BinarySearchTree<T> {
         Self::is_valid_node(&self.root, None, None)
     }
 
-    fn is_valid_node(
-        node: &Option<Box<Node<T>>>,
-        min: Option<&T>,
-        max: Option<&T>,
-    ) -> bool {
+    fn is_valid_node(node: &Option<Box<Node<T>>>, min: Option<&T>, max: Option<&T>) -> bool {
         match node {
             None => true,
             Some(n) => {

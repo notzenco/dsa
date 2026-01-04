@@ -6,4 +6,4 @@
 
 pub mod binary_heap;
 
-pub use binary_heap::{BinaryHeap, MinHeap, MaxHeap, HeapType};
+pub use binary_heap::{BinaryHeap, HeapType, MaxHeap, MinHeap};

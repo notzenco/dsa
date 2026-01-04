@@ -454,10 +454,7 @@ pub fn manacher(s: &str) -> (usize, usize) {
         }
 
         // Expand around center
-        while i >= p[i] + 1
-            && i + p[i] + 1 < n
-            && t[i - p[i] - 1] == t[i + p[i] + 1]
-        {
+        while i >= p[i] + 1 && i + p[i] + 1 < n && t[i - p[i] - 1] == t[i + p[i] + 1] {
             p[i] += 1;
         }
 

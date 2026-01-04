@@ -5,8 +5,8 @@
 //! - [`HashTable`] - Hash table with open addressing
 //! - [`BloomFilter`] - Probabilistic set membership testing
 
-pub mod hash_table;
 pub mod bloom_filter;
+pub mod hash_table;
 
-pub use hash_table::HashTable;
 pub use bloom_filter::BloomFilter;
+pub use hash_table::HashTable;
