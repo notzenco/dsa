@@ -1,0 +1,54 @@
+#!/bin/bash
+# Pre-push hook: run full test suite
+
+set -e
+
+echo "Running pre-push tests..."
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+FAILED=0
+
+# Rust tests
+if command -v cargo &> /dev/null; then
+    echo -e "\n${YELLOW}Running Rust tests...${NC}"
+    if (cd by-language/rust && cargo test --all-features); then
+        echo -e "${GREEN}Rust tests passed!${NC}"
+    else
+        echo -e "${RED}Rust tests failed!${NC}"
+        FAILED=1
+    fi
+fi
+
+# Python tests
+if command -v pytest &> /dev/null; then
+    echo -e "\n${YELLOW}Running Python tests...${NC}"
+    if (cd by-language/python && pytest tests/ -q); then
+        echo -e "${GREEN}Python tests passed!${NC}"
+    else
+        echo -e "${RED}Python tests failed!${NC}"
+        FAILED=1
+    fi
+fi
+
+# C tests
+if command -v make &> /dev/null && [ -f "by-language/c/Makefile" ]; then
+    echo -e "\n${YELLOW}Running C tests...${NC}"
+    if (cd by-language/c && make test); then
+        echo -e "${GREEN}C tests passed!${NC}"
+    else
+        echo -e "${RED}C tests failed!${NC}"
+        FAILED=1
+    fi
+fi
+
+if [ $FAILED -eq 1 ]; then
+    echo -e "\n${RED}Pre-push tests failed. Push aborted.${NC}"
+    exit 1
+fi
+
+echo -e "\n${GREEN}All tests passed! Pushing...${NC}"

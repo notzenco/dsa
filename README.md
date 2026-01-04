@@ -169,6 +169,12 @@ cd by-language/rust
 cargo test
 ```
 
+### Git Hooks (Optional)
+```bash
+# Install pre-commit and pre-push hooks
+./.githooks/install.sh
+```
+
 ## Implementation Template
 
 Each implementation follows a consistent format:

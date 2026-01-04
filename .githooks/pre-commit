@@ -1,0 +1,59 @@
+#!/bin/bash
+# Pre-commit hook: format and lint checks
+
+set -e
+
+echo "Running pre-commit checks..."
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+# Track if any check fails
+FAILED=0
+
+# Rust checks
+if command -v cargo &> /dev/null; then
+    echo -n "Checking Rust formatting... "
+    if (cd by-language/rust && cargo fmt --all -- --check) &> /dev/null; then
+        echo -e "${GREEN}OK${NC}"
+    else
+        echo -e "${RED}FAILED${NC}"
+        echo "Run 'cd by-language/rust && cargo fmt' to fix"
+        FAILED=1
+    fi
+
+    echo -n "Running Rust clippy... "
+    if (cd by-language/rust && cargo clippy --all-targets -- -D warnings) &> /dev/null 2>&1; then
+        echo -e "${GREEN}OK${NC}"
+    else
+        echo -e "${RED}WARNINGS${NC} (continuing)"
+    fi
+fi
+
+# Python checks (optional - only if ruff or black is installed)
+if command -v ruff &> /dev/null; then
+    echo -n "Checking Python with ruff... "
+    if ruff check by-language/python --quiet 2>/dev/null; then
+        echo -e "${GREEN}OK${NC}"
+    else
+        echo -e "${RED}FAILED${NC}"
+        FAILED=1
+    fi
+elif command -v black &> /dev/null; then
+    echo -n "Checking Python formatting... "
+    if black --check by-language/python --quiet 2>/dev/null; then
+        echo -e "${GREEN}OK${NC}"
+    else
+        echo -e "${RED}FAILED${NC}"
+        FAILED=1
+    fi
+fi
+
+if [ $FAILED -eq 1 ]; then
+    echo -e "\n${RED}Pre-commit checks failed. Please fix the issues above.${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}All pre-commit checks passed!${NC}"
