@@ -23,7 +23,7 @@ pub mod linear;
 pub mod trees;
 // pub mod hashing;    // TODO: Phase 4
 pub mod heaps;
-// pub mod graphs;     // TODO: Phase 5
+pub mod graphs;
 // pub mod caches;     // TODO: Phase 6
 // pub mod advanced;   // TODO: Phase 6
 
