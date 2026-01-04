@@ -1,6 +1,6 @@
 # Data Structures & Algorithms
 
-A comprehensive collection of data structures and algorithms implemented in **C** and **Python**.
+A comprehensive collection of data structures and algorithms implemented in **C**, **Python**, and **Rust**.
 
 Each implementation includes:
 - Detailed ASCII visual diagrams
@@ -14,6 +14,7 @@ Each implementation includes:
 |----------|---------|------------|
 | C | C11 | gcc/make |
 | Python | 3.10+ | pytest |
+| Rust | 1.70+ | cargo |
 
 ## Repository Structure
 
@@ -21,7 +22,8 @@ Each implementation includes:
 dsa/
 ├── by-language/          # Implementations organized by language
 │   ├── c/                # Complete C implementations
-│   └── python/           # Complete Python implementations
+│   ├── python/           # Complete Python implementations
+│   └── rust/             # Complete Rust implementations
 ├── by-topic/             # Cross-reference index by topic
 │   ├── arrays/           # Dynamic arrays, two pointers, sliding window
 │   ├── linked-lists/     # Singly/doubly linked lists
@@ -41,110 +43,110 @@ dsa/
 ## Data Structures
 
 ### Linear
-| Structure | Python | C |
-|-----------|:------:|:-:|
-| Dynamic Array | ✓ | ✓ |
-| Singly Linked List | ✓ | ✓ |
-| Doubly Linked List | ✓ | ✓ |
-| Stack | ✓ | ✓ |
-| Queue | ✓ | ✓ |
-| Deque | ✓ | ✓ |
-| Circular Queue | ✓ | ✓ |
-| Min/Max Stack | ✓ | ✓ |
-| Monotonic Queue | ✓ | ✓ |
+| Structure | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| Dynamic Array | ✓ | ✓ | ✓ |
+| Singly Linked List | ✓ | ✓ | ✓ |
+| Doubly Linked List | ✓ | ✓ | ✓ |
+| Stack | ✓ | ✓ | ✓ |
+| Queue | ✓ | ✓ | ✓ |
+| Deque | ✓ | ✓ | ✓ |
+| Circular Queue | ✓ | ✓ | ✓ |
+| Min/Max Stack | ✓ | ✓ | ✓ |
+| Monotonic Queue | ✓ | ✓ | ✓ |
 
 ### Trees
-| Structure | Python | C |
-|-----------|:------:|:-:|
-| Binary Search Tree | ✓ | ✓ |
-| AVL Tree | ✓ | ✓ |
-| Red-Black Tree | ✓ | ✓ |
-| B-Tree | ✓ | ✓ |
-| Trie | ✓ | ✓ |
-| Segment Tree | ✓ | ✓ |
-| Fenwick Tree | ✓ | ✓ |
+| Structure | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| Binary Search Tree | ✓ | ✓ | ✓ |
+| AVL Tree | ✓ | ✓ | ✓ |
+| Red-Black Tree | ✓ | ✓ | ✓ |
+| B-Tree | ✓ | ✓ | ✓ |
+| Trie | ✓ | ✓ | ✓ |
+| Segment Tree | ✓ | ✓ | ✓ |
+| Fenwick Tree | ✓ | ✓ | ✓ |
 
 ### Hashing
-| Structure | Python | C |
-|-----------|:------:|:-:|
-| Hash Table | ✓ | ✓ |
-| Bloom Filter | ✓ | ✓ |
+| Structure | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| Hash Table | ✓ | ✓ | ✓ |
+| Bloom Filter | ✓ | ✓ | ✓ |
 
 ### Heaps
-| Structure | Python | C |
-|-----------|:------:|:-:|
-| Binary Heap | ✓ | ✓ |
-| Priority Queue | ✓ | ✓ |
+| Structure | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| Binary Heap | ✓ | ✓ | ✓ |
+| Priority Queue | ✓ | ✓ | ✓ |
 
 ### Graphs
-| Structure | Python | C |
-|-----------|:------:|:-:|
-| Adjacency List | ✓ | ✓ |
-| Adjacency Matrix | ✓ | ✓ |
-| Union-Find | ✓ | ✓ |
+| Structure | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| Adjacency List | ✓ | ✓ | ✓ |
+| Adjacency Matrix | ✓ | ✓ | ✓ |
+| Union-Find | ✓ | ✓ | ✓ |
 
 ### Caches
-| Structure | Python | C |
-|-----------|:------:|:-:|
-| LRU Cache | ✓ | ✓ |
-| LFU Cache | ✓ | ✓ |
-| TTL Cache | ✓ | ✓ |
+| Structure | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| LRU Cache | ✓ | ✓ | ✓ |
+| LFU Cache | ✓ | ✓ | ✓ |
+| TTL Cache | ✓ | ✓ | - |
 
 ### Advanced
-| Structure | Python | C |
-|-----------|:------:|:-:|
-| Skip List | ✓ | ✓ |
+| Structure | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| Skip List | ✓ | ✓ | ✓ |
 
 ## Algorithms
 
 ### Sorting
-| Algorithm | Python | C |
-|-----------|:------:|:-:|
-| Bubble Sort | ✓ | ✓ |
-| Selection Sort | ✓ | ✓ |
-| Insertion Sort | ✓ | ✓ |
-| Merge Sort | ✓ | ✓ |
-| Quick Sort | ✓ | ✓ |
-| Heap Sort | ✓ | ✓ |
-| Counting Sort | ✓ | ✓ |
-| Radix Sort | ✓ | ✓ |
+| Algorithm | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| Bubble Sort | ✓ | ✓ | ✓ |
+| Selection Sort | ✓ | ✓ | ✓ |
+| Insertion Sort | ✓ | ✓ | ✓ |
+| Merge Sort | ✓ | ✓ | ✓ |
+| Quick Sort | ✓ | ✓ | ✓ |
+| Heap Sort | ✓ | ✓ | ✓ |
+| Counting Sort | ✓ | ✓ | ✓ |
+| Radix Sort | ✓ | ✓ | ✓ |
 
 ### Searching
-| Algorithm | Python | C |
-|-----------|:------:|:-:|
-| Binary Search | ✓ | ✓ |
-| Two Pointers | ✓ | ✓ |
-| Sliding Window | ✓ | ✓ |
+| Algorithm | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| Binary Search | ✓ | ✓ | ✓ |
+| Two Pointers | ✓ | ✓ | ✓ |
+| Sliding Window | ✓ | ✓ | ✓ |
 
 ### Graph
-| Algorithm | Python | C |
-|-----------|:------:|:-:|
-| BFS | ✓ | ✓ |
-| DFS | ✓ | ✓ |
-| Dijkstra | ✓ | ✓ |
-| Bellman-Ford | ✓ | ✓ |
-| Floyd-Warshall | ✓ | ✓ |
-| Prim's MST | ✓ | ✓ |
-| Kruskal's MST | ✓ | ✓ |
-| Topological Sort | ✓ | ✓ |
-| Tarjan's SCC | ✓ | ✓ |
+| Algorithm | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| BFS | ✓ | ✓ | ✓ |
+| DFS | ✓ | ✓ | ✓ |
+| Dijkstra | ✓ | ✓ | ✓ |
+| Bellman-Ford | ✓ | ✓ | ✓ |
+| Floyd-Warshall | ✓ | ✓ | ✓ |
+| Prim's MST | ✓ | ✓ | ✓ |
+| Kruskal's MST | ✓ | ✓ | ✓ |
+| Topological Sort | ✓ | ✓ | ✓ |
+| Tarjan's SCC | ✓ | ✓ | ✓ |
 
 ### Dynamic Programming
-| Problem | Python | C |
-|---------|:------:|:-:|
-| Fibonacci | ✓ | ✓ |
-| Knapsack | ✓ | ✓ |
-| LCS | ✓ | ✓ |
-| LIS | ✓ | ✓ |
-| Edit Distance | ✓ | ✓ |
-| Coin Change | ✓ | ✓ |
+| Problem | Python | C | Rust |
+|---------|:------:|:-:|:----:|
+| Fibonacci | ✓ | ✓ | ✓ |
+| Knapsack | ✓ | ✓ | ✓ |
+| LCS | ✓ | ✓ | ✓ |
+| LIS | ✓ | ✓ | ✓ |
+| Edit Distance | ✓ | ✓ | ✓ |
+| Coin Change | ✓ | ✓ | ✓ |
 
 ### String
-| Algorithm | Python | C |
-|-----------|:------:|:-:|
-| KMP | ✓ | ✓ |
-| Rabin-Karp | ✓ | ✓ |
-| Z-Algorithm | ✓ | ✓ |
+| Algorithm | Python | C | Rust |
+|-----------|:------:|:-:|:----:|
+| KMP | ✓ | ✓ | ✓ |
+| Rabin-Karp | ✓ | ✓ | ✓ |
+| Z-Algorithm | ✓ | ✓ | ✓ |
 
 ## Quick Start
 
@@ -159,6 +161,12 @@ pytest tests/
 ```bash
 cd by-language/c
 make test
+```
+
+### Rust
+```bash
+cd by-language/rust
+cargo test
 ```
 
 ## Implementation Template
