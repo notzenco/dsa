@@ -14,7 +14,9 @@ git config core.hooksPath .githooks
 # Make hooks executable
 chmod +x "$HOOK_DIR/pre-commit" 2>/dev/null
 chmod +x "$HOOK_DIR/pre-push" 2>/dev/null
+chmod +x "$HOOK_DIR/commit-msg" 2>/dev/null
 
 echo "Git hooks installed successfully!"
 echo "  - pre-commit: format and lint checks"
 echo "  - pre-push: full test suite"
+echo "  - commit-msg: conventional commit format"

@@ -1,0 +1,47 @@
+#!/bin/bash
+# Commit message hook: enforce conventional commit format
+
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Valid prefixes (conventional commits)
+valid_prefixes="feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert"
+
+# Pattern: prefix(optional-scope): description
+pattern="^($valid_prefixes)(\(.+\))?: .+"
+
+if ! echo "$commit_msg" | head -1 | grep -qE "$pattern"; then
+    echo -e "${RED}Invalid commit message format!${NC}"
+    echo ""
+    echo "Commit message must follow: <type>(<scope>): <description>"
+    echo ""
+    echo -e "${YELLOW}Valid prefixes:${NC}"
+    echo "  feat:     New feature"
+    echo "  fix:      Bug fix"
+    echo "  docs:     Documentation changes"
+    echo "  style:    Code style (formatting, semicolons, etc.)"
+    echo "  refactor: Code refactoring"
+    echo "  perf:     Performance improvements"
+    echo "  test:     Adding or updating tests"
+    echo "  build:    Build system or dependencies"
+    echo "  ci:       CI/CD configuration"
+    echo "  chore:    Maintenance tasks"
+    echo "  revert:   Revert a previous commit"
+    echo ""
+    echo -e "${YELLOW}Examples:${NC}"
+    echo "  feat: add binary search tree"
+    echo "  fix(rust): resolve memory leak in linked list"
+    echo "  docs: update README with examples"
+    echo "  test(python): add edge case tests for sorting"
+    echo ""
+    echo -e "Your message: ${RED}$commit_msg${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}Commit message format OK${NC}"
