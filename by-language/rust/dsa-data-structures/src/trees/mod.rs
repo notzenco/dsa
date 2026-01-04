@@ -1,0 +1,21 @@
+//! Tree data structures.
+//!
+//! This module contains implementations of tree data structures:
+//!
+//! - [`BinarySearchTree`] - Basic binary search tree
+//! - `AVLTree` - Self-balancing AVL tree
+//! - `RedBlackTree` - Self-balancing red-black tree
+//! - `BTree` - B-tree for disk-based storage
+//! - `Trie` - Prefix tree for string operations
+//! - `SegmentTree` - Range query data structure
+//! - `FenwickTree` - Binary indexed tree for prefix sums
+
+pub mod binary_search_tree;
+// pub mod avl_tree;
+// pub mod red_black_tree;
+// pub mod b_tree;
+// pub mod trie;
+// pub mod segment_tree;
+// pub mod fenwick_tree;
+
+pub use binary_search_tree::BinarySearchTree;

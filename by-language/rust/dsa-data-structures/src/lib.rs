@@ -20,7 +20,7 @@
 extern crate alloc;
 
 pub mod linear;
-// pub mod trees;      // TODO: Phase 3
+pub mod trees;
 // pub mod hashing;    // TODO: Phase 4
 // pub mod heaps;      // TODO: Phase 4
 // pub mod graphs;     // TODO: Phase 5
