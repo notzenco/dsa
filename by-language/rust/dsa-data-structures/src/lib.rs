@@ -25,6 +25,6 @@ pub mod trees;
 pub mod heaps;
 pub mod graphs;
 pub mod caches;
-// pub mod advanced;   // TODO: Phase 6
+pub mod advanced;
 
 pub use dsa_core::{DsaError, Result};
