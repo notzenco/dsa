@@ -17,7 +17,7 @@
 
 extern crate alloc;
 
-// pub mod sorting;              // TODO: Phase 7
+pub mod sorting;
 // pub mod searching;            // TODO: Phase 8
 // pub mod graph;                // TODO: Phase 8
 // pub mod dynamic_programming;  // TODO: Phase 8
