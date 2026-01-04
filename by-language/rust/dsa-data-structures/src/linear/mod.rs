@@ -11,7 +11,7 @@
 //! - `MonotonicQueue` - Monotonic queue for sliding window problems
 
 pub mod dynamic_array;
-// pub mod singly_linked_list;
+pub mod singly_linked_list;
 // pub mod doubly_linked_list;
 // pub mod stack;
 // pub mod queue;
@@ -19,3 +19,4 @@ pub mod dynamic_array;
 // pub mod monotonic_queue;
 
 pub use dynamic_array::DynamicArray;
+pub use singly_linked_list::SinglyLinkedList;
