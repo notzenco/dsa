@@ -1,6 +1,8 @@
 package dsa.algorithms;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public final class Sorting {
 
@@ -227,5 +229,124 @@ public final class Sorting {
             if (arr[i] < arr[i - 1]) return false;
         }
         return true;
+    }
+
+    public static int[] bucketSort(int[] arr) {
+        int[] a = arr.clone();
+        int n = a.length;
+        if (n <= 1) return a;
+        int max = a[0];
+        for (int v : a) {
+            if (v > max) max = v;
+        }
+        if (max == 0) return a; // all elements are zero
+        int bucketCount = (int) Math.max(1, Math.sqrt(n));
+        @SuppressWarnings("unchecked")
+        List<Integer>[] buckets = new List[bucketCount];
+        for (int i = 0; i < bucketCount; i++) {
+            buckets[i] = new ArrayList<>();
+        }
+        for (int v : a) {
+            int idx = (int) ((long) v * (bucketCount - 1) / max);
+            buckets[idx].add(v);
+        }
+        // Insertion sort each bucket
+        int pos = 0;
+        for (List<Integer> bucket : buckets) {
+            int size = bucket.size();
+            int[] b = new int[size];
+            for (int i = 0; i < size; i++) b[i] = bucket.get(i);
+            // Insertion sort on b
+            for (int i = 1; i < size; i++) {
+                int key = b[i];
+                int j = i - 1;
+                while (j >= 0 && b[j] > key) {
+                    b[j + 1] = b[j];
+                    j--;
+                }
+                b[j + 1] = key;
+            }
+            for (int v : b) {
+                a[pos++] = v;
+            }
+        }
+        return a;
+    }
+
+    private static final int TIM_MIN_RUN = 32;
+
+    public static int[] timSort(int[] arr) {
+        int[] a = arr.clone();
+        int n = a.length;
+        if (n <= 1) return a;
+
+        // Insertion sort individual runs of TIM_MIN_RUN
+        for (int i = 0; i < n; i += TIM_MIN_RUN) {
+            int end = Math.min(i + TIM_MIN_RUN - 1, n - 1);
+            // Insertion sort from i to end
+            for (int j = i + 1; j <= end; j++) {
+                int key = a[j];
+                int k = j - 1;
+                while (k >= i && a[k] > key) {
+                    a[k + 1] = a[k];
+                    k--;
+                }
+                a[k + 1] = key;
+            }
+        }
+
+        // Merge runs, doubling size each iteration
+        for (int size = TIM_MIN_RUN; size < n; size *= 2) {
+            for (int left = 0; left < n; left += 2 * size) {
+                int mid = Math.min(left + size - 1, n - 1);
+                int right = Math.min(left + 2 * size - 1, n - 1);
+                if (mid < right) {
+                    merge(a, left, mid, right);
+                }
+            }
+        }
+        return a;
+    }
+
+    public static int quickSelect(int[] arr, int k) {
+        if (k < 0 || k >= arr.length) {
+            throw new IllegalArgumentException("k is out of bounds");
+        }
+        int[] a = arr.clone();
+        return quickSelectHelper(a, 0, a.length - 1, k);
+    }
+
+    private static int quickSelectHelper(int[] a, int low, int high, int k) {
+        if (low == high) return a[low];
+        int pivotIdx = partition(a, low, high);
+        if (k == pivotIdx) {
+            return a[k];
+        } else if (k < pivotIdx) {
+            return quickSelectHelper(a, low, pivotIdx - 1, k);
+        } else {
+            return quickSelectHelper(a, pivotIdx + 1, high, k);
+        }
+    }
+
+    public static int[] stableSort(int[] arr) {
+        return mergeSort(arr);
+    }
+
+    public static boolean isStable(String algorithmName) {
+        switch (algorithmName.toLowerCase()) {
+            case "bubble":
+            case "insertion":
+            case "merge":
+            case "counting":
+            case "tim":
+                return true;
+            case "selection":
+            case "quick":
+            case "heap":
+            case "shell":
+                return false;
+            default:
+                throw new IllegalArgumentException("Unknown algorithm: " + algorithmName);
+        }
     }
 }

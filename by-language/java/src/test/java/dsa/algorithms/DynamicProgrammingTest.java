@@ -216,4 +216,202 @@ class DynamicProgrammingTest {
         // No matrices
         assertEquals(0, DynamicProgramming.matrixChainMultiplication(new int[]{10}));
     }
+
+    // --- houseRobber ---
+    @Test
+    void testHouseRobber() {
+        assertEquals(4, DynamicProgramming.houseRobber(new int[]{1, 2, 3, 1}));
+        assertEquals(12, DynamicProgramming.houseRobber(new int[]{2, 7, 9, 3, 1}));
+        assertEquals(0, DynamicProgramming.houseRobber(new int[]{}));
+    }
+
+    @Test
+    void testHouseRobberSingleHouse() {
+        assertEquals(5, DynamicProgramming.houseRobber(new int[]{5}));
+    }
+
+    @Test
+    void testHouseRobberTwoHouses() {
+        assertEquals(7, DynamicProgramming.houseRobber(new int[]{3, 7}));
+    }
+
+    @Test
+    void testHouseRobberAllSameValues() {
+        assertEquals(9, DynamicProgramming.houseRobber(new int[]{3, 3, 3, 3, 3}));
+    }
+
+    // --- houseRobberII ---
+    @Test
+    void testHouseRobberII() {
+        assertEquals(3, DynamicProgramming.houseRobberII(new int[]{2, 3, 2}));
+        assertEquals(4, DynamicProgramming.houseRobberII(new int[]{1, 2, 3, 1}));
+        assertEquals(3, DynamicProgramming.houseRobberII(new int[]{1, 2, 3}));
+        assertEquals(0, DynamicProgramming.houseRobberII(new int[]{}));
+        assertEquals(5, DynamicProgramming.houseRobberII(new int[]{5}));
+    }
+
+    // --- unboundedKnapsack ---
+    @Test
+    void testUnboundedKnapsack() {
+        int[] weights = {1, 3, 4, 5};
+        int[] values = {10, 40, 50, 70};
+        assertEquals(110, DynamicProgramming.unboundedKnapsack(weights, values, 8));
+    }
+
+    @Test
+    void testUnboundedKnapsackMultipleCopies() {
+        int[] weights = {2};
+        int[] values = {5};
+        assertEquals(15, DynamicProgramming.unboundedKnapsack(weights, values, 6));
+    }
+
+    @Test
+    void testUnboundedKnapsackEmpty() {
+        assertEquals(0, DynamicProgramming.unboundedKnapsack(new int[]{}, new int[]{}, 10));
+    }
+
+    // --- longestPalindromicSubsequence ---
+    @Test
+    void testLongestPalindromicSubsequence() {
+        assertEquals(4, DynamicProgramming.longestPalindromicSubsequence("bbbab"));
+        assertEquals(2, DynamicProgramming.longestPalindromicSubsequence("cbbd"));
+    }
+
+    @Test
+    void testLongestPalindromicSubsequenceSingleChar() {
+        assertEquals(1, DynamicProgramming.longestPalindromicSubsequence("a"));
+    }
+
+    @Test
+    void testLongestPalindromicSubsequenceAllSame() {
+        assertEquals(5, DynamicProgramming.longestPalindromicSubsequence("aaaaa"));
+    }
+
+    @Test
+    void testLongestPalindromicSubsequenceEmpty() {
+        assertEquals(0, DynamicProgramming.longestPalindromicSubsequence(""));
+    }
+
+    // --- fibonacciOptimized ---
+    @Test
+    void testFibonacciOptimized() {
+        for (int i = 0; i <= 30; i++) {
+            assertEquals(DynamicProgramming.fibonacci(i), DynamicProgramming.fibonacciOptimized(i),
+                    "fibonacciOptimized should match fibonacci for n=" + i);
+        }
+    }
+
+    // --- lisWithSequence ---
+    @Test
+    void testLisWithSequence() {
+        int[] result = DynamicProgramming.lisWithSequence(new int[]{10, 9, 2, 5, 3, 7, 101, 18});
+        assertEquals(4, result.length);
+        // Verify the sequence is increasing
+        for (int i = 1; i < result.length; i++) {
+            assertTrue(result[i] > result[i - 1]);
+        }
+    }
+
+    @Test
+    void testLisWithSequenceEmpty() {
+        assertArrayEquals(new int[]{}, DynamicProgramming.lisWithSequence(new int[]{}));
+    }
+
+    @Test
+    void testLisWithSequenceSingle() {
+        assertArrayEquals(new int[]{5}, DynamicProgramming.lisWithSequence(new int[]{5}));
+    }
+
+    @Test
+    void testLisWithSequenceAlreadySorted() {
+        assertArrayEquals(new int[]{1, 2, 3, 4, 5}, DynamicProgramming.lisWithSequence(new int[]{1, 2, 3, 4, 5}));
+    }
+
+    // --- canPartition ---
+    @Test
+    void testCanPartition() {
+        assertTrue(DynamicProgramming.canPartition(new int[]{1, 5, 11, 5}));
+        assertFalse(DynamicProgramming.canPartition(new int[]{1, 2, 3, 5}));
+        assertTrue(DynamicProgramming.canPartition(new int[]{1, 1}));
+        assertFalse(DynamicProgramming.canPartition(new int[]{1}));
+    }
+
+    // --- minCostClimbingStairs ---
+    @Test
+    void testMinCostClimbingStairs() {
+        assertEquals(15, DynamicProgramming.minCostClimbingStairs(new int[]{10, 15, 20}));
+        assertEquals(6, DynamicProgramming.minCostClimbingStairs(new int[]{1, 100, 1, 1, 1, 100, 1, 1, 100, 1}));
+        assertEquals(0, DynamicProgramming.minCostClimbingStairs(new int[]{}));
+    }
+
+    // --- numDecodings ---
+    @Test
+    void testNumDecodings() {
+        assertEquals(2, DynamicProgramming.numDecodings("12"));
+        assertEquals(3, DynamicProgramming.numDecodings("226"));
+        assertEquals(0, DynamicProgramming.numDecodings("0"));
+        assertEquals(0, DynamicProgramming.numDecodings("06"));
+        assertEquals(1, DynamicProgramming.numDecodings("10"));
+        assertEquals(1, DynamicProgramming.numDecodings("27"));
+    }
+
+    // --- maximalSquare ---
+    @Test
+    void testMaximalSquare() {
+        int[][] matrix = {
+            {1, 0, 1, 0, 0},
+            {1, 0, 1, 1, 1},
+            {1, 1, 1, 1, 1},
+            {1, 0, 0, 1, 0}
+        };
+        assertEquals(4, DynamicProgramming.maximalSquare(matrix));
+    }
+
+    @Test
+    void testMaximalSquareAllOnes() {
+        int[][] matrix = {
+            {1, 1, 1},
+            {1, 1, 1},
+            {1, 1, 1}
+        };
+        assertEquals(9, DynamicProgramming.maximalSquare(matrix));
+    }
+
+    @Test
+    void testMaximalSquareSingleRow() {
+        int[][] matrix = {{1, 0, 1, 1}};
+        assertEquals(1, DynamicProgramming.maximalSquare(matrix));
+    }
+
+    @Test
+    void testMaximalSquareEmpty() {
+        assertEquals(0, DynamicProgramming.maximalSquare(new int[][]{}));
+    }
+
+    // --- lengthOfLIS_DP ---
+    @Test
+    void testLengthOfLIS_DP() {
+        // Should agree with longestIncreasingSubsequence
+        int[][] testCases = {
+            {10, 9, 2, 5, 3, 7, 101, 18},
+            {0, 1, 0, 3, 2, 3},
+            {7, 7, 7, 7},
+            {1, 2, 3, 4, 5, 6}
+        };
+        for (int[] tc : testCases) {
+            assertEquals(DynamicProgramming.longestIncreasingSubsequence(tc),
+                         DynamicProgramming.lengthOfLIS_DP(tc),
+                         "LIS_DP should match LIS for input " + Arrays.toString(tc));
+        }
+    }
+
+    @Test
+    void testLengthOfLIS_DPEmpty() {
+        assertEquals(0, DynamicProgramming.lengthOfLIS_DP(new int[]{}));
+    }
+
+    @Test
+    void testLengthOfLIS_DPSingle() {
+        assertEquals(1, DynamicProgramming.lengthOfLIS_DP(new int[]{5}));
+    }
 }

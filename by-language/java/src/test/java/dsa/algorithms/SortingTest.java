@@ -157,4 +157,114 @@ class SortingTest {
         assertSortsCorrectly(Sorting::quickSort, mixed);
         assertSortsCorrectly(Sorting::heapSort, mixed);
     }
+
+    // --- bucketSort ---
+    @Test
+    void testBucketSort() {
+        testNonNegativeSortAlgorithm(Sorting::bucketSort);
+    }
+
+    @Test
+    void testBucketSortLargeRandom() {
+        Random rng = new Random(54321);
+        int[] large = new int[300];
+        for (int i = 0; i < large.length; i++) {
+            large[i] = rng.nextInt(1000);
+        }
+        assertSortsCorrectly(Sorting::bucketSort, large);
+    }
+
+    // --- timSort ---
+    @Test
+    void testTimSort() {
+        testSortAlgorithm(Sorting::timSort);
+    }
+
+    @Test
+    void testTimSortLargeRandom() {
+        Random rng = new Random(67890);
+        int[] large = new int[300];
+        for (int i = 0; i < large.length; i++) {
+            large[i] = rng.nextInt(2000) - 1000;
+        }
+        assertSortsCorrectly(Sorting::timSort, large);
+    }
+
+    @Test
+    void testTimSortNearlyOrdered() {
+        int[] nearlyOrdered = {1, 2, 4, 3, 5, 6, 8, 7, 9, 10};
+        assertSortsCorrectly(Sorting::timSort, nearlyOrdered);
+    }
+
+    // --- quickSelect ---
+    @Test
+    void testQuickSelectBasic() {
+        int[] arr = {7, 2, 5, 1, 8, 3};
+        // Sorted: 1, 2, 3, 5, 7, 8
+        assertEquals(1, Sorting.quickSelect(arr, 0));
+        assertEquals(2, Sorting.quickSelect(arr, 1));
+        assertEquals(3, Sorting.quickSelect(arr, 2));
+        assertEquals(5, Sorting.quickSelect(arr, 3));
+        assertEquals(7, Sorting.quickSelect(arr, 4));
+        assertEquals(8, Sorting.quickSelect(arr, 5));
+    }
+
+    @Test
+    void testQuickSelectSingleElement() {
+        assertEquals(42, Sorting.quickSelect(new int[]{42}, 0));
+    }
+
+    @Test
+    void testQuickSelectSortedInput() {
+        int[] arr = {1, 2, 3, 4, 5};
+        assertEquals(3, Sorting.quickSelect(arr, 2));
+        assertEquals(1, Sorting.quickSelect(arr, 0));
+        assertEquals(5, Sorting.quickSelect(arr, 4));
+    }
+
+    @Test
+    void testQuickSelectOutOfBounds() {
+        assertThrows(IllegalArgumentException.class, () -> Sorting.quickSelect(new int[]{1, 2, 3}, 5));
+        assertThrows(IllegalArgumentException.class, () -> Sorting.quickSelect(new int[]{1, 2, 3}, -1));
+    }
+
+    @Test
+    void testQuickSelectDoesNotModifyInput() {
+        int[] arr = {5, 3, 1, 4, 2};
+        int[] copy = arr.clone();
+        Sorting.quickSelect(arr, 2);
+        assertArrayEquals(copy, arr, "Input should not be modified");
+    }
+
+    // --- stableSort ---
+    @Test
+    void testStableSort() {
+        testSortAlgorithm(Sorting::stableSort);
+    }
+
+    // --- isStable ---
+    @Test
+    void testIsStable() {
+        assertTrue(Sorting.isStable("bubble"));
+        assertTrue(Sorting.isStable("insertion"));
+        assertTrue(Sorting.isStable("merge"));
+        assertTrue(Sorting.isStable("counting"));
+        assertTrue(Sorting.isStable("tim"));
+        assertFalse(Sorting.isStable("selection"));
+        assertFalse(Sorting.isStable("quick"));
+        assertFalse(Sorting.isStable("heap"));
+        assertFalse(Sorting.isStable("shell"));
+    }
+
+    @Test
+    void testIsStableCaseInsensitive() {
+        assertTrue(Sorting.isStable("Bubble"));
+        assertTrue(Sorting.isStable("MERGE"));
+        assertFalse(Sorting.isStable("QUICK"));
+    }
+
+    @Test
+    void testIsStableUnknown() {
+        assertThrows(IllegalArgumentException.class, () -> Sorting.isStable("bogosort"));
+    }
 }

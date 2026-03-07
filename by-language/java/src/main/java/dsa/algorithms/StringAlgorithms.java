@@ -245,4 +245,254 @@ public final class StringAlgorithms {
         String sub = doubled.substring(1, doubled.length() - 1);
         return sub.contains(s);
     }
+
+    public static List<Integer> boyerMoore(String text, String pattern) {
+        List<Integer> result = new ArrayList<>();
+        if (pattern.isEmpty() || text.length() < pattern.length()) return result;
+        int n = text.length(), m = pattern.length();
+        // Build bad character table
+        int[] badChar = new int[256];
+        Arrays.fill(badChar, -1);
+        for (int i = 0; i < m; i++) {
+            badChar[pattern.charAt(i)] = i;
+        }
+        int shift = 0;
+        while (shift <= n - m) {
+            int j = m - 1;
+            while (j >= 0 && pattern.charAt(j) == text.charAt(shift + j)) {
+                j--;
+            }
+            if (j < 0) {
+                result.add(shift);
+                shift += (shift + m < n) ? m - badChar[text.charAt(shift + m)] : 1;
+            } else {
+                int bc = badChar[text.charAt(shift + j)];
+                shift += Math.max(1, j - bc);
+            }
+        }
+        return result;
+    }
+
+    public static String shortestPalindrome(String s) {
+        if (s == null || s.length() <= 1) return s == null ? "" : s;
+        String rev = new StringBuilder(s).reverse().toString();
+        String concat = s + "#" + rev;
+        int[] lps = computeLPSArray(concat);
+        int longestPrefixPalin = lps[concat.length() - 1];
+        String suffix = s.substring(longestPrefixPalin);
+        return new StringBuilder(suffix).reverse().toString() + s;
+    }
+
+    public static String longestHappyPrefix(String s) {
+        if (s == null || s.length() <= 1) return "";
+        int[] lps = computeLPSArray(s);
+        int len = lps[s.length() - 1];
+        return s.substring(0, len);
+    }
+
+    public static int countPalindromicSubstrings(String s) {
+        if (s == null || s.isEmpty()) return 0;
+        int count = 0;
+        int n = s.length();
+        for (int center = 0; center < n; center++) {
+            // Odd length palindromes
+            int left = center, right = center;
+            while (left >= 0 && right < n && s.charAt(left) == s.charAt(right)) {
+                count++;
+                left--;
+                right++;
+            }
+            // Even length palindromes
+            left = center;
+            right = center + 1;
+            while (left >= 0 && right < n && s.charAt(left) == s.charAt(right)) {
+                count++;
+                left--;
+                right++;
+            }
+        }
+        return count;
+    }
+
+    public static int[] computeLCPArray(String s, int[] suffixArray) {
+        int n = s.length();
+        int[] rank = new int[n];
+        int[] lcp = new int[n];
+        for (int i = 0; i < n; i++) {
+            rank[suffixArray[i]] = i;
+        }
+        int k = 0;
+        for (int i = 0; i < n; i++) {
+            if (rank[i] == 0) {
+                k = 0;
+                continue;
+            }
+            int j = suffixArray[rank[i] - 1];
+            while (i + k < n && j + k < n && s.charAt(i + k) == s.charAt(j + k)) {
+                k++;
+            }
+            lcp[rank[i]] = k;
+            if (k > 0) k--;
+        }
+        return lcp;
+    }
+
+    public static List<Integer> searchWithSuffixArray(String text, String pattern) {
+        List<Integer> result = new ArrayList<>();
+        if (pattern.isEmpty() || text.isEmpty()) return result;
+        int[] sa = buildSuffixArray(text);
+        int n = text.length(), m = pattern.length();
+        // Binary search for lower bound
+        int lo = 0, hi = n - 1;
+        int first = n;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            int cmp = compareSubstring(text, sa[mid], pattern);
+            if (cmp >= 0) {
+                if (cmp == 0) first = mid;
+                hi = mid - 1;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        if (first == n) return result;
+        // Binary search for upper bound
+        lo = first;
+        hi = n - 1;
+        int last = first;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            int cmp = compareSubstring(text, sa[mid], pattern);
+            if (cmp <= 0) {
+                if (cmp == 0) last = mid;
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        for (int i = first; i <= last; i++) {
+            result.add(sa[i]);
+        }
+        Collections.sort(result);
+        return result;
+    }
+
+    private static int compareSubstring(String text, int suffixStart, String pattern) {
+        int n = text.length(), m = pattern.length();
+        int len = Math.min(n - suffixStart, m);
+        for (int i = 0; i < len; i++) {
+            if (text.charAt(suffixStart + i) != pattern.charAt(i)) {
+                return Character.compare(text.charAt(suffixStart + i), pattern.charAt(i));
+            }
+        }
+        if (n - suffixStart < m) return -1;
+        return 0;
+    }
+
+    public static List<Integer> rabinKarpMultiple(String text, String[] patterns) {
+        Set<Integer> resultSet = new TreeSet<>();
+        if (text.isEmpty() || patterns.length == 0) return new ArrayList<>(resultSet);
+        long prime = 1_000_000_007L;
+        long base = 256;
+        // Group patterns by length
+        Map<Integer, List<String>> byLength = new HashMap<>();
+        for (String p : patterns) {
+            if (!p.isEmpty() && p.length() <= text.length()) {
+                byLength.computeIfAbsent(p.length(), k -> new ArrayList<>()).add(p);
+            }
+        }
+        for (Map.Entry<Integer, List<String>> entry : byLength.entrySet()) {
+            int m = entry.getKey();
+            List<String> pats = entry.getValue();
+            // Compute hashes for all patterns of this length
+            Set<Long> patHashes = new HashSet<>();
+            Set<String> patSet = new HashSet<>(pats);
+            for (String p : pats) {
+                long h = 0;
+                for (int i = 0; i < m; i++) {
+                    h = (h * base + p.charAt(i)) % prime;
+                }
+                patHashes.add(h);
+            }
+            long highPow = 1;
+            for (int i = 0; i < m - 1; i++) {
+                highPow = (highPow * base) % prime;
+            }
+            long textHash = 0;
+            for (int i = 0; i < m; i++) {
+                textHash = (textHash * base + text.charAt(i)) % prime;
+            }
+            for (int i = 0; i <= text.length() - m; i++) {
+                if (patHashes.contains(textHash)) {
+                    String window = text.substring(i, i + m);
+                    if (patSet.contains(window)) {
+                        resultSet.add(i);
+                    }
+                }
+                if (i < text.length() - m) {
+                    textHash = ((textHash - text.charAt(i) * highPow % prime + prime) * base
+                            + text.charAt(i + m)) % prime;
+                }
+            }
+        }
+        return new ArrayList<>(resultSet);
+    }
+
+    public static boolean isSubsequence(String s, String t) {
+        int si = 0, ti = 0;
+        while (si < s.length() && ti < t.length()) {
+            if (s.charAt(si) == t.charAt(ti)) {
+                si++;
+            }
+            ti++;
+        }
+        return si == s.length();
+    }
+
+    public static int longestRepeatingSubstring(String s) {
+        if (s == null || s.length() <= 1) return 0;
+        int n = s.length();
+        int lo = 1, hi = n - 1;
+        int result = 0;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (hasRepeatingSubstring(s, mid)) {
+                result = mid;
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return result;
+    }
+
+    private static boolean hasRepeatingSubstring(String s, int len) {
+        long prime = 1_000_000_007L;
+        long base = 31;
+        long hash = 0;
+        long highPow = 1;
+        for (int i = 0; i < len - 1; i++) {
+            highPow = (highPow * base) % prime;
+        }
+        for (int i = 0; i < len; i++) {
+            hash = (hash * base + s.charAt(i)) % prime;
+        }
+        Map<Long, List<Integer>> seen = new HashMap<>();
+        seen.computeIfAbsent(hash, k -> new ArrayList<>()).add(0);
+        for (int i = 1; i <= s.length() - len; i++) {
+            hash = ((hash - s.charAt(i - 1) * highPow % prime + prime) * base
+                    + s.charAt(i + len - 1)) % prime;
+            List<Integer> positions = seen.get(hash);
+            if (positions != null) {
+                String candidate = s.substring(i, i + len);
+                for (int pos : positions) {
+                    if (s.substring(pos, pos + len).equals(candidate)) {
+                        return true;
+                    }
+                }
+            }
+            seen.computeIfAbsent(hash, k -> new ArrayList<>()).add(i);
+        }
+        return false;
+    }
 }
