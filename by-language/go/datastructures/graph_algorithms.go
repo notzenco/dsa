@@ -671,3 +671,207 @@ func (g *GraphCore) KosarajuSCC() [][]int {
 	}
 	return sccs
 }
+
+// ArticulationPoints finds all articulation points (cut vertices) in undirected graph.
+func (g *GraphCore) ArticulationPoints() []int {
+	if g.directed {
+		return nil
+	}
+	disc := make(map[int]int)
+	low := make(map[int]int)
+	parent := make(map[int]int)
+	ap := make(map[int]bool)
+	timer := 0
+
+	var dfs func(int)
+	dfs = func(u int) {
+		disc[u] = timer
+		low[u] = timer
+		timer++
+		children := 0
+
+		for v := range g.adj[u] {
+			if _, ok := disc[v]; !ok {
+				children++
+				parent[v] = u
+				dfs(v)
+				if low[v] < low[u] {
+					low[u] = low[v]
+				}
+				// u is AP if: root with 2+ children, or non-root with low[v] >= disc[u]
+				if parent[u] == -1 && children > 1 {
+					ap[u] = true
+				}
+				if parent[u] != -1 && low[v] >= disc[u] {
+					ap[u] = true
+				}
+			} else if v != parent[u] {
+				if disc[v] < low[u] {
+					low[u] = disc[v]
+				}
+			}
+		}
+	}
+
+	for v := range g.adj {
+		parent[v] = -1
+	}
+	for v := range g.adj {
+		if _, ok := disc[v]; !ok {
+			dfs(v)
+		}
+	}
+
+	var result []int
+	for v := range ap {
+		result = append(result, v)
+	}
+	return result
+}
+
+// Bridges finds all bridge edges in an undirected graph.
+func (g *GraphCore) Bridges() [][2]int {
+	if g.directed {
+		return nil
+	}
+	disc := make(map[int]int)
+	low := make(map[int]int)
+	parent := make(map[int]int)
+	timer := 0
+	var bridges [][2]int
+
+	var dfs func(int)
+	dfs = func(u int) {
+		disc[u] = timer
+		low[u] = timer
+		timer++
+
+		for v := range g.adj[u] {
+			if _, ok := disc[v]; !ok {
+				parent[v] = u
+				dfs(v)
+				if low[v] < low[u] {
+					low[u] = low[v]
+				}
+				if low[v] > disc[u] {
+					bridges = append(bridges, [2]int{u, v})
+				}
+			} else if v != parent[u] {
+				if disc[v] < low[u] {
+					low[u] = disc[v]
+				}
+			}
+		}
+	}
+
+	for v := range g.adj {
+		parent[v] = -1
+	}
+	for v := range g.adj {
+		if _, ok := disc[v]; !ok {
+			dfs(v)
+		}
+	}
+	return bridges
+}
+
+// ShortestPathUnweighted returns shortest distances from source using BFS.
+func (g *GraphCore) ShortestPathUnweighted(source int) map[int]int {
+	dist := make(map[int]int)
+	dist[source] = 0
+	queue := []int{source}
+
+	for len(queue) > 0 {
+		v := queue[0]
+		queue = queue[1:]
+		for u := range g.adj[v] {
+			if _, ok := dist[u]; !ok {
+				dist[u] = dist[v] + 1
+				queue = append(queue, u)
+			}
+		}
+	}
+	return dist
+}
+
+// InDegree returns the in-degree of a vertex.
+func (g *GraphCore) InDegree(v int) int {
+	count := 0
+	for u := range g.adj {
+		if _, ok := g.adj[u][v]; ok {
+			count++
+		}
+	}
+	return count
+}
+
+// OutDegree returns the out-degree of a vertex.
+func (g *GraphCore) OutDegree(v int) int {
+	return len(g.adj[v])
+}
+
+// Degree returns the degree of a vertex (undirected).
+func (g *GraphCore) Degree(v int) int {
+	if g.directed {
+		return g.InDegree(v) + g.OutDegree(v)
+	}
+	return g.OutDegree(v)
+}
+
+// IsDAG checks if the directed graph is acyclic.
+func (g *GraphCore) IsDAG() bool {
+	if !g.directed {
+		return false
+	}
+	return !g.HasCycle()
+}
+
+// Transpose returns the transpose of a directed graph.
+func (g *GraphCore) Transpose() *GraphCore {
+	if !g.directed {
+		return nil
+	}
+	trans := NewGraphCore(true)
+	for v := range g.adj {
+		trans.AddVertex(v)
+	}
+	for v := range g.adj {
+		for u, w := range g.adj[v] {
+			trans.AddEdge(u, v, w)
+		}
+	}
+	return trans
+}
+
+// AllPaths returns all simple paths from source to target.
+func (g *GraphCore) AllPaths(source, target int) [][]int {
+	var result [][]int
+	visited := make(map[int]bool)
+	path := []int{source}
+
+	var dfs func(int)
+	dfs = func(v int) {
+		if v == target {
+			cp := make([]int, len(path))
+			copy(cp, path)
+			result = append(result, cp)
+			return
+		}
+		visited[v] = true
+		for u := range g.adj[v] {
+			if !visited[u] {
+				path = append(path, u)
+				dfs(u)
+				path = path[:len(path)-1]
+			}
+		}
+		visited[v] = false
+	}
+	dfs(source)
+	return result
+}
+
+// CountPaths returns the number of simple paths from source to target.
+func (g *GraphCore) CountPaths(source, target int) int {
+	return len(g.AllPaths(source, target))
+}

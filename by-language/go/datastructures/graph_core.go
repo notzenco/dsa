@@ -116,23 +116,6 @@ func (g *GraphCore) NeighborsWeighted(v int) []struct{ Vertex int; Weight float6
 	return nil
 }
 
-func (g *GraphCore) Degree(v int) int {
-	if neighbors, ok := g.adj[v]; ok {
-		return len(neighbors)
-	}
-	return 0
-}
-
-func (g *GraphCore) InDegree(v int) int {
-	count := 0
-	for u := range g.adj {
-		if _, ok := g.adj[u][v]; ok {
-			count++
-		}
-	}
-	return count
-}
-
 func (g *GraphCore) Contains(v int) bool {
 	_, ok := g.adj[v]
 	return ok
