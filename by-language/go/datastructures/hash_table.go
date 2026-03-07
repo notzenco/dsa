@@ -282,3 +282,156 @@ func (s *HashSet[K]) Items() []K {
 func (s *HashSet[K]) Clear() {
 	s.table.Clear()
 }
+
+// Union returns a new set with elements from both sets.
+func (s *HashSet[K]) Union(other *HashSet[K]) *HashSet[K] {
+	result := NewHashSet[K]()
+	for _, k := range s.Items() {
+		result.Add(k)
+	}
+	for _, k := range other.Items() {
+		result.Add(k)
+	}
+	return result
+}
+
+// Intersection returns a new set with elements common to both sets.
+func (s *HashSet[K]) Intersection(other *HashSet[K]) *HashSet[K] {
+	result := NewHashSet[K]()
+	for _, k := range s.Items() {
+		if other.Contains(k) {
+			result.Add(k)
+		}
+	}
+	return result
+}
+
+// Difference returns a new set with elements in s but not in other.
+func (s *HashSet[K]) Difference(other *HashSet[K]) *HashSet[K] {
+	result := NewHashSet[K]()
+	for _, k := range s.Items() {
+		if !other.Contains(k) {
+			result.Add(k)
+		}
+	}
+	return result
+}
+
+// SymmetricDifference returns elements in either set but not both.
+func (s *HashSet[K]) SymmetricDifference(other *HashSet[K]) *HashSet[K] {
+	result := NewHashSet[K]()
+	for _, k := range s.Items() {
+		if !other.Contains(k) {
+			result.Add(k)
+		}
+	}
+	for _, k := range other.Items() {
+		if !s.Contains(k) {
+			result.Add(k)
+		}
+	}
+	return result
+}
+
+// IsSubset checks if s is a subset of other.
+func (s *HashSet[K]) IsSubset(other *HashSet[K]) bool {
+	if s.Size() > other.Size() {
+		return false
+	}
+	for _, k := range s.Items() {
+		if !other.Contains(k) {
+			return false
+		}
+	}
+	return true
+}
+
+// IsSuperset checks if s is a superset of other.
+func (s *HashSet[K]) IsSuperset(other *HashSet[K]) bool {
+	return other.IsSubset(s)
+}
+
+// Equals checks if two sets contain the same elements.
+func (s *HashSet[K]) Equals(other *HashSet[K]) bool {
+	return s.Size() == other.Size() && s.IsSubset(other)
+}
+
+// LoadFactor returns the current load factor of the chaining hash table.
+func (ht *HashTableChaining[K, V]) LoadFactor() float64 {
+	return float64(ht.size) / float64(ht.capacity)
+}
+
+// Entries returns all key-value pairs.
+func (ht *HashTableChaining[K, V]) Entries() []htChainEntry[K, V] {
+	entries := make([]htChainEntry[K, V], 0, ht.size)
+	for _, bucket := range ht.buckets {
+		entries = append(entries, bucket...)
+	}
+	return entries
+}
+
+// GetOrDefault returns value for key, or default if not found.
+func (ht *HashTableChaining[K, V]) GetOrDefault(key K, defaultVal V) V {
+	if v, ok := ht.Get(key); ok {
+		return v
+	}
+	return defaultVal
+}
+
+// PutIfAbsent inserts only if key doesn't exist, returns true if inserted.
+func (ht *HashTableChaining[K, V]) PutIfAbsent(key K, value V) bool {
+	if ht.Contains(key) {
+		return false
+	}
+	ht.Put(key, value)
+	return true
+}
+
+// BucketCount returns the number of non-empty buckets.
+func (ht *HashTableChaining[K, V]) BucketCount() int {
+	count := 0
+	for _, bucket := range ht.buckets {
+		if len(bucket) > 0 {
+			count++
+		}
+	}
+	return count
+}
+
+// MaxBucketSize returns the size of the largest bucket.
+func (ht *HashTableChaining[K, V]) MaxBucketSize() int {
+	maxSize := 0
+	for _, bucket := range ht.buckets {
+		if len(bucket) > maxSize {
+			maxSize = len(bucket)
+		}
+	}
+	return maxSize
+}
+
+// LoadFactor returns the current load factor of the open addressing hash table.
+func (ht *HashTableOpenAddressing[K, V]) LoadFactor() float64 {
+	return float64(ht.size) / float64(ht.capacity)
+}
+
+// Keys returns all keys in the open addressing hash table.
+func (ht *HashTableOpenAddressing[K, V]) Keys() []K {
+	keys := make([]K, 0, ht.size)
+	for _, entry := range ht.entries {
+		if entry.Occupied && !entry.Tombstone {
+			keys = append(keys, entry.Key)
+		}
+	}
+	return keys
+}
+
+// Values returns all values in the open addressing hash table.
+func (ht *HashTableOpenAddressing[K, V]) Values() []V {
+	values := make([]V, 0, ht.size)
+	for _, entry := range ht.entries {
+		if entry.Occupied && !entry.Tombstone {
+			values = append(values, entry.Value)
+		}
+	}
+	return values
+}

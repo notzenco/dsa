@@ -220,4 +220,231 @@ public class Trie {
         }
         return current;
     }
+
+    // ========== TrieMap ==========
+
+    /**
+     * A trie-based map that maps string keys to values.
+     *
+     * @param <V> the value type
+     */
+    public static class TrieMap<V> {
+
+        private static class Node<V> {
+            Map<Character, Node<V>> children = new HashMap<>();
+            V value;
+            boolean hasValue;
+        }
+
+        private final Node<V> root;
+        private int size;
+
+        public TrieMap() {
+            this.root = new Node<>();
+            this.size = 0;
+        }
+
+        /**
+         * Associates the given value with the given key.
+         */
+        public void put(String key, V value) {
+            if (key == null) {
+                throw new IllegalArgumentException("Key must not be null");
+            }
+            Node<V> current = root;
+            for (char ch : key.toCharArray()) {
+                current.children.putIfAbsent(ch, new Node<>());
+                current = current.children.get(ch);
+            }
+            if (!current.hasValue) {
+                size++;
+            }
+            current.value = value;
+            current.hasValue = true;
+        }
+
+        /**
+         * Returns the value associated with the given key, if present.
+         */
+        public Optional<V> get(String key) {
+            if (key == null) {
+                return Optional.empty();
+            }
+            Node<V> node = findNode(key);
+            if (node == null || !node.hasValue) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(node.value);
+        }
+
+        /**
+         * Checks whether the map contains the given key.
+         */
+        public boolean containsKey(String key) {
+            if (key == null) {
+                return false;
+            }
+            Node<V> node = findNode(key);
+            return node != null && node.hasValue;
+        }
+
+        /**
+         * Removes the given key from the map.
+         *
+         * @return true if the key was found and removed
+         */
+        public boolean delete(String key) {
+            if (key == null || !containsKey(key)) {
+                return false;
+            }
+            deleteHelper(root, key, 0);
+            size--;
+            return true;
+        }
+
+        private boolean deleteHelper(Node<V> node, String key, int depth) {
+            if (depth == key.length()) {
+                node.hasValue = false;
+                node.value = null;
+                return node.children.isEmpty();
+            }
+            char ch = key.charAt(depth);
+            Node<V> child = node.children.get(ch);
+            if (child == null) {
+                return false;
+            }
+            boolean shouldDelete = deleteHelper(child, key, depth + 1);
+            if (shouldDelete) {
+                node.children.remove(ch);
+                return !node.hasValue && node.children.isEmpty();
+            }
+            return false;
+        }
+
+        /**
+         * Returns the number of key-value mappings in the map.
+         */
+        public int size() {
+            return size;
+        }
+
+        /**
+         * Returns all keys in the map.
+         */
+        public List<String> keys() {
+            List<String> result = new ArrayList<>();
+            collectKeys(root, new StringBuilder(), result);
+            return result;
+        }
+
+        /**
+         * Returns all keys that start with the given prefix.
+         */
+        public List<String> keysWithPrefix(String prefix) {
+            List<String> result = new ArrayList<>();
+            if (prefix == null) {
+                return result;
+            }
+            Node<V> node = findNode(prefix);
+            if (node == null) {
+                return result;
+            }
+            collectKeys(node, new StringBuilder(prefix), result);
+            return result;
+        }
+
+        private void collectKeys(Node<V> node, StringBuilder prefix, List<String> result) {
+            if (node.hasValue) {
+                result.add(prefix.toString());
+            }
+            TreeMap<Character, Node<V>> sorted = new TreeMap<>(node.children);
+            for (Map.Entry<Character, Node<V>> entry : sorted.entrySet()) {
+                prefix.append(entry.getKey());
+                collectKeys(entry.getValue(), prefix, result);
+                prefix.deleteCharAt(prefix.length() - 1);
+            }
+        }
+
+        private Node<V> findNode(String key) {
+            Node<V> current = root;
+            for (char ch : key.toCharArray()) {
+                Node<V> child = current.children.get(ch);
+                if (child == null) {
+                    return null;
+                }
+                current = child;
+            }
+            return current;
+        }
+    }
+
+    // ========== WordDictionary ==========
+
+    /**
+     * A dictionary that supports adding words and searching with wildcard '.'
+     * which matches any single character.
+     */
+    public static class WordDictionary {
+
+        private static class Node {
+            Map<Character, Node> children = new HashMap<>();
+            boolean isEnd;
+        }
+
+        private final Node root;
+
+        public WordDictionary() {
+            this.root = new Node();
+        }
+
+        /**
+         * Adds a word to the dictionary.
+         */
+        public void addWord(String word) {
+            if (word == null) {
+                return;
+            }
+            Node current = root;
+            for (char ch : word.toCharArray()) {
+                current.children.putIfAbsent(ch, new Node());
+                current = current.children.get(ch);
+            }
+            current.isEnd = true;
+        }
+
+        /**
+         * Searches for a pattern that may contain '.' wildcards.
+         * Each '.' matches exactly one character.
+         *
+         * @param pattern the search pattern
+         * @return true if a matching word exists
+         */
+        public boolean search(String pattern) {
+            if (pattern == null) {
+                return false;
+            }
+            return searchHelper(root, pattern, 0);
+        }
+
+        private boolean searchHelper(Node node, String pattern, int index) {
+            if (index == pattern.length()) {
+                return node.isEnd;
+            }
+            char ch = pattern.charAt(index);
+            if (ch == '.') {
+                for (Node child : node.children.values()) {
+                    if (searchHelper(child, pattern, index + 1)) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                Node child = node.children.get(ch);
+                if (child == null) {
+                    return false;
+                }
+                return searchHelper(child, pattern, index + 1);
+            }
+        }
+    }
 }

@@ -1,7 +1,10 @@
 package dsa.datastructures;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Graph representation using an adjacency matrix.
@@ -213,6 +216,206 @@ public class AdjacencyMatrix {
      */
     public boolean isDirected() {
         return directed;
+    }
+
+    /**
+     * Represents an edge in the graph.
+     */
+    public static class Edge {
+        public final int from, to;
+        public final double weight;
+
+        public Edge(int from, int to, double weight) {
+            this.from = from;
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+
+    /**
+     * Updates the weight of an existing edge from u to v.
+     * For undirected graphs, the reverse edge is also updated.
+     *
+     * @param u      the source vertex
+     * @param v      the destination vertex
+     * @param weight the new weight
+     * @throws IndexOutOfBoundsException if u or v is out of range
+     * @throws IllegalArgumentException  if the edge does not exist
+     */
+    public void setWeight(int u, int v, double weight) {
+        validateVertex(u);
+        validateVertex(v);
+        if (!hasEdge(u, v)) {
+            throw new IllegalArgumentException(
+                    "Edge (" + u + ", " + v + ") does not exist");
+        }
+        matrix[u][v] = weight;
+        if (!directed) {
+            matrix[v][u] = weight;
+        }
+    }
+
+    /**
+     * Performs a breadth-first search starting from the given vertex.
+     *
+     * @param start the starting vertex
+     * @return list of vertices in BFS order
+     * @throws IndexOutOfBoundsException if start is out of range
+     */
+    public List<Integer> bfs(int start) {
+        validateVertex(start);
+        List<Integer> result = new ArrayList<>();
+        boolean[] visited = new boolean[numVertices];
+        Queue<Integer> queue = new ArrayDeque<>();
+        visited[start] = true;
+        queue.add(start);
+        while (!queue.isEmpty()) {
+            int v = queue.poll();
+            result.add(v);
+            for (int i = 0; i < numVertices; i++) {
+                if (matrix[v][i] != NO_EDGE && !visited[i]) {
+                    visited[i] = true;
+                    queue.add(i);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Performs an iterative depth-first search starting from the given vertex.
+     *
+     * @param start the starting vertex
+     * @return list of vertices in DFS order
+     * @throws IndexOutOfBoundsException if start is out of range
+     */
+    public List<Integer> dfs(int start) {
+        validateVertex(start);
+        List<Integer> result = new ArrayList<>();
+        boolean[] visited = new boolean[numVertices];
+        Deque<Integer> stack = new ArrayDeque<>();
+        stack.push(start);
+        while (!stack.isEmpty()) {
+            int v = stack.pop();
+            if (visited[v]) {
+                continue;
+            }
+            visited[v] = true;
+            result.add(v);
+            // Push neighbors in reverse order so that lower-numbered vertices
+            // are visited first (popped first from the stack).
+            for (int i = numVertices - 1; i >= 0; i--) {
+                if (matrix[v][i] != NO_EDGE && !visited[i]) {
+                    stack.push(i);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Computes all-pairs shortest distances using the Floyd-Warshall algorithm.
+     * Uses {@link Double#POSITIVE_INFINITY} for unreachable pairs.
+     *
+     * @return a 2D array where [i][j] is the shortest distance from i to j
+     */
+    public double[][] floydWarshall() {
+        double[][] dist = new double[numVertices][numVertices];
+        for (int i = 0; i < numVertices; i++) {
+            for (int j = 0; j < numVertices; j++) {
+                if (i == j) {
+                    dist[i][j] = 0;
+                } else {
+                    dist[i][j] = matrix[i][j];
+                }
+            }
+        }
+        for (int k = 0; k < numVertices; k++) {
+            for (int i = 0; i < numVertices; i++) {
+                for (int j = 0; j < numVertices; j++) {
+                    if (dist[i][k] + dist[k][j] < dist[i][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+        return dist;
+    }
+
+    /**
+     * Computes the transitive closure of the graph.
+     *
+     * @return a 2D boolean array where [i][j] is true if there is a path from i to j
+     */
+    public boolean[][] transitiveClosure() {
+        boolean[][] reach = new boolean[numVertices][numVertices];
+        for (int i = 0; i < numVertices; i++) {
+            for (int j = 0; j < numVertices; j++) {
+                reach[i][j] = (i == j) || (matrix[i][j] != NO_EDGE);
+            }
+        }
+        for (int k = 0; k < numVertices; k++) {
+            for (int i = 0; i < numVertices; i++) {
+                for (int j = 0; j < numVertices; j++) {
+                    if (reach[i][k] && reach[k][j]) {
+                        reach[i][j] = true;
+                    }
+                }
+            }
+        }
+        return reach;
+    }
+
+    /**
+     * Checks whether there is a path from vertex u to vertex v using BFS.
+     *
+     * @param u the source vertex
+     * @param v the destination vertex
+     * @return true if a path exists from u to v
+     * @throws IndexOutOfBoundsException if u or v is out of range
+     */
+    public boolean hasPath(int u, int v) {
+        validateVertex(u);
+        validateVertex(v);
+        if (u == v) {
+            return true;
+        }
+        boolean[] visited = new boolean[numVertices];
+        Queue<Integer> queue = new ArrayDeque<>();
+        visited[u] = true;
+        queue.add(u);
+        while (!queue.isEmpty()) {
+            int curr = queue.poll();
+            for (int i = 0; i < numVertices; i++) {
+                if (matrix[curr][i] != NO_EDGE && !visited[i]) {
+                    if (i == v) {
+                        return true;
+                    }
+                    visited[i] = true;
+                    queue.add(i);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns all edges in the graph.
+     * For undirected graphs, each edge is returned once (u &lt; v).
+     *
+     * @return list of edges
+     */
+    public List<Edge> getEdges() {
+        List<Edge> edges = new ArrayList<>();
+        for (int i = 0; i < numVertices; i++) {
+            int start = directed ? 0 : i;
+            for (int j = start; j < numVertices; j++) {
+                if (matrix[i][j] != NO_EDGE) {
+                    edges.add(new Edge(i, j, matrix[i][j]));
+                }
+            }
+        }
+        return edges;
     }
 
     private void validateVertex(int v) {

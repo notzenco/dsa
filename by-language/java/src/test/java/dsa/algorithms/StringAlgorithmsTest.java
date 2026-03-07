@@ -160,4 +160,131 @@ class StringAlgorithmsTest {
         assertEquals(StringAlgorithms.levenshteinDistance("abc", "def"),
                      StringAlgorithms.levenshteinDistance("def", "abc"));
     }
+
+    // --- boyerMoore ---
+    @Test
+    void testBoyerMooreBasic() {
+        assertEquals(List.of(0, 3, 6), StringAlgorithms.boyerMoore("abcabcabc", "abc"));
+    }
+
+    @Test
+    void testBoyerMooreNoMatch() {
+        assertEquals(List.of(), StringAlgorithms.boyerMoore("abcdef", "xyz"));
+    }
+
+    @Test
+    void testBoyerMooreOverlapping() {
+        assertEquals(List.of(0, 1, 2), StringAlgorithms.boyerMoore("aaaa", "aa"));
+    }
+
+    @Test
+    void testBoyerMooreSingleChar() {
+        assertEquals(List.of(0, 3), StringAlgorithms.boyerMoore("abcabc", "a"));
+    }
+
+    @Test
+    void testBoyerMooreConsistency() {
+        String text = "aabaacaadaabaaba";
+        String pattern = "aaba";
+        List<Integer> naive = StringAlgorithms.naiveSearch(text, pattern);
+        List<Integer> bm = StringAlgorithms.boyerMoore(text, pattern);
+        assertEquals(naive, bm, "Boyer-Moore should match naive");
+    }
+
+    // --- shortestPalindrome ---
+    @Test
+    void testShortestPalindrome() {
+        assertEquals("aaacecaaa", StringAlgorithms.shortestPalindrome("aacecaaa"));
+        assertEquals("dcbabcd", StringAlgorithms.shortestPalindrome("abcd"));
+        assertEquals("a", StringAlgorithms.shortestPalindrome("a"));
+        assertEquals("", StringAlgorithms.shortestPalindrome(""));
+    }
+
+    // --- longestHappyPrefix ---
+    @Test
+    void testLongestHappyPrefix() {
+        assertEquals("l", StringAlgorithms.longestHappyPrefix("level"));
+        assertEquals("abab", StringAlgorithms.longestHappyPrefix("ababab"));
+        assertEquals("", StringAlgorithms.longestHappyPrefix("abc"));
+        assertEquals("", StringAlgorithms.longestHappyPrefix("a"));
+    }
+
+    // --- countPalindromicSubstrings ---
+    @Test
+    void testCountPalindromicSubstrings() {
+        assertEquals(3, StringAlgorithms.countPalindromicSubstrings("abc"));
+        assertEquals(6, StringAlgorithms.countPalindromicSubstrings("aaa"));
+        assertEquals(1, StringAlgorithms.countPalindromicSubstrings("a"));
+        assertEquals(0, StringAlgorithms.countPalindromicSubstrings(""));
+    }
+
+    // --- computeLCPArray ---
+    @Test
+    void testComputeLCPArray() {
+        String s = "banana";
+        int[] sa = StringAlgorithms.buildSuffixArray(s);
+        int[] lcp = StringAlgorithms.computeLCPArray(s, sa);
+        // sa = [5, 3, 1, 0, 4, 2]
+        // suffixes: a, ana, anana, banana, na, nana
+        // LCP: [0, 1, 3, 0, 0, 2]
+        assertEquals(0, lcp[0]); // first element is always 0
+        assertEquals(1, lcp[1]); // a vs ana
+        assertEquals(3, lcp[2]); // ana vs anana
+        assertEquals(0, lcp[3]); // anana vs banana
+        assertEquals(0, lcp[4]); // banana vs na
+        assertEquals(2, lcp[5]); // na vs nana
+    }
+
+    // --- searchWithSuffixArray ---
+    @Test
+    void testSearchWithSuffixArray() {
+        List<Integer> result = StringAlgorithms.searchWithSuffixArray("banana", "ana");
+        assertEquals(2, result.size());
+        assertTrue(result.contains(1));
+        assertTrue(result.contains(3));
+    }
+
+    @Test
+    void testSearchWithSuffixArrayNotFound() {
+        List<Integer> result = StringAlgorithms.searchWithSuffixArray("banana", "xyz");
+        assertTrue(result.isEmpty());
+    }
+
+    // --- rabinKarpMultiple ---
+    @Test
+    void testRabinKarpMultiple() {
+        List<Integer> result = StringAlgorithms.rabinKarpMultiple("abcabcabc", new String[]{"abc", "cab"});
+        assertTrue(result.contains(0));
+        assertTrue(result.contains(2));
+        assertTrue(result.contains(3));
+        assertTrue(result.contains(5));
+        assertTrue(result.contains(6));
+    }
+
+    @Test
+    void testRabinKarpMultipleNoMatch() {
+        List<Integer> result = StringAlgorithms.rabinKarpMultiple("hello", new String[]{"xyz"});
+        assertTrue(result.isEmpty());
+    }
+
+    // --- isSubsequence ---
+    @Test
+    void testIsSubsequence() {
+        assertTrue(StringAlgorithms.isSubsequence("ace", "abcde"));
+        assertFalse(StringAlgorithms.isSubsequence("aec", "abcde"));
+        assertTrue(StringAlgorithms.isSubsequence("", "abcde"));
+        assertTrue(StringAlgorithms.isSubsequence("", ""));
+        assertFalse(StringAlgorithms.isSubsequence("a", ""));
+        assertTrue(StringAlgorithms.isSubsequence("abc", "abc"));
+    }
+
+    // --- longestRepeatingSubstring ---
+    @Test
+    void testLongestRepeatingSubstring() {
+        assertEquals(3, StringAlgorithms.longestRepeatingSubstring("banana"));
+        assertEquals(2, StringAlgorithms.longestRepeatingSubstring("abab"));
+        assertEquals(0, StringAlgorithms.longestRepeatingSubstring("abc"));
+        assertEquals(0, StringAlgorithms.longestRepeatingSubstring("a"));
+        assertEquals(0, StringAlgorithms.longestRepeatingSubstring(""));
+    }
 }

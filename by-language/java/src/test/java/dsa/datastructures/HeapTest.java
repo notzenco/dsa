@@ -393,4 +393,174 @@ class HeapTest {
         assertEquals("apple", result.get(0));
         assertEquals("banana", result.get(1));
     }
+
+    // ==================== kWayMerge Tests ====================
+
+    @Test
+    void kWayMergeBasic() {
+        List<List<Integer>> lists = List.of(
+                List.of(1, 4, 7),
+                List.of(2, 5, 8),
+                List.of(3, 6, 9)
+        );
+        List<Integer> result = Heap.kWayMerge(lists);
+        assertEquals(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9), result);
+    }
+
+    @Test
+    void kWayMergeDifferentLengths() {
+        List<List<Integer>> lists = List.of(
+                List.of(1, 3, 5, 7, 9),
+                List.of(2),
+                List.of(4, 6)
+        );
+        List<Integer> result = Heap.kWayMerge(lists);
+        assertEquals(List.of(1, 2, 3, 4, 5, 6, 7, 9), result);
+    }
+
+    @Test
+    void kWayMergeEmpty() {
+        List<Integer> result = Heap.kWayMerge(List.of());
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void kWayMergeNull() {
+        List<Integer> result = Heap.kWayMerge(null);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void kWayMergeSingleList() {
+        List<List<Integer>> lists = List.of(List.of(1, 2, 3));
+        List<Integer> result = Heap.kWayMerge(lists);
+        assertEquals(List.of(1, 2, 3), result);
+    }
+
+    @Test
+    void kWayMergeWithStrings() {
+        List<List<String>> lists = List.of(
+                List.of("apple", "cherry"),
+                List.of("banana", "date")
+        );
+        List<String> result = Heap.kWayMerge(lists);
+        assertEquals(List.of("apple", "banana", "cherry", "date"), result);
+    }
+
+    // ==================== topKFrequent Tests ====================
+
+    @Test
+    void topKFrequentBasic() {
+        int[] result = Heap.topKFrequent(new int[]{1, 1, 1, 2, 2, 3}, 2);
+        assertEquals(2, result.length);
+        // Result should contain 1 and 2 (most frequent)
+        Arrays.sort(result);
+        assertArrayEquals(new int[]{1, 2}, result);
+    }
+
+    @Test
+    void topKFrequentSingleElement() {
+        int[] result = Heap.topKFrequent(new int[]{1}, 1);
+        assertArrayEquals(new int[]{1}, result);
+    }
+
+    @Test
+    void topKFrequentAllSameFrequency() {
+        int[] result = Heap.topKFrequent(new int[]{1, 2, 3}, 2);
+        assertEquals(2, result.length);
+    }
+
+    @Test
+    void topKFrequentAllElements() {
+        int[] result = Heap.topKFrequent(new int[]{3, 3, 1, 1, 2, 2}, 3);
+        assertEquals(3, result.length);
+        Arrays.sort(result);
+        assertArrayEquals(new int[]{1, 2, 3}, result);
+    }
+
+    // ==================== MedianFinder Tests ====================
+
+    @Test
+    void medianFinderBasic() {
+        var mf = new Heap.MedianFinder();
+        mf.addNum(1);
+        assertEquals(1.0, mf.findMedian());
+        mf.addNum(2);
+        assertEquals(1.5, mf.findMedian());
+        mf.addNum(3);
+        assertEquals(2.0, mf.findMedian());
+    }
+
+    @Test
+    void medianFinderDescendingOrder() {
+        var mf = new Heap.MedianFinder();
+        mf.addNum(5);
+        mf.addNum(4);
+        mf.addNum(3);
+        mf.addNum(2);
+        mf.addNum(1);
+        assertEquals(3.0, mf.findMedian());
+    }
+
+    @Test
+    void medianFinderEvenCount() {
+        var mf = new Heap.MedianFinder();
+        mf.addNum(1);
+        mf.addNum(3);
+        mf.addNum(2);
+        mf.addNum(4);
+        assertEquals(2.5, mf.findMedian());
+    }
+
+    @Test
+    void medianFinderSize() {
+        var mf = new Heap.MedianFinder();
+        assertEquals(0, mf.size());
+        mf.addNum(10);
+        mf.addNum(20);
+        assertEquals(2, mf.size());
+    }
+
+    @Test
+    void medianFinderEmptyThrows() {
+        var mf = new Heap.MedianFinder();
+        assertThrows(NoSuchElementException.class, mf::findMedian);
+    }
+
+    @Test
+    void medianFinderDuplicates() {
+        var mf = new Heap.MedianFinder();
+        mf.addNum(5);
+        mf.addNum(5);
+        mf.addNum(5);
+        assertEquals(5.0, mf.findMedian());
+    }
+
+    // ==================== findMedianSortedArrays Tests ====================
+
+    @Test
+    void findMedianSortedArraysBasic() {
+        assertEquals(2.0, Heap.findMedianSortedArrays(new int[]{1, 3}, new int[]{2}));
+    }
+
+    @Test
+    void findMedianSortedArraysEvenTotal() {
+        assertEquals(2.5, Heap.findMedianSortedArrays(new int[]{1, 2}, new int[]{3, 4}));
+    }
+
+    @Test
+    void findMedianSortedArraysOneEmpty() {
+        assertEquals(2.0, Heap.findMedianSortedArrays(new int[]{}, new int[]{1, 2, 3}));
+    }
+
+    @Test
+    void findMedianSortedArraysSingleElements() {
+        assertEquals(1.5, Heap.findMedianSortedArrays(new int[]{1}, new int[]{2}));
+    }
+
+    @Test
+    void findMedianSortedArraysBothEmpty() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Heap.findMedianSortedArrays(new int[]{}, new int[]{}));
+    }
 }

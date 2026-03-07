@@ -208,3 +208,103 @@ func (sl *SkipList[K, V]) Keys() []K {
 	}
 	return result
 }
+
+// Values returns all values in order.
+func (sl *SkipList[K, V]) Values() []V {
+	var result []V
+	current := sl.head.Forward[0]
+	for current != nil {
+		result = append(result, current.Value)
+		current = current.Forward[0]
+	}
+	return result
+}
+
+// Clear removes all elements.
+func (sl *SkipList[K, V]) Clear() {
+	for i := range sl.head.Forward {
+		sl.head.Forward[i] = nil
+	}
+	sl.level = 0
+	sl.size = 0
+}
+
+// Level returns the current maximum level.
+func (sl *SkipList[K, V]) Level() int {
+	return sl.level
+}
+
+// RangeCount returns count of keys in [low, high].
+func (sl *SkipList[K, V]) RangeCount(low, high K) int {
+	count := 0
+	current := sl.head
+	for i := sl.level; i >= 0; i-- {
+		for current.Forward[i] != nil && current.Forward[i].Key < low {
+			current = current.Forward[i]
+		}
+	}
+	current = current.Forward[0]
+	for current != nil && current.Key <= high {
+		count++
+		current = current.Forward[0]
+	}
+	return count
+}
+
+// ForEach applies a function to each key-value pair in order.
+func (sl *SkipList[K, V]) ForEach(fn func(K, V)) {
+	current := sl.head.Forward[0]
+	for current != nil {
+		fn(current.Key, current.Value)
+		current = current.Forward[0]
+	}
+}
+
+// GetOrDefault returns the value for key, or a default if not found.
+func (sl *SkipList[K, V]) GetOrDefault(key K, defaultVal V) V {
+	v, ok := sl.Search(key)
+	if ok {
+		return v
+	}
+	return defaultVal
+}
+
+// Head returns the first key-value pair.
+func (sl *SkipList[K, V]) Head() (K, V, bool) {
+	return sl.Min()
+}
+
+// Tail returns the last key-value pair.
+func (sl *SkipList[K, V]) Tail() (K, V, bool) {
+	return sl.Max()
+}
+
+// Pop removes and returns the minimum element.
+func (sl *SkipList[K, V]) Pop() (K, V, bool) {
+	if sl.head.Forward[0] == nil {
+		var zk K
+		var zv V
+		return zk, zv, false
+	}
+	first := sl.head.Forward[0]
+	k, v := first.Key, first.Value
+	sl.Delete(k)
+	return k, v, true
+}
+
+// Rank returns the 1-based rank of a key (position in sorted order).
+func (sl *SkipList[K, V]) Rank(key K) int {
+	rank := 0
+	current := sl.head.Forward[0]
+	for current != nil {
+		if current.Key > key {
+			break
+		}
+		rank++
+		if current.Key == key {
+			return rank
+		}
+		current = current.Forward[0]
+	}
+	return 0 // not found
+}

@@ -2,6 +2,7 @@ package dsa.datastructures;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -188,5 +189,119 @@ class LfuCacheTest {
         assertEquals(Optional.of(1), cache.get("a"));
         assertEquals(Optional.empty(), cache.get("b"));
         assertEquals(Optional.of(3), cache.get("c"));
+    }
+
+    // ---- getFrequency ----
+
+    @Test
+    void getFrequency() {
+        var cache = new LfuCache<String, Integer>(3);
+        cache.put("a", 1);
+        assertEquals(1, cache.getFrequency("a"));
+        cache.get("a");
+        assertEquals(2, cache.getFrequency("a"));
+        assertEquals(-1, cache.getFrequency("missing"));
+    }
+
+    // ---- remove ----
+
+    @Test
+    void removeKey() {
+        var cache = new LfuCache<String, Integer>(3);
+        cache.put("a", 1);
+        cache.put("b", 2);
+        cache.put("c", 3);
+        assertEquals(Optional.of(2), cache.remove("b"));
+        assertEquals(2, cache.size());
+        assertFalse(cache.containsKey("b"));
+        assertEquals(Optional.empty(), cache.remove("missing"));
+    }
+
+    @Test
+    void removeUpdatesMinFrequency() {
+        var cache = new LfuCache<String, Integer>(3);
+        cache.put("a", 1); // freq=1
+        cache.get("a");    // freq=2
+        cache.put("b", 2); // freq=1
+        cache.remove("b"); // remove the min-freq entry
+        // min frequency should recalculate to 2
+        assertEquals(2, cache.getMinFrequency());
+    }
+
+    // ---- keys and values ----
+
+    @Test
+    void keysAndValues() {
+        var cache = new LfuCache<String, Integer>(3);
+        cache.put("a", 1);
+        cache.put("b", 2);
+        List<String> keys = cache.keys();
+        assertEquals(2, keys.size());
+        assertTrue(keys.contains("a"));
+        assertTrue(keys.contains("b"));
+        List<Integer> values = cache.values();
+        assertEquals(2, values.size());
+        assertTrue(values.contains(1));
+        assertTrue(values.contains(2));
+    }
+
+    // ---- getMinFrequency / getMaxFrequency ----
+
+    @Test
+    void getMinAndMaxFrequency() {
+        var cache = new LfuCache<String, Integer>(3);
+        assertEquals(0, cache.getMinFrequency());
+        assertEquals(0, cache.getMaxFrequency());
+
+        cache.put("a", 1); // freq=1
+        cache.put("b", 2); // freq=1
+        cache.get("a");    // freq: a=2, b=1
+        cache.get("a");    // freq: a=3, b=1
+        assertEquals(1, cache.getMinFrequency());
+        assertEquals(3, cache.getMaxFrequency());
+    }
+
+    // ---- peek ----
+
+    @Test
+    void peekDoesNotIncrementFrequency() {
+        var cache = new LfuCache<String, Integer>(2);
+        cache.put("a", 1); // freq=1
+        assertEquals(Optional.of(1), cache.peek("a"));
+        assertEquals(1, cache.getFrequency("a")); // still 1
+        assertEquals(Optional.empty(), cache.peek("missing"));
+    }
+
+    // ---- putIfAbsent ----
+
+    @Test
+    void putIfAbsentNewKey() {
+        var cache = new LfuCache<String, Integer>(3);
+        assertEquals(Optional.empty(), cache.putIfAbsent("a", 1));
+        assertEquals(Optional.of(1), cache.get("a"));
+    }
+
+    @Test
+    void putIfAbsentExistingKey() {
+        var cache = new LfuCache<String, Integer>(3);
+        cache.put("a", 1);
+        assertEquals(Optional.of(1), cache.putIfAbsent("a", 99));
+        assertEquals(Optional.of(1), cache.peek("a")); // value unchanged
+    }
+
+    // ---- getOrDefault ----
+
+    @Test
+    void getOrDefaultExistingKey() {
+        var cache = new LfuCache<String, Integer>(3);
+        cache.put("a", 1);
+        assertEquals(1, cache.getOrDefault("a", 99));
+        assertEquals(2, cache.getFrequency("a")); // frequency incremented
+    }
+
+    @Test
+    void getOrDefaultMissingKey() {
+        var cache = new LfuCache<String, Integer>(3);
+        assertEquals(99, cache.getOrDefault("missing", 99));
     }
 }

@@ -389,4 +389,169 @@ public class Heap {
         Collections.reverse(result);
         return result;
     }
+
+    /**
+     * Merges k sorted lists into a single sorted list using a min-heap.
+     *
+     * @param lists the list of sorted lists to merge
+     * @param <T>   the element type
+     * @return a single sorted list containing all elements
+     */
+    public static <T extends Comparable<T>> List<T> kWayMerge(List<List<T>> lists) {
+        List<T> result = new ArrayList<>();
+        if (lists == null || lists.isEmpty()) {
+            return result;
+        }
+        // Each entry: [listIndex, elementIndex] with the actual value
+        java.util.PriorityQueue<int[]> pq = new java.util.PriorityQueue<>((a, b) -> {
+            @SuppressWarnings("unchecked")
+            Comparable<T> va = (Comparable<T>) lists.get(a[0]).get(a[1]);
+            T vb = lists.get(b[0]).get(b[1]);
+            return va.compareTo(vb);
+        });
+        for (int i = 0; i < lists.size(); i++) {
+            if (lists.get(i) != null && !lists.get(i).isEmpty()) {
+                pq.offer(new int[]{i, 0});
+            }
+        }
+        while (!pq.isEmpty()) {
+            int[] entry = pq.poll();
+            int listIdx = entry[0];
+            int elemIdx = entry[1];
+            result.add(lists.get(listIdx).get(elemIdx));
+            if (elemIdx + 1 < lists.get(listIdx).size()) {
+                pq.offer(new int[]{listIdx, elemIdx + 1});
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Finds the k most frequent elements in the given array.
+     *
+     * @param nums the input array
+     * @param k    the number of top frequent elements to return
+     * @return an array of the k most frequent elements
+     */
+    public static int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int num : nums) {
+            freq.merge(num, 1, Integer::sum);
+        }
+        // Min-heap by frequency
+        java.util.PriorityQueue<Map.Entry<Integer, Integer>> pq =
+                new java.util.PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
+        for (Map.Entry<Integer, Integer> entry : freq.entrySet()) {
+            pq.offer(entry);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+        int[] result = new int[pq.size()];
+        int i = result.length - 1;
+        while (!pq.isEmpty()) {
+            result[i--] = pq.poll().getKey();
+        }
+        return result;
+    }
+
+    /**
+     * Finds the median of two sorted arrays using binary search.
+     *
+     * @param nums1 the first sorted array
+     * @param nums2 the second sorted array
+     * @return the median value
+     * @throws IllegalArgumentException if both arrays are empty
+     */
+    public static double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        if (nums1.length == 0 && nums2.length == 0) {
+            throw new IllegalArgumentException("Both arrays must not be empty");
+        }
+        // Ensure nums1 is the shorter array
+        if (nums1.length > nums2.length) {
+            return findMedianSortedArrays(nums2, nums1);
+        }
+        int m = nums1.length;
+        int n = nums2.length;
+        int lo = 0, hi = m;
+        while (lo <= hi) {
+            int i = (lo + hi) / 2;
+            int j = (m + n + 1) / 2 - i;
+
+            int maxLeftA = (i == 0) ? Integer.MIN_VALUE : nums1[i - 1];
+            int minRightA = (i == m) ? Integer.MAX_VALUE : nums1[i];
+            int maxLeftB = (j == 0) ? Integer.MIN_VALUE : nums2[j - 1];
+            int minRightB = (j == n) ? Integer.MAX_VALUE : nums2[j];
+
+            if (maxLeftA <= minRightB && maxLeftB <= minRightA) {
+                if ((m + n) % 2 == 0) {
+                    return (Math.max(maxLeftA, maxLeftB) + Math.min(minRightA, minRightB)) / 2.0;
+                } else {
+                    return Math.max(maxLeftA, maxLeftB);
+                }
+            } else if (maxLeftA > minRightB) {
+                hi = i - 1;
+            } else {
+                lo = i + 1;
+            }
+        }
+        throw new IllegalStateException("Input arrays are not sorted");
+    }
+
+    // ========== MedianFinder ==========
+
+    /**
+     * Finds the running median efficiently using two heaps.
+     * The lower half is stored in a max-heap, and the upper half in a min-heap.
+     */
+    public static class MedianFinder {
+        private final MaxHeap<Integer> lower;
+        private final MinHeap<Integer> upper;
+
+        public MedianFinder() {
+            this.lower = new MaxHeap<>();
+            this.upper = new MinHeap<>();
+        }
+
+        /**
+         * Adds a number to the data stream.
+         */
+        public void addNum(int num) {
+            // Always add to lower first
+            lower.push(num);
+            // Balance: max of lower must be <= min of upper
+            if (!upper.isEmpty() && lower.peek() > upper.peek()) {
+                upper.push(lower.pop());
+            }
+            // Maintain size property: lower.size >= upper.size
+            // and lower.size - upper.size <= 1
+            if (lower.size() > upper.size() + 1) {
+                upper.push(lower.pop());
+            } else if (upper.size() > lower.size()) {
+                lower.push(upper.pop());
+            }
+        }
+
+        /**
+         * Returns the current median.
+         *
+         * @throws NoSuchElementException if no numbers have been added
+         */
+        public double findMedian() {
+            if (lower.isEmpty() && upper.isEmpty()) {
+                throw new NoSuchElementException("No numbers added");
+            }
+            if (lower.size() > upper.size()) {
+                return lower.peek();
+            }
+            return (lower.peek() + upper.peek()) / 2.0;
+        }
+
+        /**
+         * Returns the total number of elements added.
+         */
+        public int size() {
+            return lower.size() + upper.size();
+        }
+    }
 }

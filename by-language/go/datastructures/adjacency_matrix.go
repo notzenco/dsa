@@ -248,6 +248,256 @@ func (g *AdjacencyMatrix) Transpose() *AdjacencyMatrix {
 	return trans
 }
 
+func (g *AdjacencyMatrix) HasCycle() bool {
+	if g.directed {
+		return g.hasCycleDirectedMatrix()
+	}
+	return g.hasCycleUndirectedMatrix()
+}
+
+func (g *AdjacencyMatrix) hasCycleDirectedMatrix() bool {
+	white, gray, black := 0, 1, 2
+	color := make([]int, g.n)
+
+	var dfs func(int) bool
+	dfs = func(v int) bool {
+		color[v] = gray
+		for j := 0; j < g.n; j++ {
+			if g.matrix[v][j] != 0 {
+				if color[j] == gray {
+					return true
+				}
+				if color[j] == white && dfs(j) {
+					return true
+				}
+			}
+		}
+		color[v] = black
+		return false
+	}
+
+	for v := 0; v < g.n; v++ {
+		if color[v] == white {
+			if dfs(v) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (g *AdjacencyMatrix) hasCycleUndirectedMatrix() bool {
+	visited := make([]bool, g.n)
+
+	var dfs func(int, int) bool
+	dfs = func(v, parent int) bool {
+		visited[v] = true
+		for j := 0; j < g.n; j++ {
+			if g.matrix[v][j] != 0 {
+				if !visited[j] {
+					if dfs(j, v) {
+						return true
+					}
+				} else if j != parent {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	for v := 0; v < g.n; v++ {
+		if !visited[v] {
+			if dfs(v, -1) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// IsComplete checks if the graph is a complete graph.
+func (g *AdjacencyMatrix) IsComplete() bool {
+	for i := 0; i < g.n; i++ {
+		for j := 0; j < g.n; j++ {
+			if i != j && g.matrix[i][j] == 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// Complement returns the complement graph.
+func (g *AdjacencyMatrix) Complement() *AdjacencyMatrix {
+	comp := NewAdjacencyMatrix(g.n, g.directed, g.weighted)
+	for i := 0; i < g.n; i++ {
+		for j := 0; j < g.n; j++ {
+			if i != j && g.matrix[i][j] == 0 {
+				comp.matrix[i][j] = 1
+			}
+		}
+	}
+	return comp
+}
+
+// Density returns the graph density (ratio of edges to possible edges).
+func (g *AdjacencyMatrix) Density() float64 {
+	if g.n <= 1 {
+		return 0
+	}
+	edges := g.EdgeCount()
+	maxEdges := g.n * (g.n - 1)
+	if !g.directed {
+		maxEdges /= 2
+	}
+	return float64(edges) / float64(maxEdges)
+}
+
+// ShortestPathDijkstra finds shortest path using Dijkstra's algorithm.
+func (g *AdjacencyMatrix) ShortestPathDijkstra(source, target int) ([]int, int) {
+	if !g.isValid(source) || !g.isValid(target) {
+		return nil, 0
+	}
+
+	dist := make([]int, g.n)
+	prev := make([]int, g.n)
+	visited := make([]bool, g.n)
+
+	for i := range dist {
+		dist[i] = math.MaxInt32
+		prev[i] = -1
+	}
+	dist[source] = 0
+
+	for count := 0; count < g.n; count++ {
+		// Find minimum distance unvisited vertex
+		u := -1
+		for v := 0; v < g.n; v++ {
+			if !visited[v] && (u == -1 || dist[v] < dist[u]) {
+				u = v
+			}
+		}
+		if u == -1 || dist[u] == math.MaxInt32 {
+			break
+		}
+		visited[u] = true
+
+		for v := 0; v < g.n; v++ {
+			if g.matrix[u][v] != 0 && !visited[v] {
+				newDist := dist[u] + g.matrix[u][v]
+				if newDist < dist[v] {
+					dist[v] = newDist
+					prev[v] = u
+				}
+			}
+		}
+	}
+
+	if dist[target] == math.MaxInt32 {
+		return nil, 0
+	}
+
+	// Reconstruct path
+	var path []int
+	for v := target; v != -1; v = prev[v] {
+		path = append([]int{v}, path...)
+	}
+	return path, dist[target]
+}
+
+// TopologicalSort returns topological ordering for a directed acyclic graph.
+func (g *AdjacencyMatrix) TopologicalSort() ([]int, bool) {
+	if !g.directed {
+		return nil, false
+	}
+
+	inDegree := make([]int, g.n)
+	for j := 0; j < g.n; j++ {
+		for i := 0; i < g.n; i++ {
+			if g.matrix[i][j] != 0 {
+				inDegree[j]++
+			}
+		}
+	}
+
+	var queue []int
+	for v := 0; v < g.n; v++ {
+		if inDegree[v] == 0 {
+			queue = append(queue, v)
+		}
+	}
+
+	var result []int
+	for len(queue) > 0 {
+		v := queue[0]
+		queue = queue[1:]
+		result = append(result, v)
+
+		for j := 0; j < g.n; j++ {
+			if g.matrix[v][j] != 0 {
+				inDegree[j]--
+				if inDegree[j] == 0 {
+					queue = append(queue, j)
+				}
+			}
+		}
+	}
+
+	if len(result) != g.n {
+		return nil, false // cycle detected
+	}
+	return result, true
+}
+
+// ConnectedComponents returns the connected components for undirected graphs.
+func (g *AdjacencyMatrix) ConnectedComponents() [][]int {
+	visited := make([]bool, g.n)
+	var components [][]int
+
+	for v := 0; v < g.n; v++ {
+		if !visited[v] {
+			component := g.BFS(v)
+			for _, u := range component {
+				visited[u] = true
+			}
+			components = append(components, component)
+		}
+	}
+	return components
+}
+
+// IsBipartite checks if the graph is bipartite.
+func (g *AdjacencyMatrix) IsBipartite() bool {
+	color := make([]int, g.n)
+	for i := range color {
+		color[i] = -1
+	}
+
+	for start := 0; start < g.n; start++ {
+		if color[start] != -1 {
+			continue
+		}
+		color[start] = 0
+		queue := []int{start}
+		for len(queue) > 0 {
+			v := queue[0]
+			queue = queue[1:]
+			for j := 0; j < g.n; j++ {
+				if g.matrix[v][j] != 0 {
+					if color[j] == -1 {
+						color[j] = 1 - color[v]
+						queue = append(queue, j)
+					} else if color[j] == color[v] {
+						return false
+					}
+				}
+			}
+		}
+	}
+	return true
+}
+
 func (g *AdjacencyMatrix) Matrix() [][]int {
 	result := make([][]int, g.n)
 	for i := range result {

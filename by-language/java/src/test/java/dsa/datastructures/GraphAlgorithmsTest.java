@@ -2,8 +2,8 @@ package dsa.datastructures;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -487,5 +487,258 @@ class GraphAlgorithmsTest {
                 () -> GraphAlgorithms.shortestPath(g, "A", "Z"));
         assertThrows(IllegalArgumentException.class,
                 () -> GraphAlgorithms.shortestPath(g, "Z", "A"));
+    }
+
+    // ========== Floyd-Warshall Tests ==========
+
+    @Test
+    void floydWarshallDirected() {
+        GraphCore g = new GraphCore(true);
+        g.addEdge("A", "B", 3);
+        g.addEdge("B", "C", 2);
+        g.addEdge("A", "C", 10);
+        Map<String, Map<String, Double>> dist = GraphAlgorithms.floydWarshall(g);
+        assertEquals(0.0, dist.get("A").get("A"));
+        assertEquals(3.0, dist.get("A").get("B"));
+        assertEquals(5.0, dist.get("A").get("C")); // A->B->C = 5, not direct 10
+        assertEquals(Double.POSITIVE_INFINITY, dist.get("B").get("A"));
+        assertEquals(2.0, dist.get("B").get("C"));
+    }
+
+    @Test
+    void floydWarshallUndirected() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 2);
+        g.addEdge("A", "C", 10);
+        Map<String, Map<String, Double>> dist = GraphAlgorithms.floydWarshall(g);
+        assertEquals(0.0, dist.get("A").get("A"));
+        assertEquals(1.0, dist.get("A").get("B"));
+        assertEquals(3.0, dist.get("A").get("C")); // A->B->C = 3
+    }
+
+    @Test
+    void floydWarshallDisconnected() {
+        GraphCore g = new GraphCore(true);
+        g.addEdge("A", "B", 1);
+        g.addVertex("C");
+        Map<String, Map<String, Double>> dist = GraphAlgorithms.floydWarshall(g);
+        assertEquals(1.0, dist.get("A").get("B"));
+        assertEquals(Double.POSITIVE_INFINITY, dist.get("A").get("C"));
+        assertEquals(Double.POSITIVE_INFINITY, dist.get("C").get("A"));
+    }
+
+    // ========== Prim MST Tests ==========
+
+    @Test
+    void primMSTBasic() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 2);
+        g.addEdge("A", "C", 3);
+        g.addEdge("C", "D", 4);
+        List<Object[]> mst = GraphAlgorithms.primMST(g);
+        assertEquals(3, mst.size()); // V-1 edges
+        double totalWeight = mst.stream().mapToDouble(e -> (Double) e[2]).sum();
+        assertEquals(7.0, totalWeight); // 1 + 2 + 4 = 7
+    }
+
+    @Test
+    void primMSTSingleVertex() {
+        GraphCore g = new GraphCore(false);
+        g.addVertex("A");
+        List<Object[]> mst = GraphAlgorithms.primMST(g);
+        assertTrue(mst.isEmpty());
+    }
+
+    @Test
+    void primMSTConnected() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "B", 4);
+        g.addEdge("A", "C", 8);
+        g.addEdge("B", "C", 2);
+        g.addEdge("B", "D", 5);
+        g.addEdge("C", "D", 1);
+        List<Object[]> mst = GraphAlgorithms.primMST(g);
+        double totalWeight = mst.stream().mapToDouble(e -> (Double) e[2]).sum();
+        assertEquals(7.0, totalWeight); // 4 + 2 + 1 = 7
+    }
+
+    // ========== Kruskal MST Tests ==========
+
+    @Test
+    void kruskalMSTBasic() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 2);
+        g.addEdge("A", "C", 3);
+        g.addEdge("C", "D", 4);
+        List<Object[]> mst = GraphAlgorithms.kruskalMST(g);
+        assertEquals(3, mst.size());
+        double totalWeight = mst.stream().mapToDouble(e -> (Double) e[2]).sum();
+        assertEquals(7.0, totalWeight);
+    }
+
+    @Test
+    void kruskalMSTMatchesPrim() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "B", 4);
+        g.addEdge("A", "C", 8);
+        g.addEdge("B", "C", 2);
+        g.addEdge("B", "D", 5);
+        g.addEdge("C", "D", 1);
+        double primWeight = GraphAlgorithms.primMST(g).stream().mapToDouble(e -> (Double) e[2]).sum();
+        double kruskalWeight = GraphAlgorithms.kruskalMST(g).stream().mapToDouble(e -> (Double) e[2]).sum();
+        assertEquals(primWeight, kruskalWeight, 1e-9);
+    }
+
+    @Test
+    void kruskalMSTSingleVertex() {
+        GraphCore g = new GraphCore(false);
+        g.addVertex("A");
+        List<Object[]> mst = GraphAlgorithms.kruskalMST(g);
+        assertTrue(mst.isEmpty());
+    }
+
+    // ========== Tarjan SCC Tests ==========
+
+    @Test
+    void tarjanSCCDAG() {
+        // DAG: each vertex is its own SCC
+        GraphCore g = new GraphCore(true);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 1);
+        g.addEdge("A", "C", 1);
+        List<List<String>> sccs = GraphAlgorithms.tarjanSCC(g);
+        assertEquals(3, sccs.size());
+        for (List<String> scc : sccs) {
+            assertEquals(1, scc.size());
+        }
+    }
+
+    @Test
+    void tarjanSCCWithCycle() {
+        GraphCore g = new GraphCore(true);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 1);
+        g.addEdge("C", "A", 1);
+        g.addEdge("C", "D", 1);
+        List<List<String>> sccs = GraphAlgorithms.tarjanSCC(g);
+        assertEquals(2, sccs.size());
+        // One SCC has {A, B, C}, another has {D}
+        Set<Set<String>> sccSets = sccs.stream()
+                .map(HashSet::new)
+                .collect(Collectors.toSet());
+        assertTrue(sccSets.contains(Set.of("A", "B", "C")));
+        assertTrue(sccSets.contains(Set.of("D")));
+    }
+
+    @Test
+    void tarjanSCCSingleVertex() {
+        GraphCore g = new GraphCore(true);
+        g.addVertex("A");
+        List<List<String>> sccs = GraphAlgorithms.tarjanSCC(g);
+        assertEquals(1, sccs.size());
+        assertEquals(List.of("A"), sccs.get(0));
+    }
+
+    // ========== Kosaraju SCC Tests ==========
+
+    @Test
+    void kosarajuSCCDAG() {
+        GraphCore g = new GraphCore(true);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 1);
+        g.addEdge("A", "C", 1);
+        List<List<String>> sccs = GraphAlgorithms.kosarajuSCC(g);
+        assertEquals(3, sccs.size());
+        for (List<String> scc : sccs) {
+            assertEquals(1, scc.size());
+        }
+    }
+
+    @Test
+    void kosarajuSCCWithCycle() {
+        GraphCore g = new GraphCore(true);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 1);
+        g.addEdge("C", "A", 1);
+        g.addEdge("C", "D", 1);
+        List<List<String>> sccs = GraphAlgorithms.kosarajuSCC(g);
+        assertEquals(2, sccs.size());
+        Set<Set<String>> sccSets = sccs.stream()
+                .map(HashSet::new)
+                .collect(Collectors.toSet());
+        assertTrue(sccSets.contains(Set.of("A", "B", "C")));
+        assertTrue(sccSets.contains(Set.of("D")));
+    }
+
+    @Test
+    void kosarajuMatchesTarjan() {
+        GraphCore g = new GraphCore(true);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 1);
+        g.addEdge("C", "A", 1);
+        g.addEdge("D", "E", 1);
+        g.addEdge("E", "D", 1);
+        g.addEdge("C", "D", 1);
+        Set<Set<String>> tarjan = GraphAlgorithms.tarjanSCC(g).stream()
+                .map(HashSet::new)
+                .collect(Collectors.toSet());
+        Set<Set<String>> kosaraju = GraphAlgorithms.kosarajuSCC(g).stream()
+                .map(HashSet::new)
+                .collect(Collectors.toSet());
+        assertEquals(tarjan, kosaraju);
+    }
+
+    // ========== isBipartite Tests ==========
+
+    @Test
+    void isBipartiteTrue() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 1);
+        g.addEdge("C", "D", 1);
+        assertTrue(GraphAlgorithms.isBipartite(g));
+    }
+
+    @Test
+    void isBipartiteFalseOddCycle() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 1);
+        g.addEdge("C", "A", 1);
+        assertFalse(GraphAlgorithms.isBipartite(g));
+    }
+
+    @Test
+    void isBipartiteDisconnected() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "B", 1);
+        g.addEdge("C", "D", 1);
+        assertTrue(GraphAlgorithms.isBipartite(g));
+    }
+
+    @Test
+    void isBipartiteEvenCycle() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "B", 1);
+        g.addEdge("B", "C", 1);
+        g.addEdge("C", "D", 1);
+        g.addEdge("D", "A", 1);
+        assertTrue(GraphAlgorithms.isBipartite(g));
+    }
+
+    @Test
+    void isBipartiteSingleVertex() {
+        GraphCore g = new GraphCore(false);
+        g.addVertex("A");
+        assertTrue(GraphAlgorithms.isBipartite(g));
+    }
+
+    @Test
+    void isBipartiteEmpty() {
+        GraphCore g = new GraphCore(false);
+        assertTrue(GraphAlgorithms.isBipartite(g));
     }
 }

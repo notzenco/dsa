@@ -361,4 +361,183 @@ class SinglyLinkedListTest {
         list.removeDuplicates();
         assertEquals(List.of(1, 3, 2), list.toList());
     }
+
+    // ---- contains ----
+
+    @Test
+    void testContains() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 2, 3));
+        assertTrue(list.contains(2));
+        assertFalse(list.contains(99));
+    }
+
+    @Test
+    void testContainsEmpty() {
+        SinglyLinkedList<Integer> list = new SinglyLinkedList<>();
+        assertFalse(list.contains(1));
+    }
+
+    // ---- set ----
+
+    @Test
+    void testSet() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 2, 3));
+        list.set(1, 99);
+        assertEquals(List.of(1, 99, 3), list.toList());
+    }
+
+    @Test
+    void testSetOutOfBounds() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1));
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set(-1, 0));
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set(1, 0));
+    }
+
+    // ---- toArray ----
+
+    @Test
+    void testToArray() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(10, 20, 30));
+        assertArrayEquals(new Object[]{10, 20, 30}, list.toArray());
+    }
+
+    @Test
+    void testToArrayEmpty() {
+        SinglyLinkedList<Integer> list = new SinglyLinkedList<>();
+        assertEquals(0, list.toArray().length);
+    }
+
+    // ---- isPalindrome ----
+
+    @Test
+    void testIsPalindromeTrue() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 2, 3, 2, 1));
+        assertTrue(list.isPalindrome());
+    }
+
+    @Test
+    void testIsPalindromeEvenLength() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 2, 2, 1));
+        assertTrue(list.isPalindrome());
+    }
+
+    @Test
+    void testIsPalindromeFalse() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 2, 3));
+        assertFalse(list.isPalindrome());
+    }
+
+    @Test
+    void testIsPalindromeSingle() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(42));
+        assertTrue(list.isPalindrome());
+    }
+
+    @Test
+    void testIsPalindromeEmpty() {
+        SinglyLinkedList<Integer> list = new SinglyLinkedList<>();
+        assertTrue(list.isPalindrome());
+    }
+
+    @Test
+    void testIsPalindromePreservesList() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 2, 3, 2, 1));
+        list.isPalindrome();
+        assertEquals(List.of(1, 2, 3, 2, 1), list.toList());
+    }
+
+    // ---- mergeSorted ----
+
+    @Test
+    void testMergeSorted() {
+        SinglyLinkedList<Integer> a = SinglyLinkedList.fromList(List.of(1, 3, 5));
+        SinglyLinkedList<Integer> b = SinglyLinkedList.fromList(List.of(2, 4, 6));
+        SinglyLinkedList<Integer> merged = SinglyLinkedList.mergeSorted(a, b);
+        assertEquals(List.of(1, 2, 3, 4, 5, 6), merged.toList());
+    }
+
+    @Test
+    void testMergeSortedOneEmpty() {
+        SinglyLinkedList<Integer> a = SinglyLinkedList.fromList(List.of(1, 2, 3));
+        SinglyLinkedList<Integer> b = new SinglyLinkedList<>();
+        assertEquals(List.of(1, 2, 3), SinglyLinkedList.mergeSorted(a, b).toList());
+        assertEquals(List.of(1, 2, 3), SinglyLinkedList.mergeSorted(b, a).toList());
+    }
+
+    @Test
+    void testMergeSortedBothEmpty() {
+        SinglyLinkedList<Integer> a = new SinglyLinkedList<>();
+        SinglyLinkedList<Integer> b = new SinglyLinkedList<>();
+        assertTrue(SinglyLinkedList.mergeSorted(a, b).isEmpty());
+    }
+
+    // ---- fromArray ----
+
+    @Test
+    void testFromArray() {
+        SinglyLinkedList<String> list = SinglyLinkedList.fromArray(new String[]{"a", "b", "c"});
+        assertEquals(List.of("a", "b", "c"), list.toList());
+        assertEquals(3, list.size());
+    }
+
+    @Test
+    void testFromArrayEmpty() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromArray(new Integer[]{});
+        assertTrue(list.isEmpty());
+    }
+
+    // ---- map ----
+
+    @Test
+    void testMap() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 2, 3));
+        SinglyLinkedList<String> mapped = list.map(i -> "v" + i);
+        assertEquals(List.of("v1", "v2", "v3"), mapped.toList());
+    }
+
+    @Test
+    void testMapEmpty() {
+        SinglyLinkedList<Integer> list = new SinglyLinkedList<>();
+        SinglyLinkedList<String> mapped = list.map(Object::toString);
+        assertTrue(mapped.isEmpty());
+    }
+
+    // ---- filter ----
+
+    @Test
+    void testFilter() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 2, 3, 4, 5));
+        SinglyLinkedList<Integer> even = list.filter(i -> i % 2 == 0);
+        assertEquals(List.of(2, 4), even.toList());
+    }
+
+    @Test
+    void testFilterNoneMatch() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 3, 5));
+        SinglyLinkedList<Integer> even = list.filter(i -> i % 2 == 0);
+        assertTrue(even.isEmpty());
+    }
+
+    // ---- reduce ----
+
+    @Test
+    void testReduce() {
+        SinglyLinkedList<Integer> list = SinglyLinkedList.fromList(List.of(1, 2, 3, 4));
+        int sum = list.reduce(0, Integer::sum);
+        assertEquals(10, sum);
+    }
+
+    @Test
+    void testReduceEmpty() {
+        SinglyLinkedList<Integer> list = new SinglyLinkedList<>();
+        int sum = list.reduce(0, Integer::sum);
+        assertEquals(0, sum);
+    }
+
+    @Test
+    void testReduceConcat() {
+        SinglyLinkedList<String> list = SinglyLinkedList.fromList(List.of("a", "b", "c"));
+        String result = list.reduce("", (acc, s) -> acc + s);
+        assertEquals("abc", result);
+    }
 }

@@ -436,6 +436,263 @@ func UniquePaths(m, n int) int {
 	return dp[n-1]
 }
 
+// MatrixChainMultiplication finds the minimum number of scalar multiplications
+// needed to multiply a chain of matrices. dims[i] = rows of matrix i, dims[n] = cols of last matrix.
+func MatrixChainMultiplication(dims []int) int {
+	n := len(dims) - 1
+	if n <= 1 {
+		return 0
+	}
+
+	dp := make([][]int, n)
+	for i := range dp {
+		dp[i] = make([]int, n)
+	}
+
+	for chainLen := 2; chainLen <= n; chainLen++ {
+		for i := 0; i <= n-chainLen; i++ {
+			j := i + chainLen - 1
+			dp[i][j] = int(^uint(0) >> 1) // MaxInt
+			for k := i; k < j; k++ {
+				cost := dp[i][k] + dp[k+1][j] + dims[i]*dims[k+1]*dims[j+1]
+				if cost < dp[i][j] {
+					dp[i][j] = cost
+				}
+			}
+		}
+	}
+	return dp[0][n-1]
+}
+
+// SubsetSum checks if any subset of arr sums to target.
+func SubsetSum(arr []int, target int) bool {
+	dp := make([]bool, target+1)
+	dp[0] = true
+	for _, num := range arr {
+		for j := target; j >= num; j-- {
+			if dp[j-num] {
+				dp[j] = true
+			}
+		}
+	}
+	return dp[target]
+}
+
+// PartitionEqualSubset checks if array can be partitioned into two subsets with equal sum.
+func PartitionEqualSubset(arr []int) bool {
+	total := 0
+	for _, v := range arr {
+		total += v
+	}
+	if total%2 != 0 {
+		return false
+	}
+	return SubsetSum(arr, total/2)
+}
+
+// FibonacciMatrixExponentiation computes fibonacci using matrix exponentiation. O(log n)
+func FibonacciMatrixExponentiation(n int) int {
+	if n <= 0 {
+		return 0
+	}
+	if n == 1 {
+		return 1
+	}
+
+	result := [2][2]int{{1, 0}, {0, 1}} // identity matrix
+	base := [2][2]int{{1, 1}, {1, 0}}
+
+	power := n - 1
+	for power > 0 {
+		if power%2 == 1 {
+			result = matMul(result, base)
+		}
+		base = matMul(base, base)
+		power /= 2
+	}
+	return result[0][0]
+}
+
+func matMul(a, b [2][2]int) [2][2]int {
+	return [2][2]int{
+		{a[0][0]*b[0][0] + a[0][1]*b[1][0], a[0][0]*b[0][1] + a[0][1]*b[1][1]},
+		{a[1][0]*b[0][0] + a[1][1]*b[1][0], a[1][0]*b[0][1] + a[1][1]*b[1][1]},
+	}
+}
+
+// RodCutting returns the maximum revenue from cutting a rod of length n.
+func RodCutting(prices []int, n int) int {
+	dp := make([]int, n+1)
+	for i := 1; i <= n; i++ {
+		for j := 1; j <= i && j <= len(prices); j++ {
+			val := prices[j-1] + dp[i-j]
+			if val > dp[i] {
+				dp[i] = val
+			}
+		}
+	}
+	return dp[n]
+}
+
+// PalindromePartitionMin returns the minimum cuts to partition a string into palindromes.
+func PalindromePartitionMin(s string) int {
+	n := len(s)
+	if n <= 1 {
+		return 0
+	}
+
+	// isPalin[i][j] = true if s[i..j] is a palindrome
+	isPalin := make([][]bool, n)
+	for i := range isPalin {
+		isPalin[i] = make([]bool, n)
+		isPalin[i][i] = true
+	}
+
+	for length := 2; length <= n; length++ {
+		for i := 0; i <= n-length; i++ {
+			j := i + length - 1
+			if length == 2 {
+				isPalin[i][j] = s[i] == s[j]
+			} else {
+				isPalin[i][j] = s[i] == s[j] && isPalin[i+1][j-1]
+			}
+		}
+	}
+
+	// dp[i] = min cuts for s[0..i]
+	dp := make([]int, n)
+	for i := range dp {
+		dp[i] = i // worst case
+	}
+
+	for i := 1; i < n; i++ {
+		if isPalin[0][i] {
+			dp[i] = 0
+			continue
+		}
+		for j := 1; j <= i; j++ {
+			if isPalin[j][i] && dp[j-1]+1 < dp[i] {
+				dp[i] = dp[j-1] + 1
+			}
+		}
+	}
+	return dp[n-1]
+}
+
+// MaximalSquare finds the area of the largest square of 1s in a binary matrix.
+func MaximalSquare(matrix [][]int) int {
+	if len(matrix) == 0 || len(matrix[0]) == 0 {
+		return 0
+	}
+	m, n := len(matrix), len(matrix[0])
+	dp := make([][]int, m)
+	for i := range dp {
+		dp[i] = make([]int, n)
+	}
+	maxSide := 0
+
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			if matrix[i][j] == 1 {
+				if i == 0 || j == 0 {
+					dp[i][j] = 1
+				} else {
+					dp[i][j] = minOf3(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) + 1
+				}
+				if dp[i][j] > maxSide {
+					maxSide = dp[i][j]
+				}
+			}
+		}
+	}
+	return maxSide * maxSide
+}
+
+// DecodeWays counts the number of ways to decode a digit string.
+func DecodeWays(s string) int {
+	n := len(s)
+	if n == 0 || s[0] == '0' {
+		return 0
+	}
+
+	dp := make([]int, n+1)
+	dp[0] = 1
+	if s[0] != '0' {
+		dp[1] = 1
+	}
+
+	for i := 2; i <= n; i++ {
+		oneDigit := int(s[i-1] - '0')
+		twoDigit := int(s[i-2]-'0')*10 + int(s[i-1]-'0')
+
+		if oneDigit >= 1 {
+			dp[i] += dp[i-1]
+		}
+		if twoDigit >= 10 && twoDigit <= 26 {
+			dp[i] += dp[i-2]
+		}
+	}
+	return dp[n]
+}
+
+// CoinChangeCombinations returns the actual coins used for minimum change.
+func CoinChangeCombinations(coins []int, amount int) []int {
+	dp := make([]int, amount+1)
+	parent := make([]int, amount+1)
+	for i := range dp {
+		dp[i] = amount + 1
+		parent[i] = -1
+	}
+	dp[0] = 0
+
+	for i := 1; i <= amount; i++ {
+		for _, coin := range coins {
+			if coin <= i && dp[i-coin]+1 < dp[i] {
+				dp[i] = dp[i-coin] + 1
+				parent[i] = coin
+			}
+		}
+	}
+	if dp[amount] > amount {
+		return nil
+	}
+	var result []int
+	for a := amount; a > 0; a -= parent[a] {
+		result = append(result, parent[a])
+	}
+	return result
+}
+
+// StockBuySellOnce returns the maximum profit from one buy-sell transaction.
+func StockBuySellOnce(prices []int) int {
+	if len(prices) < 2 {
+		return 0
+	}
+	minPrice := prices[0]
+	maxProfit := 0
+	for i := 1; i < len(prices); i++ {
+		profit := prices[i] - minPrice
+		if profit > maxProfit {
+			maxProfit = profit
+		}
+		if prices[i] < minPrice {
+			minPrice = prices[i]
+		}
+	}
+	return maxProfit
+}
+
+// StockBuySellMultiple returns the maximum profit from unlimited buy-sell transactions.
+func StockBuySellMultiple(prices []int) int {
+	profit := 0
+	for i := 1; i < len(prices); i++ {
+		if prices[i] > prices[i-1] {
+			profit += prices[i] - prices[i-1]
+		}
+	}
+	return profit
+}
+
 // MinPathSum finds the minimum path sum in a grid.
 func MinPathSum(grid [][]int) int {
 	if len(grid) == 0 || len(grid[0]) == 0 {

@@ -190,3 +190,129 @@ func TestMinSubarraySum(t *testing.T) {
 		t.Errorf("expected 0, got %d", result)
 	}
 }
+
+func TestLongestSubstringWithoutRepeating(t *testing.T) {
+	if LongestSubstringWithoutRepeating("abcabcbb") != 3 {
+		t.Errorf("expected 3")
+	}
+	if LongestSubstringWithoutRepeating("bbbbb") != 1 {
+		t.Errorf("expected 1")
+	}
+	if LongestSubstringWithoutRepeating("pwwkew") != 3 {
+		t.Errorf("expected 3")
+	}
+	if LongestSubstringWithoutRepeating("") != 0 {
+		t.Errorf("expected 0")
+	}
+}
+
+func TestMinWindowSubstring(t *testing.T) {
+	result := MinWindowSubstring("ADOBECODEBANC", "ABC")
+	if result != "BANC" {
+		t.Errorf("expected 'BANC', got %q", result)
+	}
+
+	result = MinWindowSubstring("a", "a")
+	if result != "a" {
+		t.Errorf("expected 'a', got %q", result)
+	}
+
+	result = MinWindowSubstring("a", "aa")
+	if result != "" {
+		t.Errorf("expected empty, got %q", result)
+	}
+}
+
+func TestContainerWithMostWater(t *testing.T) {
+	result := ContainerWithMostWater([]int{1, 8, 6, 2, 5, 4, 8, 3, 7})
+	if result != 49 {
+		t.Errorf("expected 49, got %d", result)
+	}
+
+	result = ContainerWithMostWater([]int{1, 1})
+	if result != 1 {
+		t.Errorf("expected 1, got %d", result)
+	}
+}
+
+func TestFindAllAnagrams(t *testing.T) {
+	result := FindAllAnagrams("cbaebabacd", "abc")
+	if len(result) != 2 || result[0] != 0 || result[1] != 6 {
+		t.Errorf("expected [0,6], got %v", result)
+	}
+
+	result = FindAllAnagrams("abab", "ab")
+	if len(result) != 3 {
+		t.Errorf("expected 3 results, got %d", len(result))
+	}
+}
+
+func TestTrappingRainWater(t *testing.T) {
+	result := TrappingRainWater([]int{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1})
+	if result != 6 {
+		t.Errorf("expected 6, got %d", result)
+	}
+
+	result = TrappingRainWater([]int{4, 2, 0, 3, 2, 5})
+	if result != 9 {
+		t.Errorf("expected 9, got %d", result)
+	}
+}
+
+func TestLongestSubarrayWithSumK(t *testing.T) {
+	result := LongestSubarrayWithSumK([]int{1, -1, 5, -2, 3}, 3)
+	if result != 4 {
+		t.Errorf("expected 4, got %d", result)
+	}
+
+	result = LongestSubarrayWithSumK([]int{-2, -1, 2, 1}, 1)
+	if result != 2 {
+		t.Errorf("expected 2, got %d", result)
+	}
+}
+
+func TestSubarrayProductLessThanK(t *testing.T) {
+	result := SubarrayProductLessThanK([]int{10, 5, 2, 6}, 100)
+	if result != 8 {
+		t.Errorf("expected 8, got %d", result)
+	}
+
+	result = SubarrayProductLessThanK([]int{1, 2, 3}, 0)
+	if result != 0 {
+		t.Errorf("expected 0, got %d", result)
+	}
+}
+
+func TestRemoveDuplicatesSorted(t *testing.T) {
+	arr := []int{1, 1, 2, 2, 3}
+	n := RemoveDuplicatesSorted(arr)
+	if n != 3 {
+		t.Errorf("expected 3 unique, got %d", n)
+	}
+	if arr[0] != 1 || arr[1] != 2 || arr[2] != 3 {
+		t.Errorf("unexpected values: %v", arr[:n])
+	}
+}
+
+func TestMoveZeroes(t *testing.T) {
+	arr := []int{0, 1, 0, 3, 12}
+	MoveZeroes(arr)
+	expected := []int{1, 3, 12, 0, 0}
+	for i, v := range expected {
+		if arr[i] != v {
+			t.Errorf("index %d: expected %d, got %d", i, v, arr[i])
+		}
+	}
+}
+
+func TestFourSum(t *testing.T) {
+	result := FourSum([]int{1, 0, -1, 0, -2, 2}, 0)
+	if len(result) != 3 {
+		t.Errorf("expected 3 quadruplets, got %d", len(result))
+	}
+
+	result = FourSum([]int{2, 2, 2, 2, 2}, 8)
+	if len(result) != 1 {
+		t.Errorf("expected 1 quadruplet, got %d", len(result))
+	}
+}

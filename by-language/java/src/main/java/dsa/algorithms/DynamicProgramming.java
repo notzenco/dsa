@@ -276,4 +276,186 @@ public final class DynamicProgramming {
         }
         return dp[0][n - 1];
     }
+
+    public static int houseRobber(int[] nums) {
+        if (nums.length == 0) return 0;
+        if (nums.length == 1) return nums[0];
+        int prev2 = 0, prev1 = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int curr = Math.max(prev1, prev2 + nums[i]);
+            prev2 = prev1;
+            prev1 = curr;
+        }
+        return prev1;
+    }
+
+    public static int houseRobberII(int[] nums) {
+        if (nums.length == 0) return 0;
+        if (nums.length == 1) return nums[0];
+        if (nums.length == 2) return Math.max(nums[0], nums[1]);
+        return Math.max(
+                houseRobberRange(nums, 0, nums.length - 2),
+                houseRobberRange(nums, 1, nums.length - 1)
+        );
+    }
+
+    private static int houseRobberRange(int[] nums, int start, int end) {
+        int prev2 = 0, prev1 = 0;
+        for (int i = start; i <= end; i++) {
+            int curr = Math.max(prev1, prev2 + nums[i]);
+            prev2 = prev1;
+            prev1 = curr;
+        }
+        return prev1;
+    }
+
+    public static int unboundedKnapsack(int[] weights, int[] values, int capacity) {
+        int[] dp = new int[capacity + 1];
+        for (int w = 1; w <= capacity; w++) {
+            for (int i = 0; i < weights.length; i++) {
+                if (weights[i] <= w) {
+                    dp[w] = Math.max(dp[w], dp[w - weights[i]] + values[i]);
+                }
+            }
+        }
+        return dp[capacity];
+    }
+
+    public static int longestPalindromicSubsequence(String s) {
+        int n = s.length();
+        if (n == 0) return 0;
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) dp[i][i] = 1;
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i <= n - len; i++) {
+                int j = i + len - 1;
+                if (s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                } else {
+                    dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[0][n - 1];
+    }
+
+    public static long fibonacciOptimized(int n) {
+        if (n <= 0) return 0;
+        if (n == 1) return 1;
+        long prev2 = 0, prev1 = 1;
+        for (int i = 2; i <= n; i++) {
+            long curr = prev1 + prev2;
+            prev2 = prev1;
+            prev1 = curr;
+        }
+        return prev1;
+    }
+
+    public static int[] lisWithSequence(int[] arr) {
+        if (arr.length == 0) return new int[]{};
+        int n = arr.length;
+        int[] dp = new int[n];
+        int[] parent = new int[n];
+        Arrays.fill(dp, 1);
+        Arrays.fill(parent, -1);
+        int maxLen = 1, maxIdx = 0;
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (arr[j] < arr[i] && dp[j] + 1 > dp[i]) {
+                    dp[i] = dp[j] + 1;
+                    parent[i] = j;
+                }
+            }
+            if (dp[i] > maxLen) {
+                maxLen = dp[i];
+                maxIdx = i;
+            }
+        }
+        int[] result = new int[maxLen];
+        int idx = maxLen - 1;
+        int cur = maxIdx;
+        while (cur != -1) {
+            result[idx--] = arr[cur];
+            cur = parent[cur];
+        }
+        return result;
+    }
+
+    public static boolean canPartition(int[] nums) {
+        int sum = 0;
+        for (int v : nums) sum += v;
+        if (sum % 2 != 0) return false;
+        int target = sum / 2;
+        return subsetSum(nums, target);
+    }
+
+    public static int minCostClimbingStairs(int[] cost) {
+        int n = cost.length;
+        if (n == 0) return 0;
+        if (n == 1) return cost[0];
+        int prev2 = cost[0], prev1 = cost[1];
+        for (int i = 2; i < n; i++) {
+            int curr = cost[i] + Math.min(prev1, prev2);
+            prev2 = prev1;
+            prev1 = curr;
+        }
+        return Math.min(prev1, prev2);
+    }
+
+    public static int numDecodings(String s) {
+        if (s == null || s.isEmpty()) return 0;
+        int n = s.length();
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = s.charAt(0) == '0' ? 0 : 1;
+        for (int i = 2; i <= n; i++) {
+            int oneDigit = s.charAt(i - 1) - '0';
+            int twoDigit = Integer.parseInt(s.substring(i - 2, i));
+            if (oneDigit >= 1) {
+                dp[i] += dp[i - 1];
+            }
+            if (twoDigit >= 10 && twoDigit <= 26) {
+                dp[i] += dp[i - 2];
+            }
+        }
+        return dp[n];
+    }
+
+    public static int maximalSquare(int[][] matrix) {
+        if (matrix.length == 0 || matrix[0].length == 0) return 0;
+        int m = matrix.length, n = matrix[0].length;
+        int[][] dp = new int[m][n];
+        int maxSide = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    if (i == 0 || j == 0) {
+                        dp[i][j] = 1;
+                    } else {
+                        dp[i][j] = Math.min(dp[i - 1][j],
+                                   Math.min(dp[i][j - 1], dp[i - 1][j - 1])) + 1;
+                    }
+                    maxSide = Math.max(maxSide, dp[i][j]);
+                }
+            }
+        }
+        return maxSide * maxSide;
+    }
+
+    public static int lengthOfLIS_DP(int[] arr) {
+        if (arr.length == 0) return 0;
+        int n = arr.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        int maxLen = 1;
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (arr[j] < arr[i]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            maxLen = Math.max(maxLen, dp[i]);
+        }
+        return maxLen;
+    }
 }

@@ -425,6 +425,263 @@ public final class GraphAlgorithms {
         return path;
     }
 
+    public static Map<String, Map<String, Double>> floydWarshall(GraphCore graph) {
+        Set<String> vertices = graph.vertices();
+        Map<String, Map<String, Double>> dist = new HashMap<>();
+        // Initialize distances
+        for (String u : vertices) {
+            Map<String, Double> row = new HashMap<>();
+            for (String v : vertices) {
+                if (u.equals(v)) {
+                    row.put(v, 0.0);
+                } else {
+                    row.put(v, Double.POSITIVE_INFINITY);
+                }
+            }
+            dist.put(u, row);
+        }
+        // Set edge weights
+        for (Object[] edge : graph.edges()) {
+            String u = (String) edge[0];
+            String v = (String) edge[1];
+            double w = (Double) edge[2];
+            dist.get(u).put(v, Math.min(dist.get(u).get(v), w));
+            if (!graph.isDirected()) {
+                dist.get(v).put(u, Math.min(dist.get(v).get(u), w));
+            }
+        }
+        // Relax through all intermediates
+        for (String k : vertices) {
+            for (String i : vertices) {
+                for (String j : vertices) {
+                    double throughK = dist.get(i).get(k) + dist.get(k).get(j);
+                    if (throughK < dist.get(i).get(j)) {
+                        dist.get(i).put(j, throughK);
+                    }
+                }
+            }
+        }
+        return dist;
+    }
+
+    public static List<Object[]> primMST(GraphCore graph) {
+        List<Object[]> mst = new ArrayList<>();
+        if (graph.numVertices() == 0) return mst;
+
+        Set<String> inMST = new HashSet<>();
+        // Priority queue: [weight, from, to]
+        PriorityQueue<double[]> pq = new PriorityQueue<>(Comparator.comparingDouble(a -> a[0]));
+        Map<String, Integer> vertexIdx = new HashMap<>();
+        List<String> vertexList = new ArrayList<>(graph.vertices());
+        for (int i = 0; i < vertexList.size(); i++) {
+            vertexIdx.put(vertexList.get(i), i);
+        }
+
+        // Store edge info separately since we need String labels
+        record EdgeInfo(double weight, String from, String to) {}
+        PriorityQueue<EdgeInfo> queue = new PriorityQueue<>(Comparator.comparingDouble(e -> e.weight));
+
+        String start = vertexList.get(0);
+        inMST.add(start);
+        for (Map.Entry<String, Double> entry : graph.getNeighborEntries(start)) {
+            queue.add(new EdgeInfo(entry.getValue(), start, entry.getKey()));
+        }
+
+        while (!queue.isEmpty() && inMST.size() < graph.numVertices()) {
+            EdgeInfo edge = queue.poll();
+            if (inMST.contains(edge.to)) continue;
+            inMST.add(edge.to);
+            mst.add(new Object[]{edge.from, edge.to, edge.weight});
+            for (Map.Entry<String, Double> entry : graph.getNeighborEntries(edge.to)) {
+                if (!inMST.contains(entry.getKey())) {
+                    queue.add(new EdgeInfo(entry.getValue(), edge.to, entry.getKey()));
+                }
+            }
+        }
+        return mst;
+    }
+
+    public static List<Object[]> kruskalMST(GraphCore graph) {
+        List<Object[]> mst = new ArrayList<>();
+        List<Object[]> edges = graph.edges();
+        edges.sort(Comparator.comparingDouble(e -> (Double) e[2]));
+
+        // Simple union-find using maps
+        Map<String, String> parent = new HashMap<>();
+        Map<String, Integer> rank = new HashMap<>();
+        for (String v : graph.vertices()) {
+            parent.put(v, v);
+            rank.put(v, 0);
+        }
+
+        for (Object[] edge : edges) {
+            String u = (String) edge[0];
+            String v = (String) edge[1];
+            double w = (Double) edge[2];
+            String rootU = find(parent, u);
+            String rootV = find(parent, v);
+            if (!rootU.equals(rootV)) {
+                mst.add(new Object[]{u, v, w});
+                union(parent, rank, rootU, rootV);
+            }
+        }
+        return mst;
+    }
+
+    private static String find(Map<String, String> parent, String x) {
+        while (!parent.get(x).equals(x)) {
+            parent.put(x, parent.get(parent.get(x))); // path compression
+            x = parent.get(x);
+        }
+        return x;
+    }
+
+    private static void union(Map<String, String> parent, Map<String, Integer> rank,
+                               String x, String y) {
+        if (rank.get(x) < rank.get(y)) {
+            parent.put(x, y);
+        } else if (rank.get(x) > rank.get(y)) {
+            parent.put(y, x);
+        } else {
+            parent.put(y, x);
+            rank.put(x, rank.get(x) + 1);
+        }
+    }
+
+    public static List<List<String>> tarjanSCC(GraphCore graph) {
+        List<List<String>> sccs = new ArrayList<>();
+        Map<String, Integer> disc = new HashMap<>();
+        Map<String, Integer> low = new HashMap<>();
+        Set<String> onStack = new HashSet<>();
+        Deque<String> stack = new ArrayDeque<>();
+        int[] timer = {0};
+
+        for (String v : graph.vertices()) {
+            if (!disc.containsKey(v)) {
+                tarjanDFS(graph, v, disc, low, onStack, stack, sccs, timer);
+            }
+        }
+        return sccs;
+    }
+
+    private static void tarjanDFS(GraphCore graph, String u,
+                                   Map<String, Integer> disc, Map<String, Integer> low,
+                                   Set<String> onStack, Deque<String> stack,
+                                   List<List<String>> sccs, int[] timer) {
+        disc.put(u, timer[0]);
+        low.put(u, timer[0]);
+        timer[0]++;
+        stack.push(u);
+        onStack.add(u);
+
+        for (Map.Entry<String, Double> entry : graph.getNeighborEntries(u)) {
+            String v = entry.getKey();
+            if (!disc.containsKey(v)) {
+                tarjanDFS(graph, v, disc, low, onStack, stack, sccs, timer);
+                low.put(u, Math.min(low.get(u), low.get(v)));
+            } else if (onStack.contains(v)) {
+                low.put(u, Math.min(low.get(u), disc.get(v)));
+            }
+        }
+
+        if (low.get(u).equals(disc.get(u))) {
+            List<String> scc = new ArrayList<>();
+            while (true) {
+                String v = stack.pop();
+                onStack.remove(v);
+                scc.add(v);
+                if (v.equals(u)) break;
+            }
+            sccs.add(scc);
+        }
+    }
+
+    public static List<List<String>> kosarajuSCC(GraphCore graph) {
+        // Step 1: Compute finish order using DFS
+        Set<String> visited = new HashSet<>();
+        Deque<String> finishOrder = new ArrayDeque<>();
+        for (String v : graph.vertices()) {
+            if (!visited.contains(v)) {
+                kosarajuDFS1(graph, v, visited, finishOrder);
+            }
+        }
+
+        // Step 2: Build transposed graph
+        GraphCore transposed = new GraphCore(true);
+        for (String v : graph.vertices()) {
+            transposed.addVertex(v);
+        }
+        for (Object[] edge : graph.edges()) {
+            String u = (String) edge[0];
+            String v = (String) edge[1];
+            double w = (Double) edge[2];
+            transposed.addEdge(v, u, w);
+        }
+
+        // Step 3: DFS in reverse finish order on transposed graph
+        visited.clear();
+        List<List<String>> sccs = new ArrayList<>();
+        while (!finishOrder.isEmpty()) {
+            String v = finishOrder.pop();
+            if (!visited.contains(v)) {
+                List<String> scc = new ArrayList<>();
+                kosarajuDFS2(transposed, v, visited, scc);
+                sccs.add(scc);
+            }
+        }
+        return sccs;
+    }
+
+    private static void kosarajuDFS1(GraphCore graph, String u, Set<String> visited,
+                                      Deque<String> finishOrder) {
+        visited.add(u);
+        for (Map.Entry<String, Double> entry : graph.getNeighborEntries(u)) {
+            String v = entry.getKey();
+            if (!visited.contains(v)) {
+                kosarajuDFS1(graph, v, visited, finishOrder);
+            }
+        }
+        finishOrder.push(u);
+    }
+
+    private static void kosarajuDFS2(GraphCore transposed, String u, Set<String> visited,
+                                      List<String> scc) {
+        visited.add(u);
+        scc.add(u);
+        for (Map.Entry<String, Double> entry : transposed.getNeighborEntries(u)) {
+            String v = entry.getKey();
+            if (!visited.contains(v)) {
+                kosarajuDFS2(transposed, v, visited, scc);
+            }
+        }
+    }
+
+    public static boolean isBipartite(GraphCore graph) {
+        Map<String, Integer> color = new HashMap<>();
+        for (String v : graph.vertices()) {
+            if (!color.containsKey(v)) {
+                // BFS coloring
+                java.util.Queue<String> queue = new java.util.LinkedList<>();
+                color.put(v, 0);
+                queue.add(v);
+                while (!queue.isEmpty()) {
+                    String u = queue.poll();
+                    int uColor = color.get(u);
+                    for (Map.Entry<String, Double> entry : graph.getNeighborEntries(u)) {
+                        String neighbor = entry.getKey();
+                        if (!color.containsKey(neighbor)) {
+                            color.put(neighbor, 1 - uColor);
+                            queue.add(neighbor);
+                        } else if (color.get(neighbor) == uColor) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     private static void validateVertex(GraphCore graph, String v) {
         if (!graph.hasVertex(v)) {
             throw new IllegalArgumentException("Vertex " + v + " does not exist in the graph");

@@ -444,3 +444,312 @@ func IsPalindrome(s string) bool {
 	}
 	return true
 }
+
+// BoyerMooreSearch finds all occurrences using Boyer-Moore bad character rule.
+func BoyerMooreSearch(text, pattern string) []int {
+	var result []int
+	n, m := len(text), len(pattern)
+	if m == 0 || m > n {
+		return result
+	}
+
+	// Build bad character table
+	badChar := make(map[byte]int)
+	for i := 0; i < m; i++ {
+		badChar[pattern[i]] = i
+	}
+
+	s := 0
+	for s <= n-m {
+		j := m - 1
+		for j >= 0 && pattern[j] == text[s+j] {
+			j--
+		}
+		if j < 0 {
+			result = append(result, s)
+			if s+m < n {
+				bc, ok := badChar[text[s+m]]
+				if ok {
+					s += m - bc
+				} else {
+					s += m + 1
+				}
+			} else {
+				s++
+			}
+		} else {
+			bc, ok := badChar[text[s+j]]
+			shift := 1
+			if ok {
+				shift = j - bc
+				if shift < 1 {
+					shift = 1
+				}
+			} else {
+				shift = j + 1
+			}
+			s += shift
+		}
+	}
+	return result
+}
+
+// LevenshteinDistance computes the edit distance between two strings.
+func LevenshteinDistance(s1, s2 string) int {
+	m, n := len(s1), len(s2)
+	if m == 0 {
+		return n
+	}
+	if n == 0 {
+		return m
+	}
+
+	// Use two rows for space optimization
+	prev := make([]int, n+1)
+	curr := make([]int, n+1)
+
+	for j := 0; j <= n; j++ {
+		prev[j] = j
+	}
+
+	for i := 1; i <= m; i++ {
+		curr[0] = i
+		for j := 1; j <= n; j++ {
+			if s1[i-1] == s2[j-1] {
+				curr[j] = prev[j-1]
+			} else {
+				del := prev[j] + 1
+				ins := curr[j-1] + 1
+				rep := prev[j-1] + 1
+				curr[j] = del
+				if ins < curr[j] {
+					curr[j] = ins
+				}
+				if rep < curr[j] {
+					curr[j] = rep
+				}
+			}
+		}
+		prev, curr = curr, prev
+	}
+	return prev[n]
+}
+
+// RepeatedSubstringPattern checks if string can be formed by repeating a substring.
+func RepeatedSubstringPattern(s string) bool {
+	n := len(s)
+	if n <= 1 {
+		return false
+	}
+
+	for length := 1; length <= n/2; length++ {
+		if n%length != 0 {
+			continue
+		}
+		pattern := s[:length]
+		match := true
+		for i := length; i < n; i += length {
+			if s[i:i+length] != pattern {
+				match = false
+				break
+			}
+		}
+		if match {
+			return true
+		}
+	}
+	return false
+}
+
+// ShortestPalindrome finds the shortest palindrome by adding characters to the front.
+func ShortestPalindrome(s string) string {
+	if len(s) <= 1 {
+		return s
+	}
+
+	rev := ReverseString(s)
+	// Find the longest palindrome prefix
+	concat := s + "#" + rev
+	lps := ComputeLPS(concat)
+	longestPalPrefix := lps[len(concat)-1]
+
+	suffix := s[longestPalPrefix:]
+	return ReverseString(suffix) + s
+}
+
+// GroupAnagrams groups strings that are anagrams of each other.
+func GroupAnagrams(strs []string) [][]string {
+	groups := make(map[[26]int][]string)
+	for _, s := range strs {
+		var key [26]int
+		for _, c := range s {
+			key[c-'a']++
+		}
+		groups[key] = append(groups[key], s)
+	}
+	result := make([][]string, 0, len(groups))
+	for _, group := range groups {
+		result = append(result, group)
+	}
+	return result
+}
+
+// LongestRepeatingSubstring finds the longest substring that appears at least twice.
+func LongestRepeatingSubstring(s string) string {
+	n := len(s)
+	if n <= 1 {
+		return ""
+	}
+
+	best := ""
+	// Binary search on length
+	lo, hi := 1, n-1
+	for lo <= hi {
+		mid := (lo + hi) / 2
+		found := longestRepeatOfLength(s, mid)
+		if found != "" {
+			best = found
+			lo = mid + 1
+		} else {
+			hi = mid - 1
+		}
+	}
+	return best
+}
+
+func longestRepeatOfLength(s string, length int) string {
+	seen := make(map[string]bool)
+	for i := 0; i <= len(s)-length; i++ {
+		sub := s[i : i+length]
+		if seen[sub] {
+			return sub
+		}
+		seen[sub] = true
+	}
+	return ""
+}
+
+// RunLengthEncode encodes a string using run-length encoding.
+func RunLengthEncode(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	var result []byte
+	count := 1
+	for i := 1; i < len(s); i++ {
+		if s[i] == s[i-1] {
+			count++
+		} else {
+			if count > 1 {
+				result = append(result, []byte(intToStr(count))...)
+			}
+			result = append(result, s[i-1])
+			count = 1
+		}
+	}
+	if count > 1 {
+		result = append(result, []byte(intToStr(count))...)
+	}
+	result = append(result, s[len(s)-1])
+	return string(result)
+}
+
+func intToStr(n int) string {
+	if n == 0 {
+		return "0"
+	}
+	var digits []byte
+	for n > 0 {
+		digits = append([]byte{byte('0' + n%10)}, digits...)
+		n /= 10
+	}
+	return string(digits)
+}
+
+// LongestPalindromicSubsequence returns the length of the longest palindromic subsequence.
+func LongestPalindromicSubsequence(s string) int {
+	n := len(s)
+	if n <= 1 {
+		return n
+	}
+
+	dp := make([][]int, n)
+	for i := range dp {
+		dp[i] = make([]int, n)
+		dp[i][i] = 1
+	}
+
+	for length := 2; length <= n; length++ {
+		for i := 0; i <= n-length; i++ {
+			j := i + length - 1
+			if s[i] == s[j] {
+				dp[i][j] = dp[i+1][j-1] + 2
+			} else {
+				dp[i][j] = dp[i+1][j]
+				if dp[i][j-1] > dp[i][j] {
+					dp[i][j] = dp[i][j-1]
+				}
+			}
+		}
+	}
+	return dp[0][n-1]
+}
+
+// MinimumWindowSort returns the minimum window that needs to be sorted
+// for the whole array to become sorted.
+func MinimumWindowSort(arr []int) (int, int) {
+	n := len(arr)
+	if n <= 1 {
+		return -1, -1
+	}
+
+	// Find left boundary
+	left := 0
+	for left < n-1 && arr[left] <= arr[left+1] {
+		left++
+	}
+	if left == n-1 {
+		return -1, -1 // already sorted
+	}
+
+	// Find right boundary
+	right := n - 1
+	for right > 0 && arr[right] >= arr[right-1] {
+		right--
+	}
+
+	// Find min and max in the unsorted subarray
+	subMin, subMax := arr[left], arr[left]
+	for i := left; i <= right; i++ {
+		if arr[i] < subMin {
+			subMin = arr[i]
+		}
+		if arr[i] > subMax {
+			subMax = arr[i]
+		}
+	}
+
+	// Extend left while elements are greater than subMin
+	for left > 0 && arr[left-1] > subMin {
+		left--
+	}
+
+	// Extend right while elements are less than subMax
+	for right < n-1 && arr[right+1] < subMax {
+		right++
+	}
+
+	return left, right
+}
+
+// StrStr implements strStr() - find first occurrence of needle in haystack.
+func StrStr(haystack, needle string) int {
+	if len(needle) == 0 {
+		return 0
+	}
+	matches := KMPSearch(haystack, needle)
+	if len(matches) > 0 {
+		return matches[0]
+	}
+	return -1
+}

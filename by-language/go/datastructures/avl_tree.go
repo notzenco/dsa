@@ -249,3 +249,174 @@ func (t *AVLTree[K, V]) isBalanced(node *AVLNode[K, V]) bool {
 func (t *AVLTree[K, V]) GetHeight() int {
 	return t.height(t.Root)
 }
+
+// Min returns the minimum key.
+func (t *AVLTree[K, V]) Min() (K, V, bool) {
+	if t.Root == nil {
+		var zk K
+		var zv V
+		return zk, zv, false
+	}
+	node := t.Root
+	for node.Left != nil {
+		node = node.Left
+	}
+	return node.Key, node.Value, true
+}
+
+// Max returns the maximum key.
+func (t *AVLTree[K, V]) Max() (K, V, bool) {
+	if t.Root == nil {
+		var zk K
+		var zv V
+		return zk, zv, false
+	}
+	node := t.Root
+	for node.Right != nil {
+		node = node.Right
+	}
+	return node.Key, node.Value, true
+}
+
+// Contains checks if a key exists.
+func (t *AVLTree[K, V]) Contains(key K) bool {
+	return t.searchNode(t.Root, key) != nil
+}
+
+// Postorder returns keys in postorder.
+func (t *AVLTree[K, V]) Postorder() []K {
+	var result []K
+	var postorder func(*AVLNode[K, V])
+	postorder = func(node *AVLNode[K, V]) {
+		if node == nil {
+			return
+		}
+		postorder(node.Left)
+		postorder(node.Right)
+		result = append(result, node.Key)
+	}
+	postorder(t.Root)
+	return result
+}
+
+// RangeQuery returns keys in [low, high] in sorted order.
+func (t *AVLTree[K, V]) RangeQuery(low, high K) []K {
+	var result []K
+	var query func(*AVLNode[K, V])
+	query = func(node *AVLNode[K, V]) {
+		if node == nil {
+			return
+		}
+		if node.Key > low {
+			query(node.Left)
+		}
+		if node.Key >= low && node.Key <= high {
+			result = append(result, node.Key)
+		}
+		if node.Key < high {
+			query(node.Right)
+		}
+	}
+	query(t.Root)
+	return result
+}
+
+// Floor returns the largest key <= given key.
+func (t *AVLTree[K, V]) Floor(key K) (K, V, bool) {
+	var rk K
+	var rv V
+	found := false
+	current := t.Root
+	for current != nil {
+		if current.Key == key {
+			return current.Key, current.Value, true
+		} else if current.Key < key {
+			rk = current.Key
+			rv = current.Value
+			found = true
+			current = current.Right
+		} else {
+			current = current.Left
+		}
+	}
+	return rk, rv, found
+}
+
+// Ceiling returns the smallest key >= given key.
+func (t *AVLTree[K, V]) Ceiling(key K) (K, V, bool) {
+	var rk K
+	var rv V
+	found := false
+	current := t.Root
+	for current != nil {
+		if current.Key == key {
+			return current.Key, current.Value, true
+		} else if current.Key > key {
+			rk = current.Key
+			rv = current.Value
+			found = true
+			current = current.Left
+		} else {
+			current = current.Right
+		}
+	}
+	return rk, rv, found
+}
+
+// KthSmallest returns the kth smallest key.
+func (t *AVLTree[K, V]) KthSmallest(k int) (K, bool) {
+	count := 0
+	var result K
+	found := false
+
+	var inorder func(*AVLNode[K, V])
+	inorder = func(node *AVLNode[K, V]) {
+		if node == nil || found {
+			return
+		}
+		inorder(node.Left)
+		count++
+		if count == k {
+			result = node.Key
+			found = true
+			return
+		}
+		inorder(node.Right)
+	}
+	inorder(t.Root)
+	return result, found
+}
+
+// Clear removes all nodes.
+func (t *AVLTree[K, V]) Clear() {
+	t.Root = nil
+	t.size = 0
+}
+
+// Values returns all values in key order.
+func (t *AVLTree[K, V]) Values() []V {
+	var result []V
+	var inorder func(*AVLNode[K, V])
+	inorder = func(node *AVLNode[K, V]) {
+		if node == nil {
+			return
+		}
+		inorder(node.Left)
+		result = append(result, node.Value)
+		inorder(node.Right)
+	}
+	inorder(t.Root)
+	return result
+}
+
+// CountNodes returns node count (same as Size but via traversal).
+func (t *AVLTree[K, V]) CountNodes() int {
+	return t.countNodes(t.Root)
+}
+
+func (t *AVLTree[K, V]) countNodes(node *AVLNode[K, V]) int {
+	if node == nil {
+		return 0
+	}
+	return 1 + t.countNodes(node.Left) + t.countNodes(node.Right)
+}

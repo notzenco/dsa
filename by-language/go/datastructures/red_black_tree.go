@@ -324,3 +324,145 @@ func (t *RedBlackTree[K]) validateRB(node *RBNode[K]) (int, bool) {
 	}
 	return blackHeight, true
 }
+
+// Min returns the minimum key.
+func (t *RedBlackTree[K]) Min() (K, bool) {
+	if t.Root == t.nil_ {
+		var zero K
+		return zero, false
+	}
+	node := t.Root
+	for node.Left != t.nil_ {
+		node = node.Left
+	}
+	return node.Key, true
+}
+
+// Max returns the maximum key.
+func (t *RedBlackTree[K]) Max() (K, bool) {
+	if t.Root == t.nil_ {
+		var zero K
+		return zero, false
+	}
+	node := t.Root
+	for node.Right != t.nil_ {
+		node = node.Right
+	}
+	return node.Key, true
+}
+
+// Contains checks if a key exists.
+func (t *RedBlackTree[K]) Contains(key K) bool {
+	return t.Search(key)
+}
+
+// Height returns the height of the tree.
+func (t *RedBlackTree[K]) Height() int {
+	return t.heightHelper(t.Root)
+}
+
+func (t *RedBlackTree[K]) heightHelper(node *RBNode[K]) int {
+	if node == t.nil_ {
+		return -1
+	}
+	lh := t.heightHelper(node.Left)
+	rh := t.heightHelper(node.Right)
+	if lh > rh {
+		return lh + 1
+	}
+	return rh + 1
+}
+
+// Preorder returns keys in preorder.
+func (t *RedBlackTree[K]) Preorder() []K {
+	var result []K
+	var preorder func(*RBNode[K])
+	preorder = func(node *RBNode[K]) {
+		if node == t.nil_ {
+			return
+		}
+		result = append(result, node.Key)
+		preorder(node.Left)
+		preorder(node.Right)
+	}
+	preorder(t.Root)
+	return result
+}
+
+// Postorder returns keys in postorder.
+func (t *RedBlackTree[K]) Postorder() []K {
+	var result []K
+	var postorder func(*RBNode[K])
+	postorder = func(node *RBNode[K]) {
+		if node == t.nil_ {
+			return
+		}
+		postorder(node.Left)
+		postorder(node.Right)
+		result = append(result, node.Key)
+	}
+	postorder(t.Root)
+	return result
+}
+
+// LevelOrder returns keys in level order.
+func (t *RedBlackTree[K]) LevelOrder() []K {
+	if t.Root == t.nil_ {
+		return nil
+	}
+	var result []K
+	queue := []*RBNode[K]{t.Root}
+	for len(queue) > 0 {
+		node := queue[0]
+		queue = queue[1:]
+		result = append(result, node.Key)
+		if node.Left != t.nil_ {
+			queue = append(queue, node.Left)
+		}
+		if node.Right != t.nil_ {
+			queue = append(queue, node.Right)
+		}
+	}
+	return result
+}
+
+// BlackHeight returns the black height of the tree.
+func (t *RedBlackTree[K]) BlackHeight() int {
+	count := 0
+	node := t.Root
+	for node != t.nil_ {
+		if node.Color == rbBlack {
+			count++
+		}
+		node = node.Left
+	}
+	return count
+}
+
+// Clear removes all nodes.
+func (t *RedBlackTree[K]) Clear() {
+	t.Root = t.nil_
+	t.size = 0
+}
+
+// RangeQuery returns keys in [low, high] in sorted order.
+func (t *RedBlackTree[K]) RangeQuery(low, high K) []K {
+	var result []K
+	var query func(*RBNode[K])
+	query = func(node *RBNode[K]) {
+		if node == t.nil_ {
+			return
+		}
+		if node.Key > low {
+			query(node.Left)
+		}
+		if node.Key >= low && node.Key <= high {
+			result = append(result, node.Key)
+		}
+		if node.Key < high {
+			query(node.Right)
+		}
+	}
+	query(t.Root)
+	return result
+}

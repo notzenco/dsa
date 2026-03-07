@@ -405,3 +405,284 @@ func (t *BST[T]) lca(node *BSTNode[T], a, b T) *BSTNode[T] {
 	}
 	return node
 }
+
+// CountNodes returns the total number of nodes.
+func (t *BST[T]) CountNodes() int {
+	return t.countNodes(t.Root)
+}
+
+func (t *BST[T]) countNodes(node *BSTNode[T]) int {
+	if node == nil {
+		return 0
+	}
+	return 1 + t.countNodes(node.Left) + t.countNodes(node.Right)
+}
+
+// LeafCount returns the number of leaf nodes.
+func (t *BST[T]) LeafCount() int {
+	return t.leafCount(t.Root)
+}
+
+func (t *BST[T]) leafCount(node *BSTNode[T]) int {
+	if node == nil {
+		return 0
+	}
+	if node.Left == nil && node.Right == nil {
+		return 1
+	}
+	return t.leafCount(node.Left) + t.leafCount(node.Right)
+}
+
+// InternalCount returns the number of internal (non-leaf) nodes.
+func (t *BST[T]) InternalCount() int {
+	return t.Size() - t.LeafCount()
+}
+
+// Width returns the maximum width (number of nodes at any level).
+func (t *BST[T]) Width() int {
+	if t.Root == nil {
+		return 0
+	}
+	maxWidth := 0
+	queue := []*BSTNode[T]{t.Root}
+	for len(queue) > 0 {
+		w := len(queue)
+		if w > maxWidth {
+			maxWidth = w
+		}
+		for i := 0; i < w; i++ {
+			node := queue[0]
+			queue = queue[1:]
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+	}
+	return maxWidth
+}
+
+// Diameter returns the longest path between any two nodes.
+func (t *BST[T]) Diameter() int {
+	d := 0
+	t.diameter(t.Root, &d)
+	return d
+}
+
+func (t *BST[T]) diameter(node *BSTNode[T], maxDiam *int) int {
+	if node == nil {
+		return -1
+	}
+	lh := t.diameter(node.Left, maxDiam)
+	rh := t.diameter(node.Right, maxDiam)
+	if lh+rh+2 > *maxDiam {
+		*maxDiam = lh + rh + 2
+	}
+	if lh > rh {
+		return lh + 1
+	}
+	return rh + 1
+}
+
+// IsBalanced checks if the BST is height-balanced.
+func (t *BST[T]) IsBalanced() bool {
+	return t.checkBalance(t.Root) != -2
+}
+
+func (t *BST[T]) checkBalance(node *BSTNode[T]) int {
+	if node == nil {
+		return -1
+	}
+	lh := t.checkBalance(node.Left)
+	if lh == -2 {
+		return -2
+	}
+	rh := t.checkBalance(node.Right)
+	if rh == -2 {
+		return -2
+	}
+	diff := lh - rh
+	if diff < -1 || diff > 1 {
+		return -2
+	}
+	if lh > rh {
+		return lh + 1
+	}
+	return rh + 1
+}
+
+// IsFull checks if every node has 0 or 2 children.
+func (t *BST[T]) IsFull() bool {
+	return t.isFull(t.Root)
+}
+
+func (t *BST[T]) isFull(node *BSTNode[T]) bool {
+	if node == nil {
+		return true
+	}
+	if (node.Left == nil) != (node.Right == nil) {
+		return false
+	}
+	return t.isFull(node.Left) && t.isFull(node.Right)
+}
+
+// IsComplete checks if the BST is a complete binary tree.
+func (t *BST[T]) IsComplete() bool {
+	if t.Root == nil {
+		return true
+	}
+	queue := []*BSTNode[T]{t.Root}
+	seenNil := false
+	for len(queue) > 0 {
+		node := queue[0]
+		queue = queue[1:]
+		if node == nil {
+			seenNil = true
+			continue
+		}
+		if seenNil {
+			return false
+		}
+		queue = append(queue, node.Left, node.Right)
+	}
+	return true
+}
+
+// PathSum checks if there's a root-to-leaf path that sums to target (int trees only).
+func BSTPathSum(root *BSTNode[int], target int) bool {
+	if root == nil {
+		return false
+	}
+	if root.Left == nil && root.Right == nil {
+		return root.Value == target
+	}
+	return BSTPathSum(root.Left, target-root.Value) ||
+		BSTPathSum(root.Right, target-root.Value)
+}
+
+// InvertTree creates a mirror of the BST (note: result is not a valid BST).
+func (t *BST[T]) Invert() {
+	t.invert(t.Root)
+}
+
+func (t *BST[T]) invert(node *BSTNode[T]) {
+	if node == nil {
+		return
+	}
+	node.Left, node.Right = node.Right, node.Left
+	t.invert(node.Left)
+	t.invert(node.Right)
+}
+
+// KthLargest returns the kth largest element.
+func (t *BST[T]) KthLargest(k int) (T, bool) {
+	count := 0
+	var result T
+	found := false
+
+	var reverseInorder func(*BSTNode[T])
+	reverseInorder = func(node *BSTNode[T]) {
+		if node == nil || found {
+			return
+		}
+		reverseInorder(node.Right)
+		count++
+		if count == k {
+			result = node.Value
+			found = true
+			return
+		}
+		reverseInorder(node.Left)
+	}
+	reverseInorder(t.Root)
+	return result, found
+}
+
+// Serialize returns a level-order representation with sentinel values.
+func (t *BST[T]) Serialize() []interface{} {
+	if t.Root == nil {
+		return nil
+	}
+	var result []interface{}
+	queue := []*BSTNode[T]{t.Root}
+	for len(queue) > 0 {
+		node := queue[0]
+		queue = queue[1:]
+		if node == nil {
+			result = append(result, nil)
+		} else {
+			result = append(result, node.Value)
+			queue = append(queue, node.Left, node.Right)
+		}
+	}
+	// Trim trailing nils
+	for len(result) > 0 && result[len(result)-1] == nil {
+		result = result[:len(result)-1]
+	}
+	return result
+}
+
+// Clear removes all nodes.
+func (t *BST[T]) Clear() {
+	t.Root = nil
+	t.size = 0
+}
+
+// RangeCount returns the count of elements in [low, high].
+func (t *BST[T]) RangeCount(low, high T) int {
+	count := 0
+	var query func(*BSTNode[T])
+	query = func(node *BSTNode[T]) {
+		if node == nil {
+			return
+		}
+		if node.Value > low {
+			query(node.Left)
+		}
+		if node.Value >= low && node.Value <= high {
+			count++
+		}
+		if node.Value < high {
+			query(node.Right)
+		}
+	}
+	query(t.Root)
+	return count
+}
+
+// Morris inorder traversal (O(1) space).
+func (t *BST[T]) MorrisInorder() []T {
+	var result []T
+	current := t.Root
+	for current != nil {
+		if current.Left == nil {
+			result = append(result, current.Value)
+			current = current.Right
+		} else {
+			pred := current.Left
+			for pred.Right != nil && pred.Right != current {
+				pred = pred.Right
+			}
+			if pred.Right == nil {
+				pred.Right = current
+				current = current.Left
+			} else {
+				pred.Right = nil
+				result = append(result, current.Value)
+				current = current.Right
+			}
+		}
+	}
+	return result
+}
+
+// BSTFromPreorder reconstructs a BST from its preorder traversal.
+func BSTFromPreorder[T Ordered](preorder []T) *BST[T] {
+	tree := NewBST[T]()
+	for _, v := range preorder {
+		tree.Insert(v)
+	}
+	return tree
+}

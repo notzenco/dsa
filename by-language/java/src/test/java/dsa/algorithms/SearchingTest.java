@@ -2,6 +2,8 @@ package dsa.algorithms;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SearchingTest {
@@ -242,5 +244,214 @@ class SearchingTest {
         assertEquals(4, Searching.interpolationSearch(uniform, 50));
         assertEquals(9, Searching.interpolationSearch(uniform, 100));
         assertEquals(-1, Searching.interpolationSearch(uniform, 55));
+    }
+
+    // --- twoSumSorted ---
+    @Test
+    void testTwoSumSortedFound() {
+        int[] arr = {1, 2, 3, 4, 6};
+        int[] result = Searching.twoSumSorted(arr, 6);
+        assertEquals(2, result.length);
+        assertEquals(arr[result[0]] + arr[result[1]], 6);
+    }
+
+    @Test
+    void testTwoSumSortedNotFound() {
+        int[] arr = {1, 2, 3, 4, 6};
+        int[] result = Searching.twoSumSorted(arr, 20);
+        assertEquals(0, result.length);
+    }
+
+    @Test
+    void testTwoSumSortedWithDuplicates() {
+        int[] arr = {1, 1, 2, 3, 4};
+        int[] result = Searching.twoSumSorted(arr, 2);
+        assertEquals(2, result.length);
+        assertEquals(0, result[0]);
+        assertEquals(1, result[1]);
+    }
+
+    // --- threeSum ---
+    @Test
+    void testThreeSumMultipleTriplets() {
+        int[] nums = {-1, 0, 1, 2, -1, -4};
+        List<List<Integer>> result = Searching.threeSum(nums);
+        assertEquals(2, result.size());
+        assertTrue(result.contains(List.of(-1, -1, 2)));
+        assertTrue(result.contains(List.of(-1, 0, 1)));
+    }
+
+    @Test
+    void testThreeSumNoSolution() {
+        int[] nums = {1, 2, 3};
+        List<List<Integer>> result = Searching.threeSum(nums);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testThreeSumAllZeros() {
+        int[] nums = {0, 0, 0, 0};
+        List<List<Integer>> result = Searching.threeSum(nums);
+        assertEquals(1, result.size());
+        assertEquals(List.of(0, 0, 0), result.get(0));
+    }
+
+    @Test
+    void testThreeSumDuplicatesHandling() {
+        int[] nums = {-2, 0, 0, 2, 2};
+        List<List<Integer>> result = Searching.threeSum(nums);
+        assertEquals(1, result.size());
+        assertEquals(List.of(-2, 0, 2), result.get(0));
+    }
+
+    // --- containerWithMostWater ---
+    @Test
+    void testContainerWithMostWaterBasic() {
+        int[] height = {1, 8, 6, 2, 5, 4, 8, 3, 7};
+        assertEquals(49, Searching.containerWithMostWater(height));
+    }
+
+    @Test
+    void testContainerWithMostWaterSingleHeight() {
+        int[] height = {1, 1};
+        assertEquals(1, Searching.containerWithMostWater(height));
+    }
+
+    @Test
+    void testContainerWithMostWaterEqualHeights() {
+        int[] height = {5, 5, 5, 5};
+        assertEquals(15, Searching.containerWithMostWater(height));
+    }
+
+    // --- removeDuplicatesSorted ---
+    @Test
+    void testRemoveDuplicatesSorted() {
+        int[] arr = {1, 1, 2, 2, 3, 4, 4, 5};
+        int newLen = Searching.removeDuplicatesSorted(arr);
+        assertEquals(5, newLen);
+        assertEquals(1, arr[0]);
+        assertEquals(2, arr[1]);
+        assertEquals(3, arr[2]);
+        assertEquals(4, arr[3]);
+        assertEquals(5, arr[4]);
+    }
+
+    @Test
+    void testRemoveDuplicatesSortedEmpty() {
+        assertEquals(0, Searching.removeDuplicatesSorted(new int[]{}));
+    }
+
+    @Test
+    void testRemoveDuplicatesSortedNoDups() {
+        int[] arr = {1, 2, 3};
+        assertEquals(3, Searching.removeDuplicatesSorted(arr));
+    }
+
+    // --- longestSubstringWithoutRepeating ---
+    @Test
+    void testLongestSubstringWithoutRepeating() {
+        assertEquals(3, Searching.longestSubstringWithoutRepeating("abcabcbb"));
+        assertEquals(1, Searching.longestSubstringWithoutRepeating("bbbbb"));
+        assertEquals(0, Searching.longestSubstringWithoutRepeating(""));
+        assertEquals(3, Searching.longestSubstringWithoutRepeating("pwwkew"));
+    }
+
+    // --- minWindowSubstring ---
+    @Test
+    void testMinWindowSubstringBasic() {
+        assertEquals("BANC", Searching.minWindowSubstring("ADOBECODEBANC", "ABC"));
+    }
+
+    @Test
+    void testMinWindowSubstringNoValid() {
+        assertEquals("", Searching.minWindowSubstring("abc", "xyz"));
+    }
+
+    @Test
+    void testMinWindowSubstringExactMatch() {
+        assertEquals("a", Searching.minWindowSubstring("a", "a"));
+    }
+
+    // --- findAllAnagrams ---
+    @Test
+    void testFindAllAnagrams() {
+        assertEquals(List.of(0, 6), Searching.findAllAnagrams("cbaebabacd", "abc"));
+    }
+
+    @Test
+    void testFindAllAnagramsNoAnagrams() {
+        assertEquals(List.of(), Searching.findAllAnagrams("abcdef", "xyz"));
+    }
+
+    @Test
+    void testFindAllAnagramsAllMatch() {
+        assertEquals(List.of(0, 1, 2), Searching.findAllAnagrams("abab", "ab"));
+    }
+
+    // --- maxSumSubarray ---
+    @Test
+    void testMaxSumSubarray() {
+        assertEquals(12, Searching.maxSumSubarray(new int[]{1, 2, 3, 4, 5}, 3));
+        assertEquals(15, Searching.maxSumSubarray(new int[]{1, 2, 3, 4, 5}, 5));
+        assertEquals(5, Searching.maxSumSubarray(new int[]{5, 1, 2, 3, 4}, 1));
+    }
+
+    // --- longestSubstringKDistinct ---
+    @Test
+    void testLongestSubstringKDistinct() {
+        assertEquals(3, Searching.longestSubstringKDistinct("eceba", 2));
+        assertEquals(4, Searching.longestSubstringKDistinct("eceba", 3));
+        assertEquals(0, Searching.longestSubstringKDistinct("abc", 0));
+        assertEquals(1, Searching.longestSubstringKDistinct("abc", 1));
+    }
+
+    // --- findRotationPoint ---
+    @Test
+    void testFindRotationPointRotated() {
+        assertEquals(4, Searching.findRotationPoint(new int[]{4, 5, 6, 7, 0, 1, 2}));
+    }
+
+    @Test
+    void testFindRotationPointNotRotated() {
+        assertEquals(0, Searching.findRotationPoint(new int[]{1, 2, 3, 4, 5}));
+    }
+
+    @Test
+    void testFindRotationPointSingleElement() {
+        assertEquals(0, Searching.findRotationPoint(new int[]{1}));
+    }
+
+    @Test
+    void testFindRotationPointEmpty() {
+        assertEquals(-1, Searching.findRotationPoint(new int[]{}));
+    }
+
+    @Test
+    void testFindRotationPointTwoElements() {
+        assertEquals(1, Searching.findRotationPoint(new int[]{2, 1}));
+    }
+
+    // --- sqrtInt ---
+    @Test
+    void testSqrtIntPerfectSquares() {
+        assertEquals(0, Searching.sqrtInt(0));
+        assertEquals(1, Searching.sqrtInt(1));
+        assertEquals(2, Searching.sqrtInt(4));
+        assertEquals(3, Searching.sqrtInt(9));
+        assertEquals(10, Searching.sqrtInt(100));
+    }
+
+    @Test
+    void testSqrtIntNonPerfect() {
+        assertEquals(1, Searching.sqrtInt(2));
+        assertEquals(1, Searching.sqrtInt(3));
+        assertEquals(2, Searching.sqrtInt(8));
+        assertEquals(3, Searching.sqrtInt(10));
+        assertEquals(4, Searching.sqrtInt(24));
+    }
+
+    @Test
+    void testSqrtIntLargeValue() {
+        assertEquals(46340, Searching.sqrtInt(Integer.MAX_VALUE));
     }
 }
