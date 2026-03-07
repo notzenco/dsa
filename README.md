@@ -1,6 +1,6 @@
 # Data Structures & Algorithms
 
-A comprehensive collection of data structures and algorithms implemented in **C**, **Python**, and **Rust**.
+A comprehensive collection of data structures and algorithms implemented in **C**, **Go**, **Java**, **Python**, **Rust**, and **TypeScript**.
 
 Each implementation includes:
 - Detailed ASCII visual diagrams
@@ -13,8 +13,11 @@ Each implementation includes:
 | Language | Version | Build Tool |
 |----------|---------|------------|
 | C | C11 | gcc/make |
+| Go | 1.21+ | go test |
+| Java | 17+ | gradle |
 | Python | 3.10+ | pytest |
 | Rust | 1.70+ | cargo |
+| TypeScript | ES2022 | bun |
 
 ## Repository Structure
 
@@ -22,8 +25,11 @@ Each implementation includes:
 dsa/
 ├── by-language/          # Implementations organized by language
 │   ├── c/                # Complete C implementations
+│   ├── go/               # Complete Go implementations
+│   ├── java/             # Complete Java implementations
 │   ├── python/           # Complete Python implementations
-│   └── rust/             # Complete Rust implementations
+│   ├── rust/             # Complete Rust implementations
+│   └── typescript/       # Complete TypeScript implementations
 ├── by-topic/             # Cross-reference index by topic
 │   ├── arrays/           # Dynamic arrays, two pointers, sliding window
 │   ├── linked-lists/     # Singly/doubly linked lists
@@ -43,112 +49,130 @@ dsa/
 ## Data Structures
 
 ### Linear
-| Structure | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| Dynamic Array | ✓ | ✓ | ✓ |
-| Singly Linked List | ✓ | ✓ | ✓ |
-| Doubly Linked List | ✓ | ✓ | ✓ |
-| Stack | ✓ | ✓ | ✓ |
-| Queue | ✓ | ✓ | ✓ |
-| Deque | ✓ | ✓ | ✓ |
-| Circular Queue | ✓ | ✓ | ✓ |
-| Min/Max Stack | ✓ | ✓ | ✓ |
-| Monotonic Queue | ✓ | ✓ | ✓ |
+| Structure | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| Dynamic Array | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Singly Linked List | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Doubly Linked List | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Stack | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Queue | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Deque | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Circular Queue | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Min/Max Stack | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Monotonic Queue | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Trees
-| Structure | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| Binary Search Tree | ✓ | ✓ | ✓ |
-| AVL Tree | ✓ | ✓ | ✓ |
-| Red-Black Tree | ✓ | ✓ | ✓ |
-| B-Tree | ✓ | ✓ | ✓ |
-| Trie | ✓ | ✓ | ✓ |
-| Segment Tree | ✓ | ✓ | ✓ |
-| Fenwick Tree | ✓ | ✓ | ✓ |
+| Structure | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| Binary Search Tree | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| AVL Tree | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Red-Black Tree | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| B-Tree | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Trie | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Segment Tree | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Fenwick Tree | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Hashing
-| Structure | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| Hash Table | ✓ | ✓ | ✓ |
-| Bloom Filter | ✓ | ✓ | ✓ |
+| Structure | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| Hash Table | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Bloom Filter | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Heaps
-| Structure | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| Binary Heap | ✓ | ✓ | ✓ |
-| Priority Queue | ✓ | ✓ | ✓ |
+| Structure | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| Binary Heap | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Priority Queue | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Graphs
-| Structure | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| Adjacency List | ✓ | ✓ | ✓ |
-| Adjacency Matrix | ✓ | ✓ | ✓ |
-| Union-Find | ✓ | ✓ | ✓ |
+| Structure | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| Adjacency List | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Adjacency Matrix | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Union-Find | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Caches
-| Structure | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| LRU Cache | ✓ | ✓ | ✓ |
-| LFU Cache | ✓ | ✓ | ✓ |
-| TTL Cache | ✓ | ✓ | - |
+| Structure | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| LRU Cache | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| LFU Cache | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| TTL Cache | ✓ | ✓ | ✓ | ✓ | - | ✓ |
 
 ### Advanced
-| Structure | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| Skip List | ✓ | ✓ | ✓ |
+| Structure | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| Skip List | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ## Algorithms
 
 ### Sorting
-| Algorithm | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| Bubble Sort | ✓ | ✓ | ✓ |
-| Selection Sort | ✓ | ✓ | ✓ |
-| Insertion Sort | ✓ | ✓ | ✓ |
-| Merge Sort | ✓ | ✓ | ✓ |
-| Quick Sort | ✓ | ✓ | ✓ |
-| Heap Sort | ✓ | ✓ | ✓ |
-| Counting Sort | ✓ | ✓ | ✓ |
-| Radix Sort | ✓ | ✓ | ✓ |
+| Algorithm | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| Bubble Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Selection Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Insertion Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Merge Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Quick Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Heap Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Counting Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Radix Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Searching
-| Algorithm | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| Binary Search | ✓ | ✓ | ✓ |
-| Two Pointers | ✓ | ✓ | ✓ |
-| Sliding Window | ✓ | ✓ | ✓ |
+| Algorithm | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| Binary Search | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Two Pointers | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Sliding Window | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Graph
-| Algorithm | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| BFS | ✓ | ✓ | ✓ |
-| DFS | ✓ | ✓ | ✓ |
-| Dijkstra | ✓ | ✓ | ✓ |
-| Bellman-Ford | ✓ | ✓ | ✓ |
-| Floyd-Warshall | ✓ | ✓ | ✓ |
-| Prim's MST | ✓ | ✓ | ✓ |
-| Kruskal's MST | ✓ | ✓ | ✓ |
-| Topological Sort | ✓ | ✓ | ✓ |
-| Tarjan's SCC | ✓ | ✓ | ✓ |
+| Algorithm | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| BFS | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| DFS | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Dijkstra | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Bellman-Ford | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Floyd-Warshall | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Prim's MST | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Kruskal's MST | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Topological Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Tarjan's SCC | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Dynamic Programming
-| Problem | Python | C | Rust |
-|---------|:------:|:-:|:----:|
-| Fibonacci | ✓ | ✓ | ✓ |
-| Knapsack | ✓ | ✓ | ✓ |
-| LCS | ✓ | ✓ | ✓ |
-| LIS | ✓ | ✓ | ✓ |
-| Edit Distance | ✓ | ✓ | ✓ |
-| Coin Change | ✓ | ✓ | ✓ |
+| Problem | C | Go | Java | Python | Rust | TypeScript |
+|---------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| Fibonacci | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Knapsack | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| LCS | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| LIS | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Edit Distance | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Coin Change | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### String
-| Algorithm | Python | C | Rust |
-|-----------|:------:|:-:|:----:|
-| KMP | ✓ | ✓ | ✓ |
-| Rabin-Karp | ✓ | ✓ | ✓ |
-| Z-Algorithm | ✓ | ✓ | ✓ |
+| Algorithm | C | Go | Java | Python | Rust | TypeScript |
+|-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
+| KMP | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Rabin-Karp | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Z-Algorithm | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ## Quick Start
+
+### C
+```bash
+cd by-language/c
+make test
+```
+
+### Go
+```bash
+cd by-language/go
+go test ./...
+```
+
+### Java
+```bash
+cd by-language/java
+gradle test
+```
 
 ### Python
 ```bash
@@ -157,16 +181,17 @@ pip install pytest
 pytest tests/
 ```
 
-### C
-```bash
-cd by-language/c
-make test
-```
-
 ### Rust
 ```bash
 cd by-language/rust
 cargo test
+```
+
+### TypeScript
+```bash
+cd by-language/typescript
+bun install
+bun test
 ```
 
 ### Git Hooks (Optional)

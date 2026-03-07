@@ -33,6 +33,22 @@ venv/
 *.exe
 build/
 
+# Go
+by-language/go/bin/
+
+# TypeScript / Bun
+node_modules/
+dist/
+bun.lockb
+
+# Java
+.gradle/
+*.class
+by-language/java/build/
+
+# Rust
+target/
+
 # IDE
 .idea/
 .vscode/

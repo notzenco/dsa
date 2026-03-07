@@ -72,3 +72,64 @@ jobs:
         run: |
           cd by-language/rust
           cargo test --all-features
+
+  go-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.21', '1.22']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Run Go tests
+        run: |
+          cd by-language/go
+          go test ./...
+
+  typescript-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: |
+          cd by-language/typescript
+          bun install
+
+      - name: Run TypeScript tests
+        run: |
+          cd by-language/typescript
+          bun test
+
+  java-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: ['17', '21']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run Java tests
+        run: |
+          cd by-language/java
+          gradle test
