@@ -199,3 +199,169 @@ func TestMinPathSum(t *testing.T) {
 		t.Errorf("expected 7, got %d", result)
 	}
 }
+
+func TestMatrixChainMultiplication(t *testing.T) {
+	// dims = [10, 30, 5, 60] means matrices 10x30, 30x5, 5x60
+	result := MatrixChainMultiplication([]int{10, 30, 5, 60})
+	if result != 4500 {
+		t.Errorf("expected 4500, got %d", result)
+	}
+
+	result = MatrixChainMultiplication([]int{40, 20, 30, 10, 30})
+	if result != 26000 {
+		t.Errorf("expected 26000, got %d", result)
+	}
+}
+
+func TestSubsetSum(t *testing.T) {
+	if !SubsetSum([]int{3, 34, 4, 12, 5, 2}, 9) {
+		t.Error("expected true for target 9")
+	}
+	if SubsetSum([]int{3, 34, 4, 12, 5, 2}, 30) {
+		t.Error("expected false for target 30")
+	}
+	if !SubsetSum([]int{1, 2, 3}, 0) {
+		t.Error("expected true for target 0")
+	}
+}
+
+func TestPartitionEqualSubset(t *testing.T) {
+	if !PartitionEqualSubset([]int{1, 5, 11, 5}) {
+		t.Error("expected true")
+	}
+	if PartitionEqualSubset([]int{1, 2, 3, 5}) {
+		t.Error("expected false")
+	}
+}
+
+func TestFibonacciMatrixExponentiation(t *testing.T) {
+	expected := []int{0, 1, 1, 2, 3, 5, 8, 13, 21, 34}
+	for i, e := range expected {
+		result := FibonacciMatrixExponentiation(i)
+		if result != e {
+			t.Errorf("fib(%d): expected %d, got %d", i, e, result)
+		}
+	}
+}
+
+func TestRodCutting(t *testing.T) {
+	prices := []int{1, 5, 8, 9, 10, 17, 17, 20}
+	result := RodCutting(prices, 8)
+	if result != 22 {
+		t.Errorf("expected 22, got %d", result)
+	}
+
+	result = RodCutting(prices, 4)
+	if result != 10 {
+		t.Errorf("expected 10, got %d", result)
+	}
+}
+
+func TestPalindromePartitionMin(t *testing.T) {
+	result := PalindromePartitionMin("aab")
+	if result != 1 {
+		t.Errorf("expected 1, got %d", result)
+	}
+
+	result = PalindromePartitionMin("a")
+	if result != 0 {
+		t.Errorf("expected 0, got %d", result)
+	}
+
+	result = PalindromePartitionMin("ab")
+	if result != 1 {
+		t.Errorf("expected 1, got %d", result)
+	}
+}
+
+func TestMaximalSquare(t *testing.T) {
+	matrix := [][]int{
+		{1, 0, 1, 0, 0},
+		{1, 0, 1, 1, 1},
+		{1, 1, 1, 1, 1},
+		{1, 0, 0, 1, 0},
+	}
+	result := MaximalSquare(matrix)
+	if result != 4 {
+		t.Errorf("expected 4, got %d", result)
+	}
+}
+
+func TestMaximalSquareAllZeros(t *testing.T) {
+	matrix := [][]int{
+		{0, 0},
+		{0, 0},
+	}
+	result := MaximalSquare(matrix)
+	if result != 0 {
+		t.Errorf("expected 0, got %d", result)
+	}
+}
+
+func TestDecodeWays(t *testing.T) {
+	result := DecodeWays("12")
+	if result != 2 {
+		t.Errorf("expected 2, got %d", result)
+	}
+
+	result = DecodeWays("226")
+	if result != 3 {
+		t.Errorf("expected 3, got %d", result)
+	}
+
+	result = DecodeWays("06")
+	if result != 0 {
+		t.Errorf("expected 0 for leading zero, got %d", result)
+	}
+
+	result = DecodeWays("0")
+	if result != 0 {
+		t.Errorf("expected 0, got %d", result)
+	}
+}
+
+func TestCoinChangeCombinations(t *testing.T) {
+	result := CoinChangeCombinations([]int{1, 2, 5}, 5)
+	if result == nil {
+		t.Fatal("expected non-nil result")
+	}
+	// Should return coins that sum to 5
+	sum := 0
+	for _, c := range result {
+		sum += c
+	}
+	if sum != 5 {
+		t.Errorf("expected coins summing to 5, got sum %d from %v", sum, result)
+	}
+}
+
+func TestCoinChangeCombinationsImpossible(t *testing.T) {
+	result := CoinChangeCombinations([]int{2}, 3)
+	if result != nil {
+		t.Errorf("expected nil for impossible, got %v", result)
+	}
+}
+
+func TestStockBuySellOnce(t *testing.T) {
+	result := StockBuySellOnce([]int{7, 1, 5, 3, 6, 4})
+	if result != 5 {
+		t.Errorf("expected 5, got %d", result)
+	}
+
+	result = StockBuySellOnce([]int{7, 6, 4, 3, 1})
+	if result != 0 {
+		t.Errorf("expected 0 (no profit), got %d", result)
+	}
+}
+
+func TestStockBuySellMultiple(t *testing.T) {
+	result := StockBuySellMultiple([]int{7, 1, 5, 3, 6, 4})
+	if result != 7 {
+		t.Errorf("expected 7, got %d", result)
+	}
+
+	result = StockBuySellMultiple([]int{1, 2, 3, 4, 5})
+	if result != 4 {
+		t.Errorf("expected 4, got %d", result)
+	}
+}

@@ -150,3 +150,104 @@ func TestSortWithComparator(t *testing.T) {
 		}
 	}
 }
+
+func TestTimSort(t *testing.T) {
+	for _, tc := range testCases {
+		arr := copySlice(tc)
+		TimSort(arr)
+		verifySorted(t, "TimSort", arr)
+	}
+}
+
+func TestTimSortLarge(t *testing.T) {
+	arr := make([]int, 200)
+	for i := range arr {
+		arr[i] = 200 - i
+	}
+	TimSort(arr)
+	verifySorted(t, "TimSort large", arr)
+}
+
+func TestCombSort(t *testing.T) {
+	for _, tc := range testCases {
+		arr := copySlice(tc)
+		CombSort(arr)
+		verifySorted(t, "CombSort", arr)
+	}
+}
+
+func TestGnomeSort(t *testing.T) {
+	for _, tc := range testCases {
+		arr := copySlice(tc)
+		GnomeSort(arr)
+		verifySorted(t, "GnomeSort", arr)
+	}
+}
+
+func TestPancakeSort(t *testing.T) {
+	for _, tc := range testCases {
+		arr := copySlice(tc)
+		PancakeSort(arr)
+		verifySorted(t, "PancakeSort", arr)
+	}
+}
+
+func TestCycleSort(t *testing.T) {
+	arr := []int{5, 3, 8, 1, 9, 2, 7, 4, 6}
+	writes := CycleSort(arr)
+	verifySorted(t, "CycleSort", arr)
+	if writes < 0 {
+		t.Errorf("writes should be >= 0, got %d", writes)
+	}
+}
+
+func TestCycleSortAlreadySorted(t *testing.T) {
+	arr := []int{1, 2, 3, 4, 5}
+	writes := CycleSort(arr)
+	verifySorted(t, "CycleSort already sorted", arr)
+	if writes != 0 {
+		t.Errorf("expected 0 writes for sorted array, got %d", writes)
+	}
+}
+
+func TestMergeSortIterative(t *testing.T) {
+	for _, tc := range testCases {
+		arr := copySlice(tc)
+		MergeSortIterative(arr)
+		verifySorted(t, "MergeSortIterative", arr)
+	}
+}
+
+func TestDutchNationalFlag(t *testing.T) {
+	arr := []int{2, 0, 2, 1, 1, 0}
+	DutchNationalFlag(arr)
+	expected := []int{0, 0, 1, 1, 2, 2}
+	for i, v := range expected {
+		if arr[i] != v {
+			t.Errorf("index %d: expected %d, got %d", i, v, arr[i])
+		}
+	}
+}
+
+func TestDutchNationalFlagAllSame(t *testing.T) {
+	arr := []int{1, 1, 1}
+	DutchNationalFlag(arr)
+	for _, v := range arr {
+		if v != 1 {
+			t.Errorf("expected all 1s, got %v", arr)
+			break
+		}
+	}
+}
+
+func TestIsStableSorted(t *testing.T) {
+	arr := []int{1, 2, 2, 3, 3, 4}
+	if !IsStableSorted(arr, func(a, b int) bool { return a < b }) {
+		t.Error("should be stable sorted")
+	}
+
+	arr2 := []int{3, 1, 2}
+	if IsStableSorted(arr2, func(a, b int) bool { return a < b }) {
+		t.Error("should not be stable sorted")
+	}
+}

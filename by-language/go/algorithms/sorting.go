@@ -289,6 +289,232 @@ func quickSelectHelper[T Ordered](arr []T, low, high, k int) T {
 	return quickSelectHelper(arr, pivot+1, high, k)
 }
 
+// TimSort sorts a slice using Tim sort (hybrid merge + insertion sort).
+func TimSort[T Ordered](arr []T) {
+	n := len(arr)
+	if n <= 1 {
+		return
+	}
+
+	const minRun = 32
+
+	// Insertion sort for small runs
+	for start := 0; start < n; start += minRun {
+		end := start + minRun - 1
+		if end >= n {
+			end = n - 1
+		}
+		timInsertionSort(arr, start, end)
+	}
+
+	// Merge runs
+	for size := minRun; size < n; size *= 2 {
+		for left := 0; left < n; left += 2 * size {
+			mid := left + size - 1
+			right := left + 2*size - 1
+			if mid >= n-1 {
+				continue
+			}
+			if right >= n {
+				right = n - 1
+			}
+			timMerge(arr, left, mid, right)
+		}
+	}
+}
+
+func timInsertionSort[T Ordered](arr []T, left, right int) {
+	for i := left + 1; i <= right; i++ {
+		key := arr[i]
+		j := i - 1
+		for j >= left && arr[j] > key {
+			arr[j+1] = arr[j]
+			j--
+		}
+		arr[j+1] = key
+	}
+}
+
+func timMerge[T Ordered](arr []T, left, mid, right int) {
+	leftArr := make([]T, mid-left+1)
+	rightArr := make([]T, right-mid)
+	copy(leftArr, arr[left:mid+1])
+	copy(rightArr, arr[mid+1:right+1])
+
+	i, j, k := 0, 0, left
+	for i < len(leftArr) && j < len(rightArr) {
+		if leftArr[i] <= rightArr[j] {
+			arr[k] = leftArr[i]
+			i++
+		} else {
+			arr[k] = rightArr[j]
+			j++
+		}
+		k++
+	}
+	for i < len(leftArr) {
+		arr[k] = leftArr[i]
+		i++
+		k++
+	}
+	for j < len(rightArr) {
+		arr[k] = rightArr[j]
+		j++
+		k++
+	}
+}
+
+// CombSort sorts using comb sort with shrink factor 1.3.
+func CombSort[T Ordered](arr []T) {
+	n := len(arr)
+	gap := n
+	shrink := 1.3
+	sorted := false
+
+	for !sorted {
+		gap = int(float64(gap) / shrink)
+		if gap <= 1 {
+			gap = 1
+			sorted = true
+		}
+		for i := 0; i+gap < n; i++ {
+			if arr[i] > arr[i+gap] {
+				arr[i], arr[i+gap] = arr[i+gap], arr[i]
+				sorted = false
+			}
+		}
+	}
+}
+
+// GnomeSort sorts using gnome sort (similar to insertion sort).
+func GnomeSort[T Ordered](arr []T) {
+	n := len(arr)
+	pos := 0
+	for pos < n {
+		if pos == 0 || arr[pos] >= arr[pos-1] {
+			pos++
+		} else {
+			arr[pos], arr[pos-1] = arr[pos-1], arr[pos]
+			pos--
+		}
+	}
+}
+
+// PancakeSort sorts using pancake flipping.
+func PancakeSort[T Ordered](arr []T) {
+	n := len(arr)
+	for size := n; size > 1; size-- {
+		// Find max in arr[0..size-1]
+		maxIdx := 0
+		for i := 1; i < size; i++ {
+			if arr[i] > arr[maxIdx] {
+				maxIdx = i
+			}
+		}
+		if maxIdx != size-1 {
+			// Flip to bring max to front
+			pancakeFlip(arr, maxIdx+1)
+			// Flip to put max at its position
+			pancakeFlip(arr, size)
+		}
+	}
+}
+
+func pancakeFlip[T Ordered](arr []T, k int) {
+	for i, j := 0, k-1; i < j; i, j = i+1, j-1 {
+		arr[i], arr[j] = arr[j], arr[i]
+	}
+}
+
+// CycleSort sorts with minimum number of writes. O(n²) time, O(1) space.
+func CycleSort[T Ordered](arr []T) int {
+	writes := 0
+	n := len(arr)
+
+	for cycleStart := 0; cycleStart < n-1; cycleStart++ {
+		item := arr[cycleStart]
+		pos := cycleStart
+		for i := cycleStart + 1; i < n; i++ {
+			if arr[i] < item {
+				pos++
+			}
+		}
+		if pos == cycleStart {
+			continue
+		}
+		for item == arr[pos] {
+			pos++
+		}
+		arr[pos], item = item, arr[pos]
+		writes++
+
+		for pos != cycleStart {
+			pos = cycleStart
+			for i := cycleStart + 1; i < n; i++ {
+				if arr[i] < item {
+					pos++
+				}
+			}
+			for item == arr[pos] {
+				pos++
+			}
+			arr[pos], item = item, arr[pos]
+			writes++
+		}
+	}
+	return writes
+}
+
+// MergeSortIterative sorts using iterative (bottom-up) merge sort.
+func MergeSortIterative[T Ordered](arr []T) {
+	n := len(arr)
+	if n <= 1 {
+		return
+	}
+
+	for width := 1; width < n; width *= 2 {
+		for i := 0; i < n; i += 2 * width {
+			mid := i + width - 1
+			right := i + 2*width - 1
+			if mid >= n-1 {
+				continue
+			}
+			if right >= n {
+				right = n - 1
+			}
+			timMerge(arr, i, mid, right)
+		}
+	}
+}
+
+// DutchNationalFlag sorts array of 0s, 1s, and 2s in-place. O(n)
+func DutchNationalFlag(arr []int) {
+	low, mid, high := 0, 0, len(arr)-1
+	for mid <= high {
+		switch arr[mid] {
+		case 0:
+			arr[low], arr[mid] = arr[mid], arr[low]
+			low++
+			mid++
+		case 1:
+			mid++
+		case 2:
+			arr[mid], arr[high] = arr[high], arr[mid]
+			high--
+		}
+	}
+}
+
+// IsStableSorted checks if a slice is sorted considering stability.
+func IsStableSorted[T any](arr []T, less func(T, T) bool) bool {
+	for i := 1; i < len(arr); i++ {
+		if less(arr[i], arr[i-1]) {
+			return false
+		}
+	}
+	return true
+}
+
 // IsSorted checks if a slice is sorted.
 func IsSorted[T Ordered](arr []T) bool {
 	for i := 1; i < len(arr); i++ {

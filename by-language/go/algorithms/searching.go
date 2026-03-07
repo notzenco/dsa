@@ -346,6 +346,259 @@ func MaxSlidingWindow(arr []int, k int) []int {
 	return result
 }
 
+// LongestSubstringWithoutRepeating returns the length of the longest substring
+// without repeating characters.
+func LongestSubstringWithoutRepeating(s string) int {
+	charIndex := make(map[byte]int)
+	maxLen := 0
+	left := 0
+
+	for right := 0; right < len(s); right++ {
+		if idx, ok := charIndex[s[right]]; ok && idx >= left {
+			left = idx + 1
+		}
+		charIndex[s[right]] = right
+		length := right - left + 1
+		if length > maxLen {
+			maxLen = length
+		}
+	}
+	return maxLen
+}
+
+// MinWindowSubstring returns the minimum window in s that contains all characters in t.
+func MinWindowSubstring(s, t string) string {
+	if len(s) == 0 || len(t) == 0 || len(s) < len(t) {
+		return ""
+	}
+
+	need := make(map[byte]int)
+	for i := 0; i < len(t); i++ {
+		need[t[i]]++
+	}
+
+	window := make(map[byte]int)
+	have, required := 0, len(need)
+	left := 0
+	bestLeft, bestLen := 0, len(s)+1
+
+	for right := 0; right < len(s); right++ {
+		c := s[right]
+		window[c]++
+		if need[c] > 0 && window[c] == need[c] {
+			have++
+		}
+
+		for have == required {
+			length := right - left + 1
+			if length < bestLen {
+				bestLen = length
+				bestLeft = left
+			}
+			lc := s[left]
+			window[lc]--
+			if need[lc] > 0 && window[lc] < need[lc] {
+				have--
+			}
+			left++
+		}
+	}
+
+	if bestLen > len(s) {
+		return ""
+	}
+	return s[bestLeft : bestLeft+bestLen]
+}
+
+// ContainerWithMostWater finds the maximum area of water that can be contained.
+func ContainerWithMostWater(heights []int) int {
+	maxArea := 0
+	left, right := 0, len(heights)-1
+
+	for left < right {
+		h := heights[left]
+		if heights[right] < h {
+			h = heights[right]
+		}
+		area := h * (right - left)
+		if area > maxArea {
+			maxArea = area
+		}
+		if heights[left] < heights[right] {
+			left++
+		} else {
+			right--
+		}
+	}
+	return maxArea
+}
+
+// FindAllAnagrams returns starting indices of all anagrams of pattern in text.
+func FindAllAnagrams(text, pattern string) []int {
+	if len(text) < len(pattern) || len(pattern) == 0 {
+		return nil
+	}
+
+	var result []int
+	var pCount, wCount [26]int
+
+	for i := 0; i < len(pattern); i++ {
+		pCount[pattern[i]-'a']++
+	}
+
+	for i := 0; i < len(text); i++ {
+		wCount[text[i]-'a']++
+		if i >= len(pattern) {
+			wCount[text[i-len(pattern)]-'a']--
+		}
+		if wCount == pCount {
+			result = append(result, i-len(pattern)+1)
+		}
+	}
+	return result
+}
+
+// TrappingRainWater calculates how much water can be trapped.
+func TrappingRainWater(heights []int) int {
+	if len(heights) < 3 {
+		return 0
+	}
+	left, right := 0, len(heights)-1
+	leftMax, rightMax := 0, 0
+	water := 0
+
+	for left < right {
+		if heights[left] < heights[right] {
+			if heights[left] >= leftMax {
+				leftMax = heights[left]
+			} else {
+				water += leftMax - heights[left]
+			}
+			left++
+		} else {
+			if heights[right] >= rightMax {
+				rightMax = heights[right]
+			} else {
+				water += rightMax - heights[right]
+			}
+			right--
+		}
+	}
+	return water
+}
+
+// LongestSubarrayWithSumK finds the longest subarray with sum exactly k.
+func LongestSubarrayWithSumK(arr []int, k int) int {
+	prefixSum := make(map[int]int)
+	prefixSum[0] = -1
+	sum := 0
+	maxLen := 0
+
+	for i, v := range arr {
+		sum += v
+		if idx, ok := prefixSum[sum-k]; ok {
+			length := i - idx
+			if length > maxLen {
+				maxLen = length
+			}
+		}
+		if _, ok := prefixSum[sum]; !ok {
+			prefixSum[sum] = i
+		}
+	}
+	return maxLen
+}
+
+// SubarrayProductLessThanK counts subarrays with product < k.
+func SubarrayProductLessThanK(arr []int, k int) int {
+	if k <= 1 {
+		return 0
+	}
+	count := 0
+	product := 1
+	left := 0
+
+	for right := 0; right < len(arr); right++ {
+		product *= arr[right]
+		for product >= k && left <= right {
+			product /= arr[left]
+			left++
+		}
+		count += right - left + 1
+	}
+	return count
+}
+
+// RemoveDuplicatesSorted removes duplicates from a sorted array in-place.
+func RemoveDuplicatesSorted[T comparable](arr []T) int {
+	if len(arr) <= 1 {
+		return len(arr)
+	}
+	writeIdx := 1
+	for i := 1; i < len(arr); i++ {
+		if arr[i] != arr[i-1] {
+			arr[writeIdx] = arr[i]
+			writeIdx++
+		}
+	}
+	return writeIdx
+}
+
+// MoveZeroes moves all zeros to the end while maintaining order of non-zeros.
+func MoveZeroes(arr []int) {
+	writeIdx := 0
+	for _, v := range arr {
+		if v != 0 {
+			arr[writeIdx] = v
+			writeIdx++
+		}
+	}
+	for i := writeIdx; i < len(arr); i++ {
+		arr[i] = 0
+	}
+}
+
+// FourSum finds all unique quadruplets that sum to target.
+func FourSum(arr []int, target int) [][4]int {
+	sorted := make([]int, len(arr))
+	copy(sorted, arr)
+	InsertionSort(sorted)
+
+	var result [][4]int
+	n := len(sorted)
+
+	for i := 0; i < n-3; i++ {
+		if i > 0 && sorted[i] == sorted[i-1] {
+			continue
+		}
+		for j := i + 1; j < n-2; j++ {
+			if j > i+1 && sorted[j] == sorted[j-1] {
+				continue
+			}
+			left, right := j+1, n-1
+			for left < right {
+				sum := sorted[i] + sorted[j] + sorted[left] + sorted[right]
+				if sum == target {
+					result = append(result, [4]int{sorted[i], sorted[j], sorted[left], sorted[right]})
+					for left < right && sorted[left] == sorted[left+1] {
+						left++
+					}
+					for left < right && sorted[right] == sorted[right-1] {
+						right--
+					}
+					left++
+					right--
+				} else if sum < target {
+					left++
+				} else {
+					right--
+				}
+			}
+		}
+	}
+	return result
+}
+
 // MinSubarraySum finds the minimum length subarray with sum >= target.
 func MinSubarraySum(arr []int, target int) int {
 	n := len(arr)
