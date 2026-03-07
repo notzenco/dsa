@@ -315,4 +315,250 @@ class QueueTest {
         dq.addRear(3);
         assertEquals(List.of(1, 2, 3), dq.toList());
     }
+
+    // ---- Queue removeAt ----
+
+    @Test
+    void testRemoveAt() {
+        Queue<Integer> q = new Queue<>();
+        q.enqueue(10);
+        q.enqueue(20);
+        q.enqueue(30);
+        assertEquals(20, q.removeAt(1));
+        assertEquals(List.of(10, 30), q.toList());
+    }
+
+    @Test
+    void testRemoveAtFirst() {
+        Queue<Integer> q = new Queue<>();
+        q.enqueue(10);
+        q.enqueue(20);
+        assertEquals(10, q.removeAt(0));
+        assertEquals(List.of(20), q.toList());
+    }
+
+    @Test
+    void testRemoveAtOutOfBounds() {
+        Queue<Integer> q = new Queue<>();
+        q.enqueue(1);
+        assertThrows(IndexOutOfBoundsException.class, () -> q.removeAt(-1));
+        assertThrows(IndexOutOfBoundsException.class, () -> q.removeAt(1));
+    }
+
+    // ---- Queue toArray ----
+
+    @Test
+    void testQueueToArray() {
+        Queue<Integer> q = new Queue<>();
+        q.enqueue(1);
+        q.enqueue(2);
+        q.enqueue(3);
+        Object[] arr = q.toArray();
+        assertArrayEquals(new Object[]{1, 2, 3}, arr);
+    }
+
+    @Test
+    void testQueueToArrayEmpty() {
+        Queue<Integer> q = new Queue<>();
+        assertEquals(0, q.toArray().length);
+    }
+
+    // ---- CircularQueue toList ----
+
+    @Test
+    void testCircularQueueToList() {
+        Queue.CircularQueue<Integer> cq = new Queue.CircularQueue<>(5);
+        cq.enqueue(1);
+        cq.enqueue(2);
+        cq.enqueue(3);
+        assertEquals(List.of(1, 2, 3), cq.toList());
+    }
+
+    @Test
+    void testCircularQueueToListAfterWrapAround() {
+        Queue.CircularQueue<Integer> cq = new Queue.CircularQueue<>(3);
+        cq.enqueue(1);
+        cq.enqueue(2);
+        cq.enqueue(3);
+        cq.dequeue(); // remove 1
+        cq.enqueue(4); // wraps around
+        assertEquals(List.of(2, 3, 4), cq.toList());
+    }
+
+    // ---- CircularQueue contains ----
+
+    @Test
+    void testCircularQueueContains() {
+        Queue.CircularQueue<String> cq = new Queue.CircularQueue<>(5);
+        cq.enqueue("hello");
+        cq.enqueue("world");
+        assertTrue(cq.contains("hello"));
+        assertFalse(cq.contains("foo"));
+    }
+
+    // ---- Deque contains ----
+
+    @Test
+    void testDequeContains() {
+        Queue.Deque<String> dq = new Queue.Deque<>();
+        dq.addRear("a");
+        dq.addRear("b");
+        assertTrue(dq.contains("a"));
+        assertFalse(dq.contains("z"));
+    }
+
+    // ---- Deque removeFirst ----
+
+    @Test
+    void testDequeRemoveFirst() {
+        Queue.Deque<Integer> dq = new Queue.Deque<>();
+        dq.addRear(1);
+        dq.addRear(2);
+        dq.addRear(3);
+        dq.addRear(2);
+        assertTrue(dq.removeFirst(2));
+        assertEquals(List.of(1, 3, 2), dq.toList());
+    }
+
+    @Test
+    void testDequeRemoveFirstNotFound() {
+        Queue.Deque<Integer> dq = new Queue.Deque<>();
+        dq.addRear(1);
+        assertFalse(dq.removeFirst(99));
+    }
+
+    // ---- Deque toArray ----
+
+    @Test
+    void testDequeToArray() {
+        Queue.Deque<Integer> dq = new Queue.Deque<>();
+        dq.addRear(1);
+        dq.addRear(2);
+        dq.addRear(3);
+        assertArrayEquals(new Object[]{1, 2, 3}, dq.toArray());
+    }
+
+    // ---- Deque reversed ----
+
+    @Test
+    void testDequeReversed() {
+        Queue.Deque<Integer> dq = new Queue.Deque<>();
+        dq.addRear(1);
+        dq.addRear(2);
+        dq.addRear(3);
+        Queue.Deque<Integer> rev = dq.reversed();
+        assertEquals(List.of(3, 2, 1), rev.toList());
+        // Original unchanged
+        assertEquals(List.of(1, 2, 3), dq.toList());
+    }
+
+    @Test
+    void testDequeReversedEmpty() {
+        Queue.Deque<Integer> dq = new Queue.Deque<>();
+        Queue.Deque<Integer> rev = dq.reversed();
+        assertTrue(rev.isEmpty());
+    }
+
+    // ---- slidingWindowMaximum ----
+
+    @Test
+    void testSlidingWindowMaximumNormal() {
+        int[] nums = {1, 3, -1, -3, 5, 3, 6, 7};
+        int[] result = Queue.slidingWindowMaximum(nums, 3);
+        assertArrayEquals(new int[]{3, 3, 5, 5, 6, 7}, result);
+    }
+
+    @Test
+    void testSlidingWindowMaximumSingleWindow() {
+        int[] nums = {4, 2, 1};
+        int[] result = Queue.slidingWindowMaximum(nums, 3);
+        assertArrayEquals(new int[]{4}, result);
+    }
+
+    @Test
+    void testSlidingWindowMaximumWindowSizeOne() {
+        int[] nums = {1, 3, 2};
+        int[] result = Queue.slidingWindowMaximum(nums, 1);
+        assertArrayEquals(new int[]{1, 3, 2}, result);
+    }
+
+    @Test
+    void testSlidingWindowMaximumEmpty() {
+        int[] result = Queue.slidingWindowMaximum(new int[]{}, 3);
+        assertEquals(0, result.length);
+    }
+
+    // ---- PriorityDeque ----
+
+    @Test
+    void testPriorityDequeAddAndPeek() {
+        Queue.PriorityDeque<Integer> pq = new Queue.PriorityDeque<>();
+        pq.add(5);
+        pq.add(1);
+        pq.add(9);
+        pq.add(3);
+        assertEquals(1, pq.peekMin());
+        assertEquals(9, pq.peekMax());
+        assertEquals(4, pq.size());
+    }
+
+    @Test
+    void testPriorityDequeRemoveMin() {
+        Queue.PriorityDeque<Integer> pq = new Queue.PriorityDeque<>();
+        pq.add(5);
+        pq.add(1);
+        pq.add(9);
+        assertEquals(1, pq.removeMin());
+        assertEquals(5, pq.peekMin());
+        assertEquals(2, pq.size());
+    }
+
+    @Test
+    void testPriorityDequeRemoveMax() {
+        Queue.PriorityDeque<Integer> pq = new Queue.PriorityDeque<>();
+        pq.add(5);
+        pq.add(1);
+        pq.add(9);
+        assertEquals(9, pq.removeMax());
+        assertEquals(5, pq.peekMax());
+        assertEquals(2, pq.size());
+    }
+
+    @Test
+    void testPriorityDequeInterleaved() {
+        Queue.PriorityDeque<Integer> pq = new Queue.PriorityDeque<>();
+        pq.add(3);
+        pq.add(1);
+        pq.add(7);
+        pq.add(5);
+        assertEquals(1, pq.removeMin());  // [3, 5, 7]
+        assertEquals(7, pq.removeMax());  // [3, 5]
+        pq.add(2);                        // [2, 3, 5]
+        assertEquals(2, pq.removeMin());  // [3, 5]
+        assertEquals(5, pq.removeMax());  // [3]
+        assertEquals(3, pq.peekMin());
+        assertEquals(3, pq.peekMax());
+    }
+
+    @Test
+    void testPriorityDequeDuplicates() {
+        Queue.PriorityDeque<Integer> pq = new Queue.PriorityDeque<>();
+        pq.add(3);
+        pq.add(3);
+        pq.add(3);
+        assertEquals(3, pq.size());
+        assertEquals(3, pq.removeMin());
+        assertEquals(2, pq.size());
+        assertEquals(3, pq.peekMin());
+    }
+
+    @Test
+    void testPriorityDequeEmpty() {
+        Queue.PriorityDeque<Integer> pq = new Queue.PriorityDeque<>();
+        assertTrue(pq.isEmpty());
+        assertThrows(NoSuchElementException.class, pq::removeMin);
+        assertThrows(NoSuchElementException.class, pq::removeMax);
+        assertThrows(NoSuchElementException.class, pq::peekMin);
+        assertThrows(NoSuchElementException.class, pq::peekMax);
+    }
 }

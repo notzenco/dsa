@@ -296,6 +296,124 @@ public class DoublyLinkedList<T> {
         tail = node;
     }
 
+    public boolean contains(T value) {
+        return find(value) != -1;
+    }
+
+    public Object[] toArray() {
+        Object[] result = new Object[size];
+        DNode<T> current = head;
+        int i = 0;
+        while (current != null) {
+            result[i++] = current.data;
+            current = current.next;
+        }
+        return result;
+    }
+
+    public void insertAfter(DNode<T> node, T value) {
+        if (node == null) {
+            throw new IllegalArgumentException("Node cannot be null");
+        }
+        DNode<T> newNode = new DNode<>(value);
+        newNode.prev = node;
+        newNode.next = node.next;
+        if (node.next != null) {
+            node.next.prev = newNode;
+        } else {
+            tail = newNode;
+        }
+        node.next = newNode;
+        size++;
+    }
+
+    public void insertBefore(DNode<T> node, T value) {
+        if (node == null) {
+            throw new IllegalArgumentException("Node cannot be null");
+        }
+        DNode<T> newNode = new DNode<>(value);
+        newNode.next = node;
+        newNode.prev = node.prev;
+        if (node.prev != null) {
+            node.prev.next = newNode;
+        } else {
+            head = newNode;
+        }
+        node.prev = newNode;
+        size++;
+    }
+
+    public DNode<T> getHead() {
+        return head;
+    }
+
+    public DNode<T> getTail() {
+        return tail;
+    }
+
+    public static <T extends Comparable<T>> DoublyLinkedList<T> mergeSorted(
+            DoublyLinkedList<T> list1, DoublyLinkedList<T> list2) {
+        DoublyLinkedList<T> result = new DoublyLinkedList<>();
+        DNode<T> a = list1.head;
+        DNode<T> b = list2.head;
+        while (a != null && b != null) {
+            if (a.data.compareTo(b.data) <= 0) {
+                result.append(a.data);
+                a = a.next;
+            } else {
+                result.append(b.data);
+                b = b.next;
+            }
+        }
+        while (a != null) {
+            result.append(a.data);
+            a = a.next;
+        }
+        while (b != null) {
+            result.append(b.data);
+            b = b.next;
+        }
+        return result;
+    }
+
+    public <R> DoublyLinkedList<R> map(java.util.function.Function<T, R> mapper) {
+        DoublyLinkedList<R> result = new DoublyLinkedList<>();
+        DNode<T> current = head;
+        while (current != null) {
+            result.append(mapper.apply(current.data));
+            current = current.next;
+        }
+        return result;
+    }
+
+    public DoublyLinkedList<T> filter(java.util.function.Predicate<T> predicate) {
+        DoublyLinkedList<T> result = new DoublyLinkedList<>();
+        DNode<T> current = head;
+        while (current != null) {
+            if (predicate.test(current.data)) {
+                result.append(current.data);
+            }
+            current = current.next;
+        }
+        return result;
+    }
+
+    public void forEach(java.util.function.Consumer<T> action) {
+        DNode<T> current = head;
+        while (current != null) {
+            action.accept(current.data);
+            current = current.next;
+        }
+    }
+
+    public void forEachReversed(java.util.function.Consumer<T> action) {
+        DNode<T> current = tail;
+        while (current != null) {
+            action.accept(current.data);
+            current = current.prev;
+        }
+    }
+
     // ---- Private helpers ----
 
     private DNode<T> getNode(int index) {

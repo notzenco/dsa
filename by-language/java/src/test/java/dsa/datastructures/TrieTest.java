@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -435,5 +436,158 @@ class TrieTest {
         assertTrue(words.contains("app"));
         assertTrue(words.contains("apple"));
         assertTrue(words.contains("application"));
+    }
+
+    // ======================== TrieMap ========================
+
+    @Test
+    void trieMapPutAndGet() {
+        var map = new Trie.TrieMap<Integer>();
+        map.put("apple", 1);
+        map.put("banana", 2);
+        assertEquals(Optional.of(1), map.get("apple"));
+        assertEquals(Optional.of(2), map.get("banana"));
+        assertEquals(Optional.empty(), map.get("cherry"));
+    }
+
+    @Test
+    void trieMapPutOverwrites() {
+        var map = new Trie.TrieMap<Integer>();
+        map.put("key", 1);
+        map.put("key", 2);
+        assertEquals(Optional.of(2), map.get("key"));
+        assertEquals(1, map.size());
+    }
+
+    @Test
+    void trieMapContainsKey() {
+        var map = new Trie.TrieMap<String>();
+        map.put("hello", "world");
+        assertTrue(map.containsKey("hello"));
+        assertFalse(map.containsKey("hell"));
+        assertFalse(map.containsKey("helloo"));
+    }
+
+    @Test
+    void trieMapDelete() {
+        var map = new Trie.TrieMap<Integer>();
+        map.put("apple", 1);
+        map.put("app", 2);
+        assertTrue(map.delete("apple"));
+        assertFalse(map.containsKey("apple"));
+        assertTrue(map.containsKey("app"));
+        assertEquals(1, map.size());
+    }
+
+    @Test
+    void trieMapDeleteNonExistent() {
+        var map = new Trie.TrieMap<Integer>();
+        map.put("apple", 1);
+        assertFalse(map.delete("banana"));
+        assertEquals(1, map.size());
+    }
+
+    @Test
+    void trieMapSize() {
+        var map = new Trie.TrieMap<Integer>();
+        assertEquals(0, map.size());
+        map.put("a", 1);
+        map.put("b", 2);
+        map.put("c", 3);
+        assertEquals(3, map.size());
+        map.delete("b");
+        assertEquals(2, map.size());
+    }
+
+    @Test
+    void trieMapKeys() {
+        var map = new Trie.TrieMap<Integer>();
+        map.put("banana", 1);
+        map.put("apple", 2);
+        map.put("cherry", 3);
+        List<String> keys = map.keys();
+        assertEquals(3, keys.size());
+        assertTrue(keys.contains("apple"));
+        assertTrue(keys.contains("banana"));
+        assertTrue(keys.contains("cherry"));
+    }
+
+    @Test
+    void trieMapKeysWithPrefix() {
+        var map = new Trie.TrieMap<Integer>();
+        map.put("apple", 1);
+        map.put("application", 2);
+        map.put("app", 3);
+        map.put("banana", 4);
+        List<String> keys = map.keysWithPrefix("app");
+        assertEquals(3, keys.size());
+        assertTrue(keys.contains("app"));
+        assertTrue(keys.contains("apple"));
+        assertTrue(keys.contains("application"));
+        assertFalse(keys.contains("banana"));
+    }
+
+    @Test
+    void trieMapNullKey() {
+        var map = new Trie.TrieMap<Integer>();
+        assertThrows(IllegalArgumentException.class, () -> map.put(null, 1));
+        assertEquals(Optional.empty(), map.get(null));
+        assertFalse(map.containsKey(null));
+    }
+
+    // ======================== WordDictionary ========================
+
+    @Test
+    void wordDictionaryExactMatch() {
+        var dict = new Trie.WordDictionary();
+        dict.addWord("bad");
+        dict.addWord("dad");
+        dict.addWord("mad");
+        assertTrue(dict.search("bad"));
+        assertTrue(dict.search("dad"));
+        assertFalse(dict.search("pad"));
+    }
+
+    @Test
+    void wordDictionaryWildcardSingle() {
+        var dict = new Trie.WordDictionary();
+        dict.addWord("bad");
+        dict.addWord("dad");
+        dict.addWord("mad");
+        assertTrue(dict.search(".ad"));
+        assertTrue(dict.search("b.."));
+    }
+
+    @Test
+    void wordDictionaryWildcardAll() {
+        var dict = new Trie.WordDictionary();
+        dict.addWord("bad");
+        assertTrue(dict.search("..."));
+        assertFalse(dict.search(".."));
+        assertFalse(dict.search("...."));
+    }
+
+    @Test
+    void wordDictionaryNoMatch() {
+        var dict = new Trie.WordDictionary();
+        dict.addWord("hello");
+        assertFalse(dict.search("hell"));
+        assertFalse(dict.search("helloo"));
+        assertFalse(dict.search("h.l"));
+    }
+
+    @Test
+    void wordDictionaryEmptyWord() {
+        var dict = new Trie.WordDictionary();
+        dict.addWord("");
+        assertTrue(dict.search(""));
+        assertFalse(dict.search("."));
+    }
+
+    @Test
+    void wordDictionaryNullHandling() {
+        var dict = new Trie.WordDictionary();
+        dict.addWord(null); // should be no-op
+        assertFalse(dict.search(null));
     }
 }

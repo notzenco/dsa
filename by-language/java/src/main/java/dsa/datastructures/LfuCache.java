@@ -131,6 +131,92 @@ public class LfuCache<K, V> {
         frequencyMap.computeIfAbsent(node.frequency, k -> new DoublyLinkedList<>()).addToFront(node);
     }
 
+    public int getFrequency(K key) {
+        Node<K, V> node = keyToNode.get(key);
+        if (node == null) return -1;
+        return node.frequency;
+    }
+
+    public Optional<V> remove(K key) {
+        Node<K, V> node = keyToNode.get(key);
+        if (node == null) return Optional.empty();
+
+        DoublyLinkedList<K, V> freqList = frequencyMap.get(node.frequency);
+        freqList.removeNode(node);
+        if (freqList.isEmpty()) {
+            frequencyMap.remove(node.frequency);
+            if (minFrequency == node.frequency) {
+                recalculateMinFrequency();
+            }
+        }
+
+        keyToNode.remove(key);
+        return Optional.of(node.value);
+    }
+
+    public List<K> keys() {
+        return new ArrayList<>(keyToNode.keySet());
+    }
+
+    public List<V> values() {
+        List<V> result = new ArrayList<>();
+        for (Node<K, V> node : keyToNode.values()) {
+            result.add(node.value);
+        }
+        return result;
+    }
+
+    public int getMinFrequency() {
+        if (keyToNode.isEmpty()) return 0;
+        return minFrequency;
+    }
+
+    public int getMaxFrequency() {
+        if (keyToNode.isEmpty()) return 0;
+        int max = 0;
+        for (Node<K, V> node : keyToNode.values()) {
+            if (node.frequency > max) {
+                max = node.frequency;
+            }
+        }
+        return max;
+    }
+
+    public Optional<V> peek(K key) {
+        Node<K, V> node = keyToNode.get(key);
+        if (node == null) return Optional.empty();
+        return Optional.of(node.value);
+    }
+
+    public Optional<V> putIfAbsent(K key, V value) {
+        Node<K, V> existing = keyToNode.get(key);
+        if (existing != null) {
+            return Optional.of(existing.value);
+        }
+        put(key, value);
+        return Optional.empty();
+    }
+
+    public V getOrDefault(K key, V defaultValue) {
+        Node<K, V> node = keyToNode.get(key);
+        if (node == null) return defaultValue;
+        updateFrequency(node);
+        return node.value;
+    }
+
+    private void recalculateMinFrequency() {
+        if (keyToNode.isEmpty()) {
+            minFrequency = 0;
+            return;
+        }
+        minFrequency = Integer.MAX_VALUE;
+        for (int freq : frequencyMap.keySet()) {
+            if (freq < minFrequency) {
+                minFrequency = freq;
+            }
+        }
+    }
+
     private void evictLFU() {
         DoublyLinkedList<K, V> minFreqList = frequencyMap.get(minFrequency);
         if (minFreqList == null) return;

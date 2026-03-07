@@ -168,4 +168,167 @@ class BloomFilterTest {
         // Expected FPR should be significant
         assertTrue(bf.expectedFalsePositiveRate() > 0.1);
     }
+
+    // --- CountingBloomFilter tests ---
+
+    @Test
+    void countingAddAndContain() {
+        var cbf = new BloomFilter.CountingBloomFilter(100, 0.01);
+        cbf.add("hello");
+        cbf.add("world");
+        assertTrue(cbf.mightContain("hello"));
+        assertTrue(cbf.mightContain("world"));
+        assertFalse(cbf.mightContain("missing"));
+    }
+
+    @Test
+    void countingRemove() {
+        var cbf = new BloomFilter.CountingBloomFilter(100, 0.01);
+        cbf.add("hello");
+        assertTrue(cbf.mightContain("hello"));
+        assertTrue(cbf.remove("hello"));
+        assertFalse(cbf.mightContain("hello"));
+    }
+
+    @Test
+    void countingRemoveNonExistent() {
+        var cbf = new BloomFilter.CountingBloomFilter(100, 0.01);
+        cbf.add("hello");
+        assertFalse(cbf.remove("not_present"));
+        // Original element should still be there
+        assertTrue(cbf.mightContain("hello"));
+    }
+
+    @Test
+    void countingMultipleAddsAndRemoves() {
+        var cbf = new BloomFilter.CountingBloomFilter(100, 0.01);
+        cbf.add("x");
+        cbf.add("x");
+        cbf.add("x");
+        assertEquals(3, cbf.count("x"));
+        assertTrue(cbf.remove("x"));
+        assertTrue(cbf.mightContain("x")); // still present (count=2)
+        assertTrue(cbf.remove("x"));
+        assertTrue(cbf.mightContain("x")); // still present (count=1)
+        assertTrue(cbf.remove("x"));
+        assertFalse(cbf.mightContain("x")); // now gone
+    }
+
+    @Test
+    void countingCountAccuracy() {
+        var cbf = new BloomFilter.CountingBloomFilter(100, 0.01);
+        assertEquals(0, cbf.count("x"));
+        cbf.add("x");
+        assertTrue(cbf.count("x") >= 1);
+        cbf.add("x");
+        assertTrue(cbf.count("x") >= 2);
+    }
+
+    @Test
+    void countingInsertedCount() {
+        var cbf = new BloomFilter.CountingBloomFilter(100, 0.01);
+        assertEquals(0, cbf.insertedCount());
+        cbf.add("a");
+        cbf.add("b");
+        assertEquals(2, cbf.insertedCount());
+        cbf.remove("a");
+        assertEquals(1, cbf.insertedCount());
+    }
+
+    @Test
+    void countingClear() {
+        var cbf = new BloomFilter.CountingBloomFilter(100, 0.01);
+        cbf.add("a");
+        cbf.add("b");
+        cbf.clear();
+        assertEquals(0, cbf.insertedCount());
+        assertFalse(cbf.mightContain("a"));
+        assertFalse(cbf.mightContain("b"));
+    }
+
+    @Test
+    void countingFalsePositiveRate() {
+        var cbf = new BloomFilter.CountingBloomFilter(100, 0.01);
+        assertEquals(0.0, cbf.expectedFalsePositiveRate());
+        cbf.add("test");
+        assertTrue(cbf.expectedFalsePositiveRate() > 0);
+    }
+
+    @Test
+    void countingSize() {
+        var cbf = new BloomFilter.CountingBloomFilter(100, 0.01);
+        assertTrue(cbf.size() > 0);
+    }
+
+    // --- ScalableBloomFilter tests ---
+
+    @Test
+    void scalableBasicAddAndContain() {
+        var sbf = new BloomFilter.ScalableBloomFilter(10, 0.01, 2.0);
+        sbf.add("hello");
+        sbf.add("world");
+        assertTrue(sbf.mightContain("hello"));
+        assertTrue(sbf.mightContain("world"));
+        assertFalse(sbf.mightContain("missing"));
+    }
+
+    @Test
+    void scalableAutoScaling() {
+        var sbf = new BloomFilter.ScalableBloomFilter(5, 0.01, 2.0);
+        assertEquals(1, sbf.filterCount());
+        for (int i = 0; i < 20; i++) {
+            sbf.add("item_" + i);
+        }
+        // Should have created additional filters
+        assertTrue(sbf.filterCount() > 1);
+        assertEquals(20, sbf.insertedCount());
+    }
+
+    @Test
+    void scalableContainsAcrossFilters() {
+        var sbf = new BloomFilter.ScalableBloomFilter(5, 0.01, 2.0);
+        for (int i = 0; i < 20; i++) {
+            sbf.add("item_" + i);
+        }
+        // All items should be found across all internal filters
+        for (int i = 0; i < 20; i++) {
+            assertTrue(sbf.mightContain("item_" + i), "Missing item_" + i);
+        }
+    }
+
+    @Test
+    void scalableClear() {
+        var sbf = new BloomFilter.ScalableBloomFilter(5, 0.01, 2.0);
+        for (int i = 0; i < 20; i++) {
+            sbf.add("item_" + i);
+        }
+        sbf.clear();
+        assertEquals(0, sbf.insertedCount());
+        assertEquals(1, sbf.filterCount());
+        assertFalse(sbf.mightContain("item_0"));
+    }
+
+    @Test
+    void scalableInvalidConstructorArgs() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new BloomFilter.ScalableBloomFilter(0, 0.01, 2.0));
+        assertThrows(IllegalArgumentException.class,
+                () -> new BloomFilter.ScalableBloomFilter(10, 0.0, 2.0));
+        assertThrows(IllegalArgumentException.class,
+                () -> new BloomFilter.ScalableBloomFilter(10, 1.0, 2.0));
+        assertThrows(IllegalArgumentException.class,
+                () -> new BloomFilter.ScalableBloomFilter(10, 0.01, 1.0));
+    }
+
+    @Test
+    void scalableNoFalseNegatives() {
+        var sbf = new BloomFilter.ScalableBloomFilter(10, 0.01, 2.0);
+        for (int i = 0; i < 100; i++) {
+            sbf.add("element_" + i);
+        }
+        for (int i = 0; i < 100; i++) {
+            assertTrue(sbf.mightContain("element_" + i),
+                    "False negative for element_" + i);
+        }
+    }
 }

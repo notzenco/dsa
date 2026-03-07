@@ -214,6 +214,141 @@ public class SinglyLinkedList<T> {
         return size == 0;
     }
 
+    public boolean contains(T value) {
+        return find(value) != -1;
+    }
+
+    public void set(int index, T value) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        getNode(index).data = value;
+    }
+
+    public Object[] toArray() {
+        Object[] result = new Object[size];
+        Node<T> current = head;
+        int i = 0;
+        while (current != null) {
+            result[i++] = current.data;
+            current = current.next;
+        }
+        return result;
+    }
+
+    public boolean isPalindrome() {
+        if (size <= 1) return true;
+
+        // Find middle using slow/fast pointers
+        Node<T> slow = head;
+        Node<T> fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // Reverse second half
+        Node<T> prev = null;
+        Node<T> current = slow.next;
+        while (current != null) {
+            Node<T> next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+
+        // Compare first half with reversed second half
+        Node<T> left = head;
+        Node<T> right = prev;
+        boolean result = true;
+        while (right != null) {
+            if (left.data != null ? !left.data.equals(right.data) : right.data != null) {
+                result = false;
+                break;
+            }
+            left = left.next;
+            right = right.next;
+        }
+
+        // Restore second half
+        current = prev;
+        prev = null;
+        while (current != null) {
+            Node<T> next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+        slow.next = prev;
+
+        return result;
+    }
+
+    public static <T extends Comparable<T>> SinglyLinkedList<T> mergeSorted(
+            SinglyLinkedList<T> list1, SinglyLinkedList<T> list2) {
+        SinglyLinkedList<T> result = new SinglyLinkedList<>();
+        Node<T> a = list1.head;
+        Node<T> b = list2.head;
+        while (a != null && b != null) {
+            if (a.data.compareTo(b.data) <= 0) {
+                result.append(a.data);
+                a = a.next;
+            } else {
+                result.append(b.data);
+                b = b.next;
+            }
+        }
+        while (a != null) {
+            result.append(a.data);
+            a = a.next;
+        }
+        while (b != null) {
+            result.append(b.data);
+            b = b.next;
+        }
+        return result;
+    }
+
+    public static <T> SinglyLinkedList<T> fromArray(T[] array) {
+        SinglyLinkedList<T> list = new SinglyLinkedList<>();
+        for (T item : array) {
+            list.append(item);
+        }
+        return list;
+    }
+
+    public <R> SinglyLinkedList<R> map(java.util.function.Function<T, R> mapper) {
+        SinglyLinkedList<R> result = new SinglyLinkedList<>();
+        Node<T> current = head;
+        while (current != null) {
+            result.append(mapper.apply(current.data));
+            current = current.next;
+        }
+        return result;
+    }
+
+    public SinglyLinkedList<T> filter(java.util.function.Predicate<T> predicate) {
+        SinglyLinkedList<T> result = new SinglyLinkedList<>();
+        Node<T> current = head;
+        while (current != null) {
+            if (predicate.test(current.data)) {
+                result.append(current.data);
+            }
+            current = current.next;
+        }
+        return result;
+    }
+
+    public <R> R reduce(R identity, java.util.function.BiFunction<R, T, R> accumulator) {
+        R result = identity;
+        Node<T> current = head;
+        while (current != null) {
+            result = accumulator.apply(result, current.data);
+            current = current.next;
+        }
+        return result;
+    }
+
     // ---- Special methods ----
 
     public T getMiddle() {

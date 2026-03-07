@@ -156,4 +156,113 @@ class FenwickTreeTest {
         // = sum(1..200) - sum(1..99) = 20100 - 4950 = 15150
         assertEquals(15150, ft.rangeQuery(99, 199));
     }
+
+    // ======================== FenwickTree2D ========================
+
+    @Test
+    void fenwickTree2DConstructor() {
+        var ft = new FenwickTree.FenwickTree2D(3, 4);
+        assertEquals(0, ft.query(0, 0));
+        assertEquals(0, ft.query(2, 3));
+    }
+
+    @Test
+    void fenwickTree2DConstructorRejectsInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> new FenwickTree.FenwickTree2D(0, 5));
+        assertThrows(IllegalArgumentException.class, () -> new FenwickTree.FenwickTree2D(5, 0));
+        assertThrows(IllegalArgumentException.class, () -> new FenwickTree.FenwickTree2D(-1, -1));
+    }
+
+    @Test
+    void fenwickTree2DUpdateAndQuery() {
+        var ft = new FenwickTree.FenwickTree2D(3, 3);
+        ft.update(0, 0, 1);
+        ft.update(0, 1, 2);
+        ft.update(1, 0, 3);
+        ft.update(1, 1, 4);
+        assertEquals(1, ft.query(0, 0));
+        assertEquals(3, ft.query(0, 1)); // 1 + 2
+        assertEquals(4, ft.query(1, 0)); // 1 + 3
+        assertEquals(10, ft.query(1, 1)); // 1 + 2 + 3 + 4
+    }
+
+    @Test
+    void fenwickTree2DRangeQuery() {
+        var ft = new FenwickTree.FenwickTree2D(3, 3);
+        // Fill a 3x3 grid:
+        // 1 2 3
+        // 4 5 6
+        // 7 8 9
+        ft.update(0, 0, 1); ft.update(0, 1, 2); ft.update(0, 2, 3);
+        ft.update(1, 0, 4); ft.update(1, 1, 5); ft.update(1, 2, 6);
+        ft.update(2, 0, 7); ft.update(2, 1, 8); ft.update(2, 2, 9);
+
+        // Full grid sum
+        assertEquals(45, ft.rangeQuery(0, 0, 2, 2));
+        // Single element
+        assertEquals(5, ft.rangeQuery(1, 1, 1, 1));
+        // Sub-rectangle: rows 1-2, cols 1-2 -> 5+6+8+9 = 28
+        assertEquals(28, ft.rangeQuery(1, 1, 2, 2));
+        // First row: 1+2+3 = 6
+        assertEquals(6, ft.rangeQuery(0, 0, 0, 2));
+        // First column: 1+4+7 = 12
+        assertEquals(12, ft.rangeQuery(0, 0, 2, 0));
+    }
+
+    @Test
+    void fenwickTree2DRangeQueryInvalidThrows() {
+        var ft = new FenwickTree.FenwickTree2D(3, 3);
+        assertThrows(IllegalArgumentException.class, () -> ft.rangeQuery(2, 0, 1, 0));
+        assertThrows(IllegalArgumentException.class, () -> ft.rangeQuery(0, 2, 0, 1));
+    }
+
+    @Test
+    void fenwickTree2DOutOfBoundsThrows() {
+        var ft = new FenwickTree.FenwickTree2D(3, 3);
+        assertThrows(IndexOutOfBoundsException.class, () -> ft.update(-1, 0, 1));
+        assertThrows(IndexOutOfBoundsException.class, () -> ft.update(0, 3, 1));
+        assertThrows(IndexOutOfBoundsException.class, () -> ft.query(3, 0));
+        assertThrows(IndexOutOfBoundsException.class, () -> ft.query(0, -1));
+    }
+
+    // ======================== countInversions ========================
+
+    @Test
+    void countInversionsBasic() {
+        // Pairs: (5,4),(5,3),(5,2),(5,1),(4,3),(4,2),(4,1),(3,2),(3,1),(2,1)
+        assertEquals(10, FenwickTree.countInversions(new int[]{5, 4, 3, 2, 1}));
+    }
+
+    @Test
+    void countInversionsSorted() {
+        assertEquals(0, FenwickTree.countInversions(new int[]{1, 2, 3, 4, 5}));
+    }
+
+    @Test
+    void countInversionsSingle() {
+        assertEquals(0, FenwickTree.countInversions(new int[]{42}));
+    }
+
+    @Test
+    void countInversionsEmpty() {
+        assertEquals(0, FenwickTree.countInversions(new int[]{}));
+    }
+
+    @Test
+    void countInversionsNull() {
+        assertEquals(0, FenwickTree.countInversions(null));
+    }
+
+    @Test
+    void countInversionsMixed() {
+        // [2, 4, 1, 3, 5] -> inversions: (2,1), (4,1), (4,3) = 3
+        assertEquals(3, FenwickTree.countInversions(new int[]{2, 4, 1, 3, 5}));
+    }
+
+    @Test
+    void countInversionsDoesNotModifyOriginal() {
+        int[] arr = {3, 1, 2};
+        FenwickTree.countInversions(arr);
+        assertArrayEquals(new int[]{3, 1, 2}, arr);
+    }
 }

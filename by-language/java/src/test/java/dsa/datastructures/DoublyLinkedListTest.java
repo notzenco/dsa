@@ -2,6 +2,7 @@ package dsa.datastructures;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -410,5 +411,183 @@ class DoublyLinkedListTest {
         // List should be: 0, 99, 2
         assertEquals(List.of(0, 99, 2), list.toList());
         assertEquals(List.of(2, 99, 0), list.toListReversed());
+    }
+
+    // ---- contains ----
+
+    @Test
+    void testContains() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 2, 3));
+        assertTrue(list.contains(2));
+        assertFalse(list.contains(99));
+    }
+
+    @Test
+    void testContainsEmpty() {
+        DoublyLinkedList<Integer> list = new DoublyLinkedList<>();
+        assertFalse(list.contains(1));
+    }
+
+    // ---- toArray ----
+
+    @Test
+    void testToArray() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(10, 20, 30));
+        assertArrayEquals(new Object[]{10, 20, 30}, list.toArray());
+    }
+
+    @Test
+    void testToArrayEmpty() {
+        DoublyLinkedList<Integer> list = new DoublyLinkedList<>();
+        assertEquals(0, list.toArray().length);
+    }
+
+    // ---- insertAfter ----
+
+    @Test
+    void testInsertAfterMiddle() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 3));
+        DoublyLinkedList.DNode<Integer> node = list.findNode(1);
+        list.insertAfter(node, 2);
+        assertEquals(List.of(1, 2, 3), list.toList());
+        assertEquals(List.of(3, 2, 1), list.toListReversed());
+        assertEquals(3, list.size());
+    }
+
+    @Test
+    void testInsertAfterTail() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 2));
+        DoublyLinkedList.DNode<Integer> node = list.findNode(2);
+        list.insertAfter(node, 3);
+        assertEquals(List.of(1, 2, 3), list.toList());
+        assertEquals(List.of(3, 2, 1), list.toListReversed());
+    }
+
+    @Test
+    void testInsertAfterNull() {
+        DoublyLinkedList<Integer> list = new DoublyLinkedList<>();
+        assertThrows(IllegalArgumentException.class, () -> list.insertAfter(null, 1));
+    }
+
+    // ---- insertBefore ----
+
+    @Test
+    void testInsertBeforeMiddle() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 3));
+        DoublyLinkedList.DNode<Integer> node = list.findNode(3);
+        list.insertBefore(node, 2);
+        assertEquals(List.of(1, 2, 3), list.toList());
+        assertEquals(List.of(3, 2, 1), list.toListReversed());
+        assertEquals(3, list.size());
+    }
+
+    @Test
+    void testInsertBeforeHead() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(2, 3));
+        DoublyLinkedList.DNode<Integer> node = list.findNode(2);
+        list.insertBefore(node, 1);
+        assertEquals(List.of(1, 2, 3), list.toList());
+        assertEquals(List.of(3, 2, 1), list.toListReversed());
+    }
+
+    @Test
+    void testInsertBeforeNull() {
+        DoublyLinkedList<Integer> list = new DoublyLinkedList<>();
+        assertThrows(IllegalArgumentException.class, () -> list.insertBefore(null, 1));
+    }
+
+    // ---- getHead / getTail ----
+
+    @Test
+    void testGetHeadAndTail() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 2, 3));
+        assertEquals(1, list.getHead().data);
+        assertEquals(3, list.getTail().data);
+    }
+
+    @Test
+    void testGetHeadAndTailEmpty() {
+        DoublyLinkedList<Integer> list = new DoublyLinkedList<>();
+        assertNull(list.getHead());
+        assertNull(list.getTail());
+    }
+
+    // ---- mergeSorted ----
+
+    @Test
+    void testMergeSorted() {
+        DoublyLinkedList<Integer> a = DoublyLinkedList.fromList(List.of(1, 3, 5));
+        DoublyLinkedList<Integer> b = DoublyLinkedList.fromList(List.of(2, 4, 6));
+        DoublyLinkedList<Integer> merged = DoublyLinkedList.mergeSorted(a, b);
+        assertEquals(List.of(1, 2, 3, 4, 5, 6), merged.toList());
+        assertEquals(List.of(6, 5, 4, 3, 2, 1), merged.toListReversed());
+    }
+
+    @Test
+    void testMergeSortedOneEmpty() {
+        DoublyLinkedList<Integer> a = DoublyLinkedList.fromList(List.of(1, 2));
+        DoublyLinkedList<Integer> b = new DoublyLinkedList<>();
+        assertEquals(List.of(1, 2), DoublyLinkedList.mergeSorted(a, b).toList());
+        assertEquals(List.of(1, 2), DoublyLinkedList.mergeSorted(b, a).toList());
+    }
+
+    // ---- map ----
+
+    @Test
+    void testMap() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 2, 3));
+        DoublyLinkedList<String> mapped = list.map(i -> "v" + i);
+        assertEquals(List.of("v1", "v2", "v3"), mapped.toList());
+    }
+
+    @Test
+    void testMapEmpty() {
+        DoublyLinkedList<Integer> list = new DoublyLinkedList<>();
+        DoublyLinkedList<String> mapped = list.map(Object::toString);
+        assertTrue(mapped.isEmpty());
+    }
+
+    // ---- filter ----
+
+    @Test
+    void testFilter() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 2, 3, 4, 5));
+        DoublyLinkedList<Integer> even = list.filter(i -> i % 2 == 0);
+        assertEquals(List.of(2, 4), even.toList());
+    }
+
+    @Test
+    void testFilterNoneMatch() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 3, 5));
+        DoublyLinkedList<Integer> even = list.filter(i -> i % 2 == 0);
+        assertTrue(even.isEmpty());
+    }
+
+    // ---- forEach ----
+
+    @Test
+    void testForEach() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 2, 3));
+        List<Integer> collected = new ArrayList<>();
+        list.forEach(collected::add);
+        assertEquals(List.of(1, 2, 3), collected);
+    }
+
+    // ---- forEachReversed ----
+
+    @Test
+    void testForEachReversed() {
+        DoublyLinkedList<Integer> list = DoublyLinkedList.fromList(List.of(1, 2, 3));
+        List<Integer> collected = new ArrayList<>();
+        list.forEachReversed(collected::add);
+        assertEquals(List.of(3, 2, 1), collected);
+    }
+
+    @Test
+    void testForEachReversedEmpty() {
+        DoublyLinkedList<Integer> list = new DoublyLinkedList<>();
+        List<Integer> collected = new ArrayList<>();
+        list.forEachReversed(collected::add);
+        assertTrue(collected.isEmpty());
     }
 }

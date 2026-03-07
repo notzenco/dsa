@@ -230,4 +230,166 @@ class AdjacencyMatrixTest {
             assertEquals(4, g.getDegree(i));
         }
     }
+
+    // ======================== setWeight ========================
+
+    @Test
+    void setWeightUpdatesExistingEdge() {
+        AdjacencyMatrix g = new AdjacencyMatrix(3, false);
+        g.addEdge(0, 1, 1.0);
+        g.setWeight(0, 1, 5.0);
+        assertEquals(5.0, g.getWeight(0, 1));
+        assertEquals(5.0, g.getWeight(1, 0));
+        assertEquals(1, g.numEdges());
+    }
+
+    @Test
+    void setWeightDirected() {
+        AdjacencyMatrix g = new AdjacencyMatrix(3, true);
+        g.addEdge(0, 1, 2.0);
+        g.setWeight(0, 1, 9.0);
+        assertEquals(9.0, g.getWeight(0, 1));
+        assertFalse(g.hasEdge(1, 0));
+    }
+
+    @Test
+    void setWeightNonExistentThrows() {
+        AdjacencyMatrix g = new AdjacencyMatrix(3, false);
+        assertThrows(IllegalArgumentException.class, () -> g.setWeight(0, 1, 5.0));
+    }
+
+    // ======================== bfs ========================
+
+    @Test
+    void bfsTraversal() {
+        AdjacencyMatrix g = new AdjacencyMatrix(5, false);
+        g.addEdge(0, 1, 1.0);
+        g.addEdge(0, 2, 1.0);
+        g.addEdge(1, 3, 1.0);
+        g.addEdge(2, 4, 1.0);
+        List<Integer> order = g.bfs(0);
+        assertEquals(5, order.size());
+        assertEquals(0, order.get(0));
+        // Level 1: 1, 2; Level 2: 3, 4
+        assertTrue(order.indexOf(1) < order.indexOf(3));
+        assertTrue(order.indexOf(2) < order.indexOf(4));
+    }
+
+    @Test
+    void bfsDisconnected() {
+        AdjacencyMatrix g = new AdjacencyMatrix(4, false);
+        g.addEdge(0, 1, 1.0);
+        // Vertices 2 and 3 are disconnected
+        List<Integer> order = g.bfs(0);
+        assertEquals(2, order.size());
+        assertTrue(order.contains(0));
+        assertTrue(order.contains(1));
+    }
+
+    // ======================== dfs ========================
+
+    @Test
+    void dfsTraversal() {
+        AdjacencyMatrix g = new AdjacencyMatrix(5, false);
+        g.addEdge(0, 1, 1.0);
+        g.addEdge(0, 2, 1.0);
+        g.addEdge(1, 3, 1.0);
+        g.addEdge(2, 4, 1.0);
+        List<Integer> order = g.dfs(0);
+        assertEquals(5, order.size());
+        assertEquals(0, order.get(0));
+    }
+
+    @Test
+    void dfsDisconnected() {
+        AdjacencyMatrix g = new AdjacencyMatrix(4, false);
+        g.addEdge(0, 1, 1.0);
+        List<Integer> order = g.dfs(0);
+        assertEquals(2, order.size());
+        assertTrue(order.contains(0));
+        assertTrue(order.contains(1));
+    }
+
+    // ======================== floydWarshall ========================
+
+    @Test
+    void floydWarshallShortestPaths() {
+        AdjacencyMatrix g = new AdjacencyMatrix(4, true);
+        g.addEdge(0, 1, 3.0);
+        g.addEdge(0, 2, 7.0);
+        g.addEdge(1, 2, 1.0);
+        g.addEdge(2, 3, 2.0);
+        double[][] dist = g.floydWarshall();
+        assertEquals(0.0, dist[0][0]);
+        assertEquals(3.0, dist[0][1]);
+        assertEquals(4.0, dist[0][2]); // 0->1->2
+        assertEquals(6.0, dist[0][3]); // 0->1->2->3
+        assertEquals(Double.POSITIVE_INFINITY, dist[3][0]);
+    }
+
+    // ======================== transitiveClosure ========================
+
+    @Test
+    void transitiveClosureDirected() {
+        AdjacencyMatrix g = new AdjacencyMatrix(4, true);
+        g.addEdge(0, 1, 1.0);
+        g.addEdge(1, 2, 1.0);
+        g.addEdge(2, 3, 1.0);
+        boolean[][] tc = g.transitiveClosure();
+        assertTrue(tc[0][3]); // path 0->1->2->3
+        assertFalse(tc[3][0]); // no reverse path
+        assertTrue(tc[0][0]); // self
+    }
+
+    // ======================== hasPath ========================
+
+    @Test
+    void hasPathExists() {
+        AdjacencyMatrix g = new AdjacencyMatrix(4, true);
+        g.addEdge(0, 1, 1.0);
+        g.addEdge(1, 2, 1.0);
+        g.addEdge(2, 3, 1.0);
+        assertTrue(g.hasPath(0, 3));
+        assertTrue(g.hasPath(0, 0));
+    }
+
+    @Test
+    void hasPathNotExists() {
+        AdjacencyMatrix g = new AdjacencyMatrix(4, true);
+        g.addEdge(0, 1, 1.0);
+        g.addEdge(2, 3, 1.0);
+        assertFalse(g.hasPath(0, 3));
+        assertFalse(g.hasPath(3, 0));
+    }
+
+    // ======================== getEdges ========================
+
+    @Test
+    void getEdgesUndirected() {
+        AdjacencyMatrix g = new AdjacencyMatrix(3, false);
+        g.addEdge(0, 1, 2.0);
+        g.addEdge(1, 2, 3.0);
+        List<AdjacencyMatrix.Edge> edges = g.getEdges();
+        assertEquals(2, edges.size());
+    }
+
+    @Test
+    void getEdgesDirected() {
+        AdjacencyMatrix g = new AdjacencyMatrix(3, true);
+        g.addEdge(0, 1, 2.0);
+        g.addEdge(1, 0, 3.0);
+        List<AdjacencyMatrix.Edge> edges = g.getEdges();
+        assertEquals(2, edges.size());
+        // Verify edge data
+        AdjacencyMatrix.Edge e = edges.get(0);
+        assertEquals(0, e.from);
+        assertEquals(1, e.to);
+        assertEquals(2.0, e.weight);
+    }
+
+    @Test
+    void getEdgesEmpty() {
+        AdjacencyMatrix g = new AdjacencyMatrix(3, false);
+        assertTrue(g.getEdges().isEmpty());
+    }
 }
