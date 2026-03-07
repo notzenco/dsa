@@ -153,20 +153,29 @@ describe("UnionFind<T>", () => {
     const uf = new UnionFind<number>();
     // Create two sets of different sizes
     for (let i = 0; i < 10; i++) uf.makeSet(i);
+    expect(uf.numComponents).toBe(10);
 
     // Build a larger set: {0,1,2,3,4}
     uf.union(0, 1);
     uf.union(0, 2);
     uf.union(0, 3);
     uf.union(0, 4);
+    expect(uf.numComponents).toBe(6);
 
     // Build a smaller set: {5,6}
     uf.union(5, 6);
+    expect(uf.numComponents).toBe(5);
 
     // When we merge, the smaller tree should attach under the larger
     uf.union(0, 5);
     expect(uf.componentSize(0)).toBe(7);
-    expect(uf.numComponents).toBe(3);
+    expect(uf.numComponents).toBe(4); // {0,1,2,3,4,5,6}, {7}, {8}, {9}
+
+    // All merged elements should be connected
+    expect(uf.connected(0, 6)).toBe(true);
+    expect(uf.connected(3, 5)).toBe(true);
+    // Unmerged elements should not be connected
+    expect(uf.connected(0, 7)).toBe(false);
   });
 
   test("toString gives meaningful output", () => {

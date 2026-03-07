@@ -353,8 +353,9 @@ describe("BinarySearchTree", () => {
 
     test("remains valid after insertions and deletions", () => {
       const bst = new BinarySearchTree<number>();
-      for (let i = 0; i < 20; i++) {
-        bst.insert(Math.floor(Math.random() * 100));
+      const values = [50, 25, 75, 12, 37, 62, 87, 6, 18, 31, 43, 56, 68, 81, 93, 3, 9, 15, 21, 28];
+      for (const v of values) {
+        bst.insert(v);
       }
       expect(bst.isValid()).toBe(true);
 
