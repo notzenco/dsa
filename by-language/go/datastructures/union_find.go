@@ -129,6 +129,130 @@ func (wuf *WeightedUnionFind) GetWeight(x, y int) (float64, bool) {
 	return wx - wy, true
 }
 
+func (wuf *WeightedUnionFind) Components() int {
+	return wuf.count
+}
+
+// PersistentUnionFind supports querying past states via version history.
+type PersistentUnionFind struct {
+	parent  []int
+	rank    []int
+	version int
+	history []persistentEntry // (version, index, oldParent, oldRank)
+}
+
+type persistentEntry struct {
+	version   int
+	index     int
+	oldParent int
+	oldRank   int
+}
+
+func NewPersistentUnionFind(n int) *PersistentUnionFind {
+	parent := make([]int, n)
+	rank := make([]int, n)
+	for i := range parent {
+		parent[i] = i
+	}
+	return &PersistentUnionFind{parent: parent, rank: rank}
+}
+
+func (puf *PersistentUnionFind) CurrentVersion() int {
+	return puf.version
+}
+
+func (puf *PersistentUnionFind) getParentAtVersion(x, version int) int {
+	parent := puf.parent[x]
+	for i := len(puf.history) - 1; i >= 0; i-- {
+		e := puf.history[i]
+		if e.version > version && e.index == x {
+			parent = e.oldParent
+		}
+	}
+	return parent
+}
+
+func (puf *PersistentUnionFind) FindAtVersion(x, version int) int {
+	parent := puf.getParentAtVersion(x, version)
+	if parent == x {
+		return x
+	}
+	return puf.FindAtVersion(parent, version)
+}
+
+func (puf *PersistentUnionFind) Find(x int) int {
+	return puf.FindAtVersion(x, puf.version)
+}
+
+func (puf *PersistentUnionFind) Union(x, y int) int {
+	rx := puf.Find(x)
+	ry := puf.Find(y)
+	if rx == ry {
+		return puf.version
+	}
+	puf.version++
+	if puf.rank[rx] < puf.rank[ry] {
+		rx, ry = ry, rx
+	}
+	puf.history = append(puf.history, persistentEntry{
+		version: puf.version, index: ry, oldParent: puf.parent[ry], oldRank: puf.rank[ry],
+	})
+	puf.parent[ry] = rx
+	if puf.rank[rx] == puf.rank[ry] {
+		puf.history = append(puf.history, persistentEntry{
+			version: puf.version, index: rx, oldParent: puf.parent[rx], oldRank: puf.rank[rx],
+		})
+		puf.rank[rx]++
+	}
+	return puf.version
+}
+
+func (puf *PersistentUnionFind) ConnectedAtVersion(x, y, version int) bool {
+	return puf.FindAtVersion(x, version) == puf.FindAtVersion(y, version)
+}
+
+func (puf *PersistentUnionFind) Connected(x, y int) bool {
+	return puf.Find(x) == puf.Find(y)
+}
+
+// FindRedundantConnection finds the edge that creates a cycle in an edge list.
+func FindRedundantConnection(edges [][2]int) [2]int {
+	n := len(edges)
+	uf := NewUnionFind(n + 1) // 1-indexed
+	for _, e := range edges {
+		if !uf.Union(e[0], e[1]) {
+			return e
+		}
+	}
+	return [2]int{}
+}
+
+// GetComponents returns all connected components as slices of indices.
+func (uf *UnionFind) GetComponents() [][]int {
+	components := make(map[int][]int)
+	for i := 0; i < len(uf.parent); i++ {
+		root := uf.Find(i)
+		components[root] = append(components[root], i)
+	}
+	result := make([][]int, 0, len(components))
+	for _, comp := range components {
+		result = append(result, comp)
+	}
+	return result
+}
+
+// SetSize returns the size of the set containing x using tracking.
+func (uf *UnionFind) SetSize(x int) int {
+	root := uf.Find(x)
+	count := 0
+	for i := range uf.parent {
+		if uf.Find(i) == root {
+			count++
+		}
+	}
+	return count
+}
+
 // NumIslands counts connected components in a 2D grid.
 func NumIslands(grid [][]byte) int {
 	if len(grid) == 0 || len(grid[0]) == 0 {

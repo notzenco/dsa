@@ -119,3 +119,120 @@ func (c *LRUCache[K, V]) evict() {
 	c.removeNode(lru)
 	delete(c.cache, lru.Key)
 }
+
+// Peek returns the value without marking as recently used.
+func (c *LRUCache[K, V]) Peek(key K) (V, bool) {
+	node, ok := c.cache[key]
+	if !ok {
+		var zero V
+		return zero, false
+	}
+	return node.Val, true
+}
+
+// Resize changes the cache capacity, evicting LRU items if necessary.
+func (c *LRUCache[K, V]) Resize(newCapacity int) {
+	if newCapacity < 1 {
+		return
+	}
+	for len(c.cache) > newCapacity {
+		c.evict()
+	}
+	c.capacity = newCapacity
+}
+
+// GetLRUKey returns the least recently used key.
+func (c *LRUCache[K, V]) GetLRUKey() (K, bool) {
+	if len(c.cache) == 0 {
+		var zero K
+		return zero, false
+	}
+	return c.tail.Prev.Key, true
+}
+
+// GetMRUKey returns the most recently used key.
+func (c *LRUCache[K, V]) GetMRUKey() (K, bool) {
+	if len(c.cache) == 0 {
+		var zero K
+		return zero, false
+	}
+	return c.head.Next.Key, true
+}
+
+// Values returns all values from most to least recently used.
+func (c *LRUCache[K, V]) Values() []V {
+	vals := make([]V, 0, len(c.cache))
+	node := c.head.Next
+	for node != c.tail {
+		vals = append(vals, node.Val)
+		node = node.Next
+	}
+	return vals
+}
+
+// Items returns all key-value pairs from most to least recently used.
+func (c *LRUCache[K, V]) Items() []struct {
+	Key K
+	Val V
+} {
+	items := make([]struct {
+		Key K
+		Val V
+	}, 0, len(c.cache))
+	node := c.head.Next
+	for node != c.tail {
+		items = append(items, struct {
+			Key K
+			Val V
+		}{node.Key, node.Val})
+		node = node.Next
+	}
+	return items
+}
+
+// ForEach iterates over all items from MRU to LRU.
+func (c *LRUCache[K, V]) ForEach(fn func(K, V)) {
+	node := c.head.Next
+	for node != c.tail {
+		fn(node.Key, node.Val)
+		node = node.Next
+	}
+}
+
+// GetOrPut returns existing value or inserts default.
+func (c *LRUCache[K, V]) GetOrPut(key K, defaultVal V) V {
+	if val, ok := c.Get(key); ok {
+		return val
+	}
+	c.Put(key, defaultVal)
+	return defaultVal
+}
+
+// PutIfAbsent inserts only if key doesn't exist, returns true if inserted.
+func (c *LRUCache[K, V]) PutIfAbsent(key K, value V) bool {
+	if c.Contains(key) {
+		return false
+	}
+	c.Put(key, value)
+	return true
+}
+
+// OldestItems returns up to n items from least to most recently used.
+func (c *LRUCache[K, V]) OldestItems(n int) []struct {
+	Key K
+	Val V
+} {
+	items := make([]struct {
+		Key K
+		Val V
+	}, 0, n)
+	node := c.tail.Prev
+	for node != c.head && len(items) < n {
+		items = append(items, struct {
+			Key K
+			Val V
+		}{node.Key, node.Val})
+		node = node.Prev
+	}
+	return items
+}

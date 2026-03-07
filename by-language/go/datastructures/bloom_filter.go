@@ -158,3 +158,143 @@ func (cbf *CountingBloomFilter) Remove(item string) bool {
 func (cbf *CountingBloomFilter) Count() int {
 	return cbf.count
 }
+
+func (cbf *CountingBloomFilter) FalsePositiveRate() float64 {
+	nonZero := 0
+	for _, c := range cbf.counters {
+		if c > 0 {
+			nonZero++
+		}
+	}
+	ratio := float64(nonZero) / float64(cbf.size)
+	return math.Pow(ratio, float64(cbf.numHash))
+}
+
+// ScalableBloomFilter grows automatically when the current filter becomes too full.
+type ScalableBloomFilter struct {
+	filters           []*BloomFilter
+	targetFPRate      float64
+	growthFactor      float64
+	initialCapacity   int
+	totalCount        int
+	maxFillRatio      float64
+}
+
+func NewScalableBloomFilter(initialCapacity int, targetFPRate float64) *ScalableBloomFilter {
+	sbf := &ScalableBloomFilter{
+		targetFPRate:    targetFPRate,
+		growthFactor:    2.0,
+		initialCapacity: initialCapacity,
+		maxFillRatio:    0.5,
+	}
+	sbf.addFilter()
+	return sbf
+}
+
+func (sbf *ScalableBloomFilter) addFilter() {
+	capacity := sbf.initialCapacity
+	for i := 0; i < len(sbf.filters); i++ {
+		capacity = int(float64(capacity) * sbf.growthFactor)
+	}
+	// Each successive filter gets a tighter FP rate
+	fpRate := sbf.targetFPRate * math.Pow(0.5, float64(len(sbf.filters)+1))
+	if fpRate < 1e-10 {
+		fpRate = 1e-10
+	}
+	sbf.filters = append(sbf.filters, NewBloomFilter(capacity, fpRate))
+}
+
+func (sbf *ScalableBloomFilter) Add(item string) {
+	activeFilter := sbf.filters[len(sbf.filters)-1]
+	// Check if active filter is too full
+	fillRatio := float64(activeFilter.count) / float64(activeFilter.size)
+	if fillRatio > sbf.maxFillRatio {
+		sbf.addFilter()
+		activeFilter = sbf.filters[len(sbf.filters)-1]
+	}
+	activeFilter.Add(item)
+	sbf.totalCount++
+}
+
+func (sbf *ScalableBloomFilter) Contains(item string) bool {
+	for _, f := range sbf.filters {
+		if f.Contains(item) {
+			return true
+		}
+	}
+	return false
+}
+
+func (sbf *ScalableBloomFilter) Count() int {
+	return sbf.totalCount
+}
+
+func (sbf *ScalableBloomFilter) NumFilters() int {
+	return len(sbf.filters)
+}
+
+func (sbf *ScalableBloomFilter) FalsePositiveRate() float64 {
+	// Combined FP rate: 1 - product(1 - fp_i)
+	product := 1.0
+	for _, f := range sbf.filters {
+		product *= (1.0 - f.FalsePositiveRate())
+	}
+	return 1.0 - product
+}
+
+// BloomFilterUnion merges two bloom filters (must have same size and hash count).
+func BloomFilterUnion(a, b *BloomFilter) *BloomFilter {
+	if a.size != b.size || a.numHash != b.numHash {
+		return nil
+	}
+	result := NewBloomFilterWithSize(a.size, a.numHash)
+	for i := range a.bits {
+		result.bits[i] = a.bits[i] || b.bits[i]
+	}
+	result.count = a.count + b.count // approximate
+	return result
+}
+
+// BloomFilterIntersection creates an intersection of two bloom filters.
+func BloomFilterIntersection(a, b *BloomFilter) *BloomFilter {
+	if a.size != b.size || a.numHash != b.numHash {
+		return nil
+	}
+	result := NewBloomFilterWithSize(a.size, a.numHash)
+	for i := range a.bits {
+		result.bits[i] = a.bits[i] && b.bits[i]
+	}
+	return result
+}
+
+// EstimateCount estimates the number of items based on bit fill ratio.
+func (bf *BloomFilter) EstimateCount() float64 {
+	setBits := 0
+	for _, b := range bf.bits {
+		if b {
+			setBits++
+		}
+	}
+	if setBits == 0 || setBits == bf.size {
+		return float64(bf.count)
+	}
+	return -float64(bf.size) / float64(bf.numHash) * math.Log(1.0-float64(setBits)/float64(bf.size))
+}
+
+// Clear resets the bloom filter.
+func (bf *BloomFilter) Clear() {
+	for i := range bf.bits {
+		bf.bits[i] = false
+	}
+	bf.count = 0
+}
+
+// Size returns the bit array size.
+func (bf *BloomFilter) Size() int {
+	return bf.size
+}
+
+// NumHashFunctions returns the number of hash functions.
+func (bf *BloomFilter) NumHashFunctions() int {
+	return bf.numHash
+}

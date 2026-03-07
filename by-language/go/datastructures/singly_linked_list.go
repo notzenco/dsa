@@ -280,6 +280,230 @@ func (l *SinglyLinkedList[T]) ToSlice() []T {
 	return result
 }
 
+// IsPalindrome checks if the linked list values form a palindrome.
+func (l *SinglyLinkedList[T]) IsPalindrome() bool {
+	if l.length <= 1 {
+		return true
+	}
+	values := l.ToSlice()
+	for i, j := 0, len(values)-1; i < j; i, j = i+1, j-1 {
+		if values[i] != values[j] {
+			return false
+		}
+	}
+	return true
+}
+
+// ReverseBetween reverses nodes between positions left and right (0-indexed).
+func (l *SinglyLinkedList[T]) ReverseBetween(left, right int) {
+	if left >= right || left < 0 || right >= l.length {
+		return
+	}
+
+	// Build slice, reverse segment, rebuild list
+	values := l.ToSlice()
+	for i, j := left, right; i < j; i, j = i+1, j-1 {
+		values[i], values[j] = values[j], values[i]
+	}
+
+	// Rebuild
+	l.head = nil
+	l.tail = nil
+	l.length = 0
+	for _, v := range values {
+		l.Append(v)
+	}
+}
+
+// GetCycleStart returns the node where a cycle begins, or nil.
+func (l *SinglyLinkedList[T]) GetCycleStart() *SLLNode[T] {
+	if l.head == nil {
+		return nil
+	}
+	slow := l.head
+	fast := l.head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+		if slow == fast {
+			// Cycle found, find start
+			slow = l.head
+			for slow != fast {
+				slow = slow.Next
+				fast = fast.Next
+			}
+			return slow
+		}
+	}
+	return nil
+}
+
+// SortList sorts the linked list using merge sort.
+func SortSinglyLinkedList(head *SLLNode[int]) *SLLNode[int] {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	// Find middle
+	slow := head
+	fast := head.Next
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+
+	mid := slow.Next
+	slow.Next = nil
+
+	left := SortSinglyLinkedList(head)
+	right := SortSinglyLinkedList(mid)
+	return mergeSortedSLL(left, right)
+}
+
+func mergeSortedSLL(a, b *SLLNode[int]) *SLLNode[int] {
+	dummy := &SLLNode[int]{}
+	current := dummy
+	for a != nil && b != nil {
+		if a.Value <= b.Value {
+			current.Next = a
+			a = a.Next
+		} else {
+			current.Next = b
+			b = b.Next
+		}
+		current = current.Next
+	}
+	if a != nil {
+		current.Next = a
+	} else {
+		current.Next = b
+	}
+	return dummy.Next
+}
+
+// MergeSortedIntLists merges two sorted int singly linked lists.
+func MergeSortedIntLists(l1, l2 *SinglyLinkedList[int]) *SinglyLinkedList[int] {
+	result := NewSinglyLinkedList[int]()
+	a := l1.Head()
+	b := l2.Head()
+	for a != nil && b != nil {
+		if a.Value <= b.Value {
+			result.Append(a.Value)
+			a = a.Next
+		} else {
+			result.Append(b.Value)
+			b = b.Next
+		}
+	}
+	for a != nil {
+		result.Append(a.Value)
+		a = a.Next
+	}
+	for b != nil {
+		result.Append(b.Value)
+		b = b.Next
+	}
+	return result
+}
+
+// RemoveAllOccurrences removes all nodes with the given value.
+func (l *SinglyLinkedList[T]) RemoveAllOccurrences(value T) int {
+	count := 0
+	for l.head != nil && l.head.Value == value {
+		l.PopFirst()
+		count++
+	}
+	if l.head == nil {
+		return count
+	}
+	current := l.head
+	for current.Next != nil {
+		if current.Next.Value == value {
+			if current.Next == l.tail {
+				l.tail = current
+			}
+			current.Next = current.Next.Next
+			l.length--
+			count++
+		} else {
+			current = current.Next
+		}
+	}
+	return count
+}
+
+// Rotate rotates the list by k positions to the right.
+func (l *SinglyLinkedList[T]) Rotate(k int) {
+	if l.length <= 1 || k <= 0 {
+		return
+	}
+	k = k % l.length
+	if k == 0 {
+		return
+	}
+	// Find the (length - k)th node
+	steps := l.length - k
+	current := l.head
+	for i := 1; i < steps; i++ {
+		current = current.Next
+	}
+	newHead := current.Next
+	current.Next = nil
+	l.tail.Next = l.head
+	l.tail = current
+	l.head = newHead
+}
+
+// PartitionInts rearranges nodes so values < pivot come before values >= pivot.
+// Only works with int linked lists.
+func PartitionIntsSLL(l *SinglyLinkedList[int], pivot int) {
+	if l.Len() <= 1 {
+		return
+	}
+	var beforeHead, beforeTail, afterHead, afterTail *SLLNode[int]
+
+	current := l.Head()
+	for current != nil {
+		next := current.Next
+		current.Next = nil
+		if current.Value < pivot {
+			if beforeHead == nil {
+				beforeHead = current
+				beforeTail = current
+			} else {
+				beforeTail.Next = current
+				beforeTail = current
+			}
+		} else {
+			if afterHead == nil {
+				afterHead = current
+				afterTail = current
+			} else {
+				afterTail.Next = current
+				afterTail = current
+			}
+		}
+		current = next
+	}
+
+	// Rebuild the list from partitioned segments
+	values := make([]int, 0, l.Len())
+	for n := beforeHead; n != nil; n = n.Next {
+		values = append(values, n.Value)
+	}
+	for n := afterHead; n != nil; n = n.Next {
+		values = append(values, n.Value)
+	}
+
+	// Clear and rebuild
+	l.head = nil
+	l.tail = nil
+	l.length = 0
+	for _, v := range values {
+		l.Append(v)
+	}
+}
+
 func SLLFromSlice[T comparable](items []T) *SinglyLinkedList[T] {
 	l := NewSinglyLinkedList[T]()
 	for _, item := range items {

@@ -217,3 +217,230 @@ func TestBSTLowestCommonAncestor(t *testing.T) {
 		t.Errorf("expected LCA 2, got %d", lca)
 	}
 }
+
+func TestBSTCountNodes(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7, 1, 4} {
+		tree.Insert(v)
+	}
+	if tree.CountNodes() != 5 {
+		t.Errorf("expected 5, got %d", tree.CountNodes())
+	}
+}
+
+func TestBSTLeafCount(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7, 1, 4, 6, 8} {
+		tree.Insert(v)
+	}
+	if tree.LeafCount() != 4 {
+		t.Errorf("expected 4 leaves, got %d", tree.LeafCount())
+	}
+}
+
+func TestBSTInternalCount(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7, 1, 4, 6, 8} {
+		tree.Insert(v)
+	}
+	if tree.InternalCount() != 3 {
+		t.Errorf("expected 3 internal nodes, got %d", tree.InternalCount())
+	}
+}
+
+func TestBSTWidth(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7, 1, 4, 6, 8} {
+		tree.Insert(v)
+	}
+	if tree.Width() != 4 {
+		t.Errorf("expected width 4, got %d", tree.Width())
+	}
+}
+
+func TestBSTDiameter(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7, 1, 8} {
+		tree.Insert(v)
+	}
+	d := tree.Diameter()
+	if d != 4 {
+		t.Errorf("expected diameter 4, got %d", d)
+	}
+}
+
+func TestBSTIsBalanced(t *testing.T) {
+	balanced := BSTFromSortedSlice([]int{1, 2, 3, 4, 5, 6, 7})
+	if !balanced.IsBalanced() {
+		t.Error("tree from sorted slice should be balanced")
+	}
+
+	skewed := NewBST[int]()
+	for i := 1; i <= 10; i++ {
+		skewed.Insert(i)
+	}
+	if skewed.IsBalanced() {
+		t.Error("sequentially inserted tree should not be balanced")
+	}
+}
+
+func TestBSTIsFull(t *testing.T) {
+	tree := BSTFromSortedSlice([]int{1, 2, 3, 4, 5, 6, 7})
+	if !tree.IsFull() {
+		t.Error("perfect tree should be full")
+	}
+
+	tree2 := NewBST[int]()
+	tree2.Insert(5)
+	tree2.Insert(3)
+	// 5 has only left child
+	if tree2.IsFull() {
+		t.Error("tree with one child should not be full")
+	}
+}
+
+func TestBSTIsComplete(t *testing.T) {
+	tree := BSTFromSortedSlice([]int{1, 2, 3, 4, 5, 6, 7})
+	if !tree.IsComplete() {
+		t.Error("perfect tree should be complete")
+	}
+}
+
+func TestBSTPathSum(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7, 1, 4} {
+		tree.Insert(v)
+	}
+	if !BSTPathSum(tree.Root, 9) {
+		t.Error("expected path sum 9 (5->3->1=9)")
+	}
+	if BSTPathSum(tree.Root, 100) {
+		t.Error("should not find path sum 100")
+	}
+}
+
+func TestBSTKthLargest(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7, 1, 4, 6, 8} {
+		tree.Insert(v)
+	}
+	val, ok := tree.KthLargest(1)
+	if !ok || val != 8 {
+		t.Errorf("expected 8, got %d", val)
+	}
+	val, ok = tree.KthLargest(3)
+	if !ok || val != 6 {
+		t.Errorf("expected 6, got %d", val)
+	}
+}
+
+func TestBSTRangeCount(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7, 1, 4, 6, 8} {
+		tree.Insert(v)
+	}
+	count := tree.RangeCount(3, 7)
+	if count != 5 {
+		t.Errorf("expected 5 in range [3,7], got %d", count)
+	}
+}
+
+func TestBSTMorrisInorder(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7, 1, 4, 6, 8} {
+		tree.Insert(v)
+	}
+	result := tree.MorrisInorder()
+	expected := []int{1, 3, 4, 5, 6, 7, 8}
+	for i, v := range expected {
+		if result[i] != v {
+			t.Errorf("index %d: expected %d, got %d", i, v, result[i])
+		}
+	}
+}
+
+func TestBSTSerialize(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7} {
+		tree.Insert(v)
+	}
+	s := tree.Serialize()
+	if len(s) != 3 {
+		t.Errorf("expected 3 elements, got %d", len(s))
+	}
+}
+
+func TestBSTClear(t *testing.T) {
+	tree := NewBST[int]()
+	tree.Insert(1)
+	tree.Insert(2)
+	tree.Clear()
+	if !tree.IsEmpty() {
+		t.Error("should be empty after clear")
+	}
+}
+
+func TestBSTFromPreorder(t *testing.T) {
+	tree := BSTFromPreorder([]int{5, 3, 1, 4, 7, 6, 8})
+	if !tree.IsValidBST() {
+		t.Error("should be valid BST")
+	}
+	if tree.Size() != 7 {
+		t.Errorf("expected 7, got %d", tree.Size())
+	}
+}
+
+func TestBSTHeight(t *testing.T) {
+	tree := NewBST[int]()
+	tree.Insert(5)
+	if tree.Height() != 0 {
+		t.Errorf("single node height should be 0, got %d", tree.Height())
+	}
+
+	tree.Insert(3)
+	tree.Insert(7)
+	if tree.Height() != 1 {
+		t.Errorf("expected height 1, got %d", tree.Height())
+	}
+}
+
+func TestBSTDeleteNonExistent(t *testing.T) {
+	tree := NewBST[int]()
+	tree.Insert(5)
+	if tree.Delete(99) {
+		t.Error("should not delete non-existent value")
+	}
+}
+
+func TestBSTMinMaxEmpty(t *testing.T) {
+	tree := NewBST[int]()
+	_, ok := tree.Min()
+	if ok {
+		t.Error("min on empty tree should fail")
+	}
+	_, ok = tree.Max()
+	if ok {
+		t.Error("max on empty tree should fail")
+	}
+}
+
+func TestBSTDuplicate(t *testing.T) {
+	tree := NewBST[int]()
+	tree.Insert(5)
+	tree.Insert(5)
+	if tree.Size() != 1 {
+		t.Errorf("expected 1 after duplicate insert, got %d", tree.Size())
+	}
+}
+
+func TestBSTInvert(t *testing.T) {
+	tree := NewBST[int]()
+	for _, v := range []int{5, 3, 7} {
+		tree.Insert(v)
+	}
+	tree.Invert()
+	// After inversion, left should be 7, right should be 3
+	if tree.Root.Left.Value != 7 || tree.Root.Right.Value != 3 {
+		t.Error("inversion failed")
+	}
+}

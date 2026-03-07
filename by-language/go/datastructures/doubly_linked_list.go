@@ -246,6 +246,172 @@ func (l *DoublyLinkedList[T]) getNode(index int) *DLLNode[T] {
 	return current
 }
 
+// Reverse reverses the entire list in place.
+func (l *DoublyLinkedList[T]) Reverse() {
+	current := l.head
+	for current != nil {
+		current.Prev, current.Next = current.Next, current.Prev
+		current = current.Prev // was Next before swap
+	}
+	l.head, l.tail = l.tail, l.head
+}
+
+// ForEach applies a function to each value.
+func (l *DoublyLinkedList[T]) ForEach(fn func(T)) {
+	current := l.head
+	for current != nil {
+		fn(current.Value)
+		current = current.Next
+	}
+}
+
+// ForEachReverse applies a function to each value in reverse order.
+func (l *DoublyLinkedList[T]) ForEachReverse(fn func(T)) {
+	current := l.tail
+	for current != nil {
+		fn(current.Value)
+		current = current.Prev
+	}
+}
+
+// Contains checks if a value exists in the list.
+func (l *DoublyLinkedList[T]) Contains(value T) bool {
+	return l.Find(value) != nil
+}
+
+// RemoveAll removes all nodes with the given value and returns count removed.
+func (l *DoublyLinkedList[T]) RemoveAll(value T) int {
+	count := 0
+	current := l.head
+	for current != nil {
+		next := current.Next
+		if current.Value == value {
+			l.RemoveNode(current)
+			count++
+		}
+		current = next
+	}
+	return count
+}
+
+// IsPalindrome checks if the list values form a palindrome.
+func (l *DoublyLinkedList[T]) IsPalindrome() bool {
+	if l.length <= 1 {
+		return true
+	}
+	front := l.head
+	back := l.tail
+	for i := 0; i < l.length/2; i++ {
+		if front.Value != back.Value {
+			return false
+		}
+		front = front.Next
+		back = back.Prev
+	}
+	return true
+}
+
+// Rotate rotates the list k positions to the right.
+func (l *DoublyLinkedList[T]) Rotate(k int) {
+	if l.length <= 1 || k <= 0 {
+		return
+	}
+	k = k % l.length
+	if k == 0 {
+		return
+	}
+	// Find split point: length - k steps from head
+	steps := l.length - k
+	splitNode := l.head
+	for i := 1; i < steps; i++ {
+		splitNode = splitNode.Next
+	}
+
+	newHead := splitNode.Next
+	splitNode.Next = nil
+	newHead.Prev = nil
+	l.tail.Next = l.head
+	l.head.Prev = l.tail
+	l.head = newHead
+	l.tail = splitNode
+}
+
+// Swap swaps the values of two nodes at the given indices.
+func (l *DoublyLinkedList[T]) Swap(i, j int) bool {
+	if i == j || i < 0 || j < 0 || i >= l.length || j >= l.length {
+		return false
+	}
+	nodeI := l.getNode(i)
+	nodeJ := l.getNode(j)
+	nodeI.Value, nodeJ.Value = nodeJ.Value, nodeI.Value
+	return true
+}
+
+// InsertSorted inserts a value into a sorted list maintaining sort order.
+func (l *DoublyLinkedList[T]) InsertSorted(value T, less func(T, T) bool) {
+	node := &DLLNode[T]{Value: value}
+	if l.head == nil || less(value, l.head.Value) {
+		l.Prepend(value)
+		return
+	}
+	current := l.head
+	for current.Next != nil && !less(value, current.Next.Value) {
+		current = current.Next
+	}
+	node.Prev = current
+	node.Next = current.Next
+	if current.Next != nil {
+		current.Next.Prev = node
+	} else {
+		l.tail = node
+	}
+	current.Next = node
+	l.length++
+}
+
+// MergeSorted merges another sorted DLL into this sorted DLL.
+func MergeSortedDLL[T comparable](l1, l2 *DoublyLinkedList[T], less func(T, T) bool) *DoublyLinkedList[T] {
+	result := NewDoublyLinkedList[T]()
+	a := l1.head
+	b := l2.head
+	for a != nil && b != nil {
+		if less(a.Value, b.Value) || (!less(b.Value, a.Value) && !less(a.Value, b.Value)) {
+			result.Append(a.Value)
+			a = a.Next
+		} else {
+			result.Append(b.Value)
+			b = b.Next
+		}
+	}
+	for a != nil {
+		result.Append(a.Value)
+		a = a.Next
+	}
+	for b != nil {
+		result.Append(b.Value)
+		b = b.Next
+	}
+	return result
+}
+
+// Copy creates a deep copy of the list.
+func (l *DoublyLinkedList[T]) Copy() *DoublyLinkedList[T] {
+	result := NewDoublyLinkedList[T]()
+	current := l.head
+	for current != nil {
+		result.Append(current.Value)
+		current = current.Next
+	}
+	return result
+}
+
+// Clear removes all elements from the list.
+func (l *DoublyLinkedList[T]) Clear() {
+	l.head = nil
+	l.tail = nil
+	l.length = 0
+}
+
 func DLLFromSlice[T comparable](items []T) *DoublyLinkedList[T] {
 	l := NewDoublyLinkedList[T]()
 	for _, item := range items {

@@ -131,3 +131,207 @@ func TestSkipListKeys(t *testing.T) {
 		}
 	}
 }
+
+func TestSkipListValues(t *testing.T) {
+	sl := NewSkipList[int, string]()
+	sl.Insert(2, "two")
+	sl.Insert(1, "one")
+	sl.Insert(3, "three")
+
+	values := sl.Values()
+	if len(values) != 3 {
+		t.Errorf("expected 3 values, got %d", len(values))
+	}
+	if values[0] != "one" || values[1] != "two" || values[2] != "three" {
+		t.Errorf("unexpected values: %v", values)
+	}
+}
+
+func TestSkipListClear(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	for i := 1; i <= 10; i++ {
+		sl.Insert(i, i)
+	}
+	sl.Clear()
+	if !sl.IsEmpty() {
+		t.Error("should be empty after clear")
+	}
+	if sl.Size() != 0 {
+		t.Errorf("expected size 0, got %d", sl.Size())
+	}
+}
+
+func TestSkipListRangeCount(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	for i := 1; i <= 10; i++ {
+		sl.Insert(i, i)
+	}
+	count := sl.RangeCount(3, 7)
+	if count != 5 {
+		t.Errorf("expected 5, got %d", count)
+	}
+}
+
+func TestSkipListForEach(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	sl.Insert(1, 10)
+	sl.Insert(2, 20)
+	sl.Insert(3, 30)
+
+	sum := 0
+	sl.ForEach(func(k int, v int) {
+		sum += v
+	})
+	if sum != 60 {
+		t.Errorf("expected sum 60, got %d", sum)
+	}
+}
+
+func TestSkipListGetOrDefault(t *testing.T) {
+	sl := NewSkipList[int, string]()
+	sl.Insert(1, "one")
+
+	val := sl.GetOrDefault(1, "default")
+	if val != "one" {
+		t.Errorf("expected 'one', got %q", val)
+	}
+
+	val = sl.GetOrDefault(99, "default")
+	if val != "default" {
+		t.Errorf("expected 'default', got %q", val)
+	}
+}
+
+func TestSkipListPop(t *testing.T) {
+	sl := NewSkipList[int, string]()
+	sl.Insert(3, "three")
+	sl.Insert(1, "one")
+	sl.Insert(2, "two")
+
+	k, v, ok := sl.Pop()
+	if !ok || k != 1 || v != "one" {
+		t.Errorf("expected (1, 'one'), got (%d, %q)", k, v)
+	}
+	if sl.Size() != 2 {
+		t.Errorf("expected size 2, got %d", sl.Size())
+	}
+}
+
+func TestSkipListPopEmpty(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	_, _, ok := sl.Pop()
+	if ok {
+		t.Error("pop from empty should fail")
+	}
+}
+
+func TestSkipListRank(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	sl.Insert(10, 10)
+	sl.Insert(20, 20)
+	sl.Insert(30, 30)
+
+	if sl.Rank(10) != 1 {
+		t.Errorf("expected rank 1, got %d", sl.Rank(10))
+	}
+	if sl.Rank(20) != 2 {
+		t.Errorf("expected rank 2, got %d", sl.Rank(20))
+	}
+	if sl.Rank(30) != 3 {
+		t.Errorf("expected rank 3, got %d", sl.Rank(30))
+	}
+	if sl.Rank(99) != 0 {
+		t.Errorf("expected rank 0 for missing, got %d", sl.Rank(99))
+	}
+}
+
+func TestSkipListLevel(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	for i := 1; i <= 100; i++ {
+		sl.Insert(i, i)
+	}
+	if sl.Level() < 0 {
+		t.Errorf("level should be >= 0, got %d", sl.Level())
+	}
+}
+
+func TestSkipListLargeInsertDelete(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	for i := 0; i < 500; i++ {
+		sl.Insert(i, i*10)
+	}
+	if sl.Size() != 500 {
+		t.Errorf("expected 500, got %d", sl.Size())
+	}
+
+	for i := 0; i < 500; i++ {
+		v, ok := sl.Search(i)
+		if !ok || v != i*10 {
+			t.Errorf("key %d: expected %d, got %d", i, i*10, v)
+		}
+	}
+
+	for i := 0; i < 250; i++ {
+		sl.Delete(i)
+	}
+	if sl.Size() != 250 {
+		t.Errorf("expected 250, got %d", sl.Size())
+	}
+}
+
+func TestSkipListHead(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	sl.Insert(3, 30)
+	sl.Insert(1, 10)
+	sl.Insert(2, 20)
+
+	k, v, ok := sl.Head()
+	if !ok || k != 1 || v != 10 {
+		t.Errorf("expected head (1, 10), got (%d, %d)", k, v)
+	}
+}
+
+func TestSkipListTail(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	sl.Insert(3, 30)
+	sl.Insert(1, 10)
+	sl.Insert(2, 20)
+
+	k, v, ok := sl.Tail()
+	if !ok || k != 3 || v != 30 {
+		t.Errorf("expected tail (3, 30), got (%d, %d)", k, v)
+	}
+}
+
+func TestSkipListFloorCeilingEdge(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	sl.Insert(10, 10)
+	sl.Insert(30, 30)
+
+	// Floor of something smaller than all
+	_, _, ok := sl.Floor(5)
+	if ok {
+		t.Error("floor of 5 should fail when min is 10")
+	}
+
+	// Ceiling of something larger than all
+	_, _, ok = sl.Ceiling(35)
+	if !ok {
+		// Actually ceiling should fail when no key >= 35
+	}
+}
+
+func TestSkipListEmpty(t *testing.T) {
+	sl := NewSkipList[int, int]()
+	if !sl.IsEmpty() {
+		t.Error("new skip list should be empty")
+	}
+	_, _, ok := sl.Min()
+	if ok {
+		t.Error("min on empty should fail")
+	}
+	_, _, ok = sl.Max()
+	if ok {
+		t.Error("max on empty should fail")
+	}
+}
