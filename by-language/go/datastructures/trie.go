@@ -31,6 +31,9 @@ func (t *Trie) IsEmpty() bool {
 }
 
 func (t *Trie) Insert(word string) {
+	if t.Search(word) {
+		return
+	}
 	node := t.Root
 	for _, ch := range word {
 		if _, ok := node.Children[ch]; !ok {
@@ -67,7 +70,11 @@ func (t *Trie) findNode(prefix string) *TrieNode {
 }
 
 func (t *Trie) Delete(word string) bool {
-	return t.deleteHelper(t.Root, []rune(word), 0)
+	if !t.Search(word) {
+		return false
+	}
+	t.deleteHelper(t.Root, []rune(word), 0)
+	return true
 }
 
 func (t *Trie) deleteHelper(node *TrieNode, word []rune, depth int) bool {
@@ -154,7 +161,7 @@ func NewTrieMap() *TrieMap {
 	return &TrieMap{root: newTrieNode()}
 }
 
-func (tm *TrieMap) Size() int    { return tm.size }
+func (tm *TrieMap) Size() int     { return tm.size }
 func (tm *TrieMap) IsEmpty() bool { return tm.size == 0 }
 
 func (tm *TrieMap) Put(key string, value interface{}) {

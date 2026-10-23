@@ -128,6 +128,24 @@ func TestTrieDuplicateInsert(t *testing.T) {
 	if trie.Size() != 1 {
 		t.Errorf("expected size 1 for duplicate, got %d", trie.Size())
 	}
+	if trie.CountWordsWithPrefix("hello") != 1 {
+		t.Errorf("duplicate insertion changed prefix count")
+	}
+}
+
+func TestTrieDeleteStoredPrefixAndMissingWord(t *testing.T) {
+	trie := NewTrie()
+	trie.Insert("a")
+	trie.Insert("ab")
+	if trie.Delete("ac") || trie.CountWordsWithPrefix("a") != 2 {
+		t.Fatal("missing deletion changed prefix count")
+	}
+	if !trie.Delete("a") || trie.Search("a") || !trie.Search("ab") {
+		t.Fatal("stored prefix deletion reported failure or damaged child")
+	}
+	if trie.CountWordsWithPrefix("a") != 1 {
+		t.Fatal("prefix count after deletion is incorrect")
+	}
 }
 
 func TestWordDictionary(t *testing.T) {

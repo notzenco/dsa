@@ -170,10 +170,14 @@ func (ht *HashTableOpenAddressing[K, V]) Put(key K, value V) {
 	}
 
 	idx := ht.hash(key)
+	firstTombstone := -1
 	for i := 0; i < ht.capacity; i++ {
 		pos := (idx + i) % ht.capacity
 		entry := &ht.entries[pos]
-		if !entry.Occupied || entry.Tombstone {
+		if !entry.Occupied {
+			if firstTombstone >= 0 {
+				entry = &ht.entries[firstTombstone]
+			}
 			entry.Key = key
 			entry.Value = value
 			entry.Occupied = true
@@ -181,10 +185,22 @@ func (ht *HashTableOpenAddressing[K, V]) Put(key K, value V) {
 			ht.size++
 			return
 		}
-		if entry.Key == key {
+		if entry.Tombstone {
+			if firstTombstone < 0 {
+				firstTombstone = pos
+			}
+		} else if entry.Key == key {
 			entry.Value = value
 			return
 		}
+	}
+	if firstTombstone >= 0 {
+		entry := &ht.entries[firstTombstone]
+		entry.Key = key
+		entry.Value = value
+		entry.Occupied = true
+		entry.Tombstone = false
+		ht.size++
 	}
 }
 

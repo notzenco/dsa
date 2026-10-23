@@ -121,6 +121,25 @@ func TestHashTableOpenAddressingDelete(t *testing.T) {
 	}
 }
 
+func TestHashTableOpenAddressingUpdatePastTombstone(t *testing.T) {
+	ht := NewHashTableOpenAddressing[int, int]()
+	first, second := 0, 1
+	for ht.hash(second) != ht.hash(first) {
+		second++
+	}
+	ht.Put(first, 10)
+	ht.Put(second, 20)
+	ht.Delete(first)
+	ht.Put(second, 30)
+	if ht.Size() != 1 {
+		t.Fatalf("size after update = %d, want 1", ht.Size())
+	}
+	ht.Delete(second)
+	if ht.Contains(second) || ht.Size() != 0 {
+		t.Fatalf("duplicate key resurfaced after deletion")
+	}
+}
+
 func TestHashTableOpenAddressingResize(t *testing.T) {
 	ht := NewHashTableOpenAddressing[int, int]()
 	for i := 0; i < 50; i++ {
