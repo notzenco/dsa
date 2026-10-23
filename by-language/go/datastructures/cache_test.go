@@ -374,6 +374,32 @@ func TestLRUCacheEmpty(t *testing.T) {
 	}
 }
 
+func TestLRUCacheClear(t *testing.T) {
+	cache := NewLRUCache[int, string](2)
+	cache.Put(1, "one")
+	cache.Put(2, "two")
+	cache.Clear()
+
+	if cache.Size() != 0 {
+		t.Fatalf("cleared cache size = %d, want 0", cache.Size())
+	}
+	if _, ok := cache.Get(1); ok {
+		t.Fatal("cleared cache should not contain old keys")
+	}
+	if keys := cache.Keys(); len(keys) != 0 {
+		t.Fatalf("cleared cache keys = %v", keys)
+	}
+
+	cache.Put(3, "three")
+	val, ok := cache.Get(3)
+	if !ok || val != "three" {
+		t.Fatalf("put after clear = %q, %v", val, ok)
+	}
+	if cache.Size() != 1 {
+		t.Fatalf("size after refill = %d", cache.Size())
+	}
+}
+
 // --- LFU Cache Extended Tests ---
 
 func TestLFUCacheCapacityZero(t *testing.T) {

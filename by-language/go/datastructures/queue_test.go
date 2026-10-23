@@ -181,3 +181,46 @@ func TestSlidingWindowMaximum(t *testing.T) {
 		t.Errorf("single element: expected [1], got %v", result)
 	}
 }
+
+func TestQueueEmptyAccessors(t *testing.T) {
+	q := NewQueue[int]()
+	if q.Size() != 0 || !q.IsEmpty() {
+		t.Fatalf("empty queue size=%d empty=%v", q.Size(), q.IsEmpty())
+	}
+	if _, ok := q.Peek(); ok {
+		t.Fatal("peek on empty queue should fail")
+	}
+	if _, ok := q.Rear(); ok {
+		t.Fatal("rear on empty queue should fail")
+	}
+
+	cq := NewCircularQueue[int](2)
+	if cq.Size() != 0 || !cq.IsEmpty() {
+		t.Fatalf("empty circular queue size=%d empty=%v", cq.Size(), cq.IsEmpty())
+	}
+	if _, ok := cq.Peek(); ok {
+		t.Fatal("peek on empty circular queue should fail")
+	}
+	if _, ok := cq.Rear(); ok {
+		t.Fatal("rear on empty circular queue should fail")
+	}
+}
+
+func TestDequeEmptyAccessors(t *testing.T) {
+	d := NewDeque[int]()
+	if d.Size() != 0 || !d.IsEmpty() {
+		t.Fatalf("empty deque size=%d empty=%v", d.Size(), d.IsEmpty())
+	}
+	if _, ok := d.PeekFront(); ok {
+		t.Fatal("peek front on empty deque should fail")
+	}
+	if _, ok := d.PeekRear(); ok {
+		t.Fatal("peek rear on empty deque should fail")
+	}
+	if _, ok := d.RemoveFront(); ok {
+		t.Fatal("remove front on empty deque should fail")
+	}
+	if _, ok := d.RemoveRear(); ok {
+		t.Fatal("remove rear on empty deque should fail")
+	}
+}
