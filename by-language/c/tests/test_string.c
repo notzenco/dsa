@@ -110,6 +110,7 @@ TEST(z_function_basic) {
 TEST(z_search_found) {
     ASSERT_EQ(0, z_search("hello world", "hello"));
     ASSERT_EQ(6, z_search("hello world", "world"));
+    ASSERT_EQ(0, z_search("$$", "$"));
 }
 
 TEST(z_search_not_found) {
@@ -120,6 +121,9 @@ TEST(z_search_all_basic) {
     int indices[10];
     int count = z_search_all("abababa", "aba", indices, 10);
     ASSERT_EQ(3, count);
+    ASSERT_EQ(2, z_search_all("$$", "$", indices, 10));
+    ASSERT_EQ(0, indices[0]);
+    ASSERT_EQ(1, indices[1]);
 }
 
 /* ============== String Properties Tests ============== */
@@ -166,6 +170,14 @@ TEST(shortest_palindrome_already) {
     char result[20];
     shortest_palindrome("aba", result);
     ASSERT_EQ(0, strcmp("aba", result));
+}
+
+TEST(shortest_palindrome_with_separator_character) {
+    char result[16];
+    shortest_palindrome("a#a", result);
+    ASSERT_EQ(0, strcmp("a#a", result));
+    shortest_palindrome("ab#", result);
+    ASSERT_EQ(0, strcmp("#bab#", result));
 }
 
 /* ============== String Transformation Tests ============== */
@@ -248,6 +260,19 @@ TEST(find_all_indices_not_found) {
     ASSERT_TRUE(indices == NULL);
 }
 
+TEST(pattern_count_beyond_thousand) {
+    char text[1002];
+    memset(text, 'a', 1001);
+    text[1001] = '\0';
+    ASSERT_EQ(1001, count_pattern(text, "a"));
+    int count = 0;
+    int *indices = find_all_indices(text, "a", &count);
+    ASSERT_NOT_NULL(indices);
+    ASSERT_EQ(1001, count);
+    ASSERT_EQ(1000, indices[1000]);
+    free(indices);
+}
+
 /* ============== Cross-Algorithm Consistency ============== */
 
 TEST(all_search_algorithms_agree) {
@@ -319,6 +344,7 @@ int main(void) {
     RUN_TEST(longest_happy_prefix_basic);
     RUN_TEST(shortest_palindrome_basic);
     RUN_TEST(shortest_palindrome_already);
+    RUN_TEST(shortest_palindrome_with_separator_character);
 
     /* String Transformation */
     RUN_TEST(string_reverse_basic);
@@ -335,6 +361,7 @@ int main(void) {
     RUN_TEST(count_pattern_basic);
     RUN_TEST(find_all_indices_basic);
     RUN_TEST(find_all_indices_not_found);
+    RUN_TEST(pattern_count_beyond_thousand);
 
     /* Cross-algorithm consistency */
     RUN_TEST(all_search_algorithms_agree);

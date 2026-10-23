@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
+#include <stdint.h>
 
 #define PRIME 101
 #define BASE 256
@@ -293,7 +295,7 @@ int z_search(const char *text, const char *pattern) {
 
     int result = -1;
     for (size_t i = m + 1; i < concat_len; i++) {
-        if ((size_t)z[i] == m) {
+        if ((size_t)z[i] >= m) {
             result = (int)(i - m - 1);
             break;
         }
@@ -331,7 +333,7 @@ int z_search_all(const char *text, const char *pattern,
     z_function(concat, z, concat_len);
 
     for (size_t i = m + 1; i < concat_len && count < max_results; i++) {
-        if ((size_t)z[i] == m) {
+        if ((size_t)z[i] >= m) {
             indices[count++] = (int)(i - m - 1);
         }
     }
@@ -404,7 +406,7 @@ void shortest_palindrome(const char *s, char *result) {
         return;
     }
 
-    /* Create s + '#' + reverse(s) */
+    /* Match the reverse against prefixes of s without a sentinel byte. */
     char *rev = malloc(n + 1);
     if (rev == NULL) {
         strcpy(result, s);
@@ -416,29 +418,33 @@ void shortest_palindrome(const char *s, char *result) {
     }
     rev[n] = '\0';
 
-    size_t concat_len = 2 * n + 1;
-    char *concat = malloc(concat_len + 1);
-    if (concat == NULL) {
+    if (n > SIZE_MAX / sizeof(size_t)) {
         free(rev);
         strcpy(result, s);
         return;
     }
-
-    memcpy(concat, s, n);
-    concat[n] = '#';
-    memcpy(concat + n + 1, rev, n + 1);
-
-    int *lps = malloc(concat_len * sizeof(int));
+    size_t *lps = malloc(n * sizeof(size_t));
     if (lps == NULL) {
         free(rev);
-        free(concat);
         strcpy(result, s);
         return;
     }
 
-    kmp_build_lps(concat, lps, concat_len);
+    lps[0] = 0;
+    for (size_t i = 1, matched = 0; i < n; i++) {
+        while (matched > 0 && s[i] != s[matched]) matched = lps[matched - 1];
+        if (s[i] == s[matched]) matched++;
+        lps[i] = matched;
+    }
 
-    int prefix_len = lps[concat_len - 1];
+    size_t prefix_len = 0;
+    for (size_t i = 0; i < n; i++) {
+        while (prefix_len > 0 &&
+               (prefix_len == n || rev[i] != s[prefix_len])) {
+            prefix_len = lps[prefix_len - 1];
+        }
+        if (rev[i] == s[prefix_len]) prefix_len++;
+    }
 
     /* Prepend reverse of suffix */
     size_t add_len = n - prefix_len;
@@ -448,7 +454,6 @@ void shortest_palindrome(const char *s, char *result) {
     strcpy(result + add_len, s);
 
     free(rev);
-    free(concat);
     free(lps);
 }
 
@@ -547,16 +552,37 @@ bool is_rotation(const char *s1, const char *s2) {
 
 /* ============== Utility ============== */
 
-int count_pattern(const char *text, const char *pattern) {
-    if (text == NULL || pattern == NULL) return 0;
-
+static int pattern_matches(const char *text, const char *pattern, int *indices) {
+    size_t n = strlen(text);
     size_t m = strlen(pattern);
-    if (m == 0) return 0;
+    if (m == 0 || m > n || m > INT_MAX || m > SIZE_MAX / sizeof(int)) return 0;
+
+    int *lps = malloc(m * sizeof(int));
+    if (lps == NULL) return 0;
+    kmp_build_lps(pattern, lps, m);
 
     int count = 0;
-    int indices[1000];
-    count = kmp_search_all(text, pattern, indices, 1000);
+    size_t matched = 0;
+    for (size_t i = 0; i < n; i++) {
+        while (matched > 0 && text[i] != pattern[matched]) {
+            matched = (size_t)lps[matched - 1];
+        }
+        if (text[i] == pattern[matched]) matched++;
+        if (matched == m) {
+            size_t start = i + 1 - m;
+            if (start > INT_MAX || count == INT_MAX) break;
+            if (indices != NULL) indices[count] = (int)start;
+            count++;
+            matched = (size_t)lps[matched - 1];
+        }
+    }
+    free(lps);
     return count;
+}
+
+int count_pattern(const char *text, const char *pattern) {
+    if (text == NULL || pattern == NULL) return 0;
+    return pattern_matches(text, pattern, NULL);
 }
 
 int *find_all_indices(const char *text, const char *pattern, int *count) {
@@ -573,22 +599,29 @@ int *find_all_indices(const char *text, const char *pattern, int *count) {
         return NULL;
     }
 
-    /* First pass to count */
-    int temp_indices[1000];
-    int temp_count = kmp_search_all(text, pattern, temp_indices, 1000);
+    int temp_count = count_pattern(text, pattern);
 
     if (temp_count == 0) {
         *count = 0;
         return NULL;
     }
 
-    int *result = malloc(temp_count * sizeof(int));
+    if ((size_t)temp_count > SIZE_MAX / sizeof(int)) {
+        *count = 0;
+        return NULL;
+    }
+    int *result = malloc((size_t)temp_count * sizeof(int));
     if (result == NULL) {
         *count = 0;
         return NULL;
     }
 
-    memcpy(result, temp_indices, temp_count * sizeof(int));
-    *count = temp_count;
+    int found = pattern_matches(text, pattern, result);
+    if (found == 0) {
+        free(result);
+        *count = 0;
+        return NULL;
+    }
+    *count = found;
     return result;
 }
