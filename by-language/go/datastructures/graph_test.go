@@ -562,6 +562,24 @@ func TestAdjacencyMatrixDijkstraUnreachable(t *testing.T) {
 	}
 }
 
+func TestAdjacencyMatrixDijkstraLargeWeight(t *testing.T) {
+	g := NewAdjacencyMatrix(2, true, true)
+	g.AddEdge(0, 1, math.MaxInt32)
+	path, distance := g.ShortestPathDijkstra(0, 1)
+	if len(path) != 2 || distance != math.MaxInt32 {
+		t.Fatalf("path = %v, distance = %d", path, distance)
+	}
+}
+
+func TestAdjacencyMatrixFloydWarshallNegativeSelfLoop(t *testing.T) {
+	g := NewAdjacencyMatrix(1, true, true)
+	g.AddEdge(0, 0, -1)
+	_, ok := g.FloydWarshall()
+	if ok {
+		t.Fatal("negative self-loop must be a negative cycle")
+	}
+}
+
 func TestAdjacencyMatrixTopologicalSort(t *testing.T) {
 	g := NewAdjacencyMatrix(4, true, false)
 	g.AddEdge(0, 1, 1)
@@ -720,6 +738,24 @@ func TestGraphArticulationPoints(t *testing.T) {
 	aps := g.ArticulationPoints()
 	if len(aps) != 1 || aps[0] != 1 {
 		t.Errorf("expected [1], got %v", aps)
+	}
+}
+
+func TestGraphNegativeVertexAndMissingDijkstraTarget(t *testing.T) {
+	g := NewGraphCore(false)
+	g.AddEdge(-1, 1, 1)
+	g.AddEdge(1, 2, 1)
+	path := g.ShortestPathBFS(-1, 2)
+	if len(path) != 3 || path[0] != -1 || path[1] != 1 || path[2] != 2 {
+		t.Fatalf("BFS path = %v", path)
+	}
+	aps := g.ArticulationPoints()
+	if len(aps) != 1 || aps[0] != 1 {
+		t.Fatalf("articulation points = %v", aps)
+	}
+	missing, _ := g.DijkstraPath(-1, 99)
+	if missing != nil {
+		t.Fatalf("missing target path = %v", missing)
 	}
 }
 

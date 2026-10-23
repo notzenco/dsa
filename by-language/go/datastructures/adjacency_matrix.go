@@ -23,9 +23,9 @@ func NewAdjacencyMatrix(numVertices int, directed, weighted bool) *AdjacencyMatr
 	}
 }
 
-func (g *AdjacencyMatrix) NumVertices() int  { return g.n }
-func (g *AdjacencyMatrix) IsDirected() bool  { return g.directed }
-func (g *AdjacencyMatrix) IsWeighted() bool  { return g.weighted }
+func (g *AdjacencyMatrix) NumVertices() int { return g.n }
+func (g *AdjacencyMatrix) IsDirected() bool { return g.directed }
+func (g *AdjacencyMatrix) IsWeighted() bool { return g.weighted }
 
 func (g *AdjacencyMatrix) EdgeCount() int {
 	count := 0
@@ -187,6 +187,9 @@ func (g *AdjacencyMatrix) FloydWarshall() ([][]float64, bool) {
 		for j := range dist[i] {
 			if i == j {
 				dist[i][j] = 0
+				if g.matrix[i][j] < 0 {
+					dist[i][j] = float64(g.matrix[i][j])
+				}
 			} else if g.matrix[i][j] != 0 {
 				dist[i][j] = float64(g.matrix[i][j])
 			} else {
@@ -363,38 +366,45 @@ func (g *AdjacencyMatrix) ShortestPathDijkstra(source, target int) ([]int, int) 
 	dist := make([]int, g.n)
 	prev := make([]int, g.n)
 	visited := make([]bool, g.n)
+	reached := make([]bool, g.n)
 
 	for i := range dist {
-		dist[i] = math.MaxInt32
 		prev[i] = -1
 	}
 	dist[source] = 0
+	reached[source] = true
 
 	for count := 0; count < g.n; count++ {
 		// Find minimum distance unvisited vertex
 		u := -1
 		for v := 0; v < g.n; v++ {
-			if !visited[v] && (u == -1 || dist[v] < dist[u]) {
+			if reached[v] && !visited[v] && (u == -1 || dist[v] < dist[u]) {
 				u = v
 			}
 		}
-		if u == -1 || dist[u] == math.MaxInt32 {
+		if u == -1 {
 			break
 		}
 		visited[u] = true
 
 		for v := 0; v < g.n; v++ {
 			if g.matrix[u][v] != 0 && !visited[v] {
-				newDist := dist[u] + g.matrix[u][v]
-				if newDist < dist[v] {
+				weight := g.matrix[u][v]
+				if (weight > 0 && dist[u] > math.MaxInt-weight) ||
+					(weight < 0 && dist[u] < math.MinInt-weight) {
+					continue
+				}
+				newDist := dist[u] + weight
+				if !reached[v] || newDist < dist[v] {
 					dist[v] = newDist
 					prev[v] = u
+					reached[v] = true
 				}
 			}
 		}
 	}
 
-	if dist[target] == math.MaxInt32 {
+	if !reached[target] {
 		return nil, 0
 	}
 

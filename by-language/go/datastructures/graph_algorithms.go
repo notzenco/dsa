@@ -20,7 +20,13 @@ func (p pq) Len() int            { return len(p) }
 func (p pq) Less(i, j int) bool  { return p[i].priority < p[j].priority }
 func (p pq) Swap(i, j int)       { p[i], p[j] = p[j], p[i]; p[i].index = i; p[j].index = j }
 func (p *pq) Push(x interface{}) { item := x.(*pqItem); item.index = len(*p); *p = append(*p, item) }
-func (p *pq) Pop() interface{}   { old := *p; n := len(old); item := old[n-1]; *p = old[:n-1]; return item }
+func (p *pq) Pop() interface{} {
+	old := *p
+	n := len(old)
+	item := old[n-1]
+	*p = old[:n-1]
+	return item
+}
 
 // --- BFS / DFS ---
 
@@ -106,7 +112,7 @@ func (g *GraphCore) ShortestPathBFS(source, target int) []int {
 	}
 
 	parent := make(map[int]int)
-	parent[source] = -1
+	parent[source] = source
 	queue := []int{source}
 
 	for len(queue) > 0 {
@@ -114,8 +120,11 @@ func (g *GraphCore) ShortestPathBFS(source, target int) []int {
 		queue = queue[1:]
 		if v == target {
 			var path []int
-			for v != -1 {
+			for {
 				path = append([]int{v}, path...)
+				if v == source {
+					break
+				}
 				v = parent[v]
 			}
 			return path
@@ -167,13 +176,24 @@ func (g *GraphCore) Dijkstra(source int) (map[int]float64, map[int]int) {
 }
 
 func (g *GraphCore) DijkstraPath(source, target int) ([]int, float64) {
+	if !g.Contains(source) || !g.Contains(target) {
+		return nil, math.Inf(1)
+	}
 	dist, prev := g.Dijkstra(source)
 	if math.IsInf(dist[target], 1) {
 		return nil, math.Inf(1)
 	}
 	var path []int
-	for v := target; v != -1; v = prev[v] {
+	for v := target; ; {
 		path = append([]int{v}, path...)
+		if v == source {
+			break
+		}
+		parent, ok := prev[v]
+		if !ok || len(path) > len(g.adj) {
+			return nil, math.Inf(1)
+		}
+		v = parent
 	}
 	return path, dist[target]
 }
@@ -699,13 +719,14 @@ func (g *GraphCore) ArticulationPoints() []int {
 					low[u] = low[v]
 				}
 				// u is AP if: root with 2+ children, or non-root with low[v] >= disc[u]
-				if parent[u] == -1 && children > 1 {
+				_, hasParent := parent[u]
+				if !hasParent && children > 1 {
 					ap[u] = true
 				}
-				if parent[u] != -1 && low[v] >= disc[u] {
+				if hasParent && low[v] >= disc[u] {
 					ap[u] = true
 				}
-			} else if v != parent[u] {
+			} else if p, hasParent := parent[u]; !hasParent || v != p {
 				if disc[v] < low[u] {
 					low[u] = disc[v]
 				}
@@ -713,9 +734,6 @@ func (g *GraphCore) ArticulationPoints() []int {
 		}
 	}
 
-	for v := range g.adj {
-		parent[v] = -1
-	}
 	for v := range g.adj {
 		if _, ok := disc[v]; !ok {
 			dfs(v)
@@ -756,7 +774,7 @@ func (g *GraphCore) Bridges() [][2]int {
 				if low[v] > disc[u] {
 					bridges = append(bridges, [2]int{u, v})
 				}
-			} else if v != parent[u] {
+			} else if p, hasParent := parent[u]; !hasParent || v != p {
 				if disc[v] < low[u] {
 					low[u] = disc[v]
 				}
@@ -764,9 +782,6 @@ func (g *GraphCore) Bridges() [][2]int {
 		}
 	}
 
-	for v := range g.adj {
-		parent[v] = -1
-	}
 	for v := range g.adj {
 		if _, ok := disc[v]; !ok {
 			dfs(v)
