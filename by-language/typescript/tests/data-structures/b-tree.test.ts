@@ -247,6 +247,18 @@ describe("BTree", () => {
       expect(after).toEqual(before.filter((v) => v !== 15));
     });
 
+    test("delete walks a non-leaf predecessor", () => {
+      const tree = new BTree(2);
+      for (let i = 10; i >= 1; i--) {
+        tree.insert(i);
+      }
+
+      expect(tree.delete(7)).toBe(true);
+      expect(tree.search(7)).toBe(false);
+      expect(tree.size).toBe(9);
+      expect(tree.traverse()).toEqual([1, 2, 3, 4, 5, 6, 8, 9, 10]);
+    });
+
     test("delete internal node (predecessor replacement)", () => {
       const tree = new BTree(2);
       for (let i = 1; i <= 10; i++) {

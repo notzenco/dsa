@@ -241,6 +241,28 @@ describe("MaxHeap", () => {
       expect(heap.size).toBe(3); // original not modified
     });
   });
+
+  describe("toArray", () => {
+    test("returns the heap elements", () => {
+      const heap = new MaxHeap<number>();
+      heap.push(1);
+      heap.push(5);
+      heap.push(3);
+      expect(heap.toArray().sort((a, b) => a - b)).toEqual([1, 3, 5]);
+      expect(heap.size).toBe(3);
+    });
+  });
+
+  describe("clear", () => {
+    test("removes every element", () => {
+      const heap = new MaxHeap<number>();
+      heap.push(1);
+      heap.push(4);
+      heap.clear();
+      expect(heap.size).toBe(0);
+      expect(heap.isEmpty).toBe(true);
+    });
+  });
 });
 
 describe("PriorityQueue", () => {
