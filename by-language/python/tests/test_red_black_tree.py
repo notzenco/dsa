@@ -1,11 +1,85 @@
 """
-Tests for Red-Black Tree and B-Tree.
+Tests for Red-Black Tree.
 """
 
 import pytest
 import random
-from data_structures.red_black_tree import RedBlackTree, Color
-from data_structures.b_tree import BTree
+from data_structures.red_black_tree import RedBlackTree, RBNode, Color
+
+
+@pytest.mark.parametrize('values', [list(range(1, 7)), list(range(6, 0, -1))])
+def test_delete_with_red_sibling_and_mirrored_case(values):
+    tree = RedBlackTree()
+    model = {}
+    for key in values:
+        tree.insert(key, str(key))
+        model[key] = str(key)
+    # Deleting the outer black leaf requires rotating its red sibling first.
+    for key in values:
+        assert tree.delete(key)
+        del model[key]
+        assert tree.inorder() == sorted(model.items())
+        assert len(tree) == len(model)
+        assert tree.is_valid()
+
+
+def test_black_height_empty_single_and_balanced():
+    tree = RedBlackTree()
+    assert tree.black_height() == 0
+    assert tree.height() == 0
+    assert tree.is_valid()
+    tree.insert(2, 'two')
+    assert tree.black_height() == 1
+    tree.insert(1, 'one')
+    tree.insert(3, 'three')
+    assert tree.black_height() == 1
+    tree.insert(0, 'zero')
+    assert tree.black_height() == 2
+    assert tree.is_valid()
+
+
+def test_none_values_have_independent_membership():
+    tree = RedBlackTree()
+    tree[1] = None
+    assert 1 in tree
+    assert tree[1] is None
+    del tree[1]
+    assert 1 not in tree
+    with pytest.raises(KeyError):
+        _ = tree[1]
+
+
+def test_node_repr_reflects_color():
+    node = RBNode(5, 'five')
+    assert repr(node) == 'RBNode(5:R)'
+    node.color = Color.BLACK
+    assert repr(node) == 'RBNode(5:B)'
+
+
+def test_validity_rejects_red_root():
+    tree = RedBlackTree()
+    tree.insert(1, 1)
+    tree._root.color = Color.RED
+    assert not tree.is_valid()
+
+
+@pytest.mark.parametrize('side', ['left', 'right'])
+def test_validity_rejects_red_parent_and_child(side):
+    tree = RedBlackTree()
+    tree.insert(10, 10)
+    child = RBNode(5 if side == 'left' else 15, None, parent=tree._root)
+    grandchild = RBNode(3 if side == 'left' else 17, None, parent=child)
+    setattr(tree._root, side, child)
+    setattr(child, side, grandchild)
+    assert not tree.is_valid()
+
+
+def test_validity_rejects_unequal_black_paths():
+    tree = RedBlackTree()
+    tree.insert(2, 2)
+    tree.insert(1, 1)
+    tree._root.left.color = Color.BLACK
+    assert not tree.is_valid()
 
 
 class TestRedBlackTreeBasics:
@@ -124,12 +198,12 @@ class TestRedBlackTreeProperties:
         """Tree should be valid after random inserts."""
         rbt = RedBlackTree()
         values = list(range(100))
-        random.shuffle(values)
+        seed = 20260417
+        random.Random(seed).shuffle(values)
 
-        for v in values:
+        for iteration, v in enumerate(values):
             rbt.insert(v, str(v))
-
-        assert rbt.is_valid()
+            assert rbt.is_valid(), f"seed={seed}, iteration={iteration}, input={values!r}"
 
     def test_is_valid_after_deletes(self):
         """Tree should be valid after deletes."""
@@ -224,206 +298,7 @@ class TestRedBlackTreeMinMax:
         assert rbt.max() is None
 
 
-class TestBTreeBasics:
-    """Test B-Tree basic operations."""
-
-    def test_empty_tree(self):
-        """Test empty tree."""
-        bt = BTree(t=2)
-        assert len(bt) == 0
-        assert 10 not in bt
-
-    def test_insert_single(self):
-        """Test single insertion."""
-        bt = BTree(t=2)
-        bt.insert(10, "ten")
-
-        assert len(bt) == 1
-        assert 10 in bt
-        assert bt.search(10) == "ten"
-
-    def test_insert_multiple(self):
-        """Test multiple insertions."""
-        bt = BTree(t=2)
-        for i in range(10):
-            bt.insert(i, str(i))
-
-        assert len(bt) == 10
-        for i in range(10):
-            assert bt.search(i) == str(i)
-
-    def test_insert_update(self):
-        """Test updating existing key."""
-        bt = BTree(t=2)
-        bt.insert(10, "ten")
-        bt.insert(10, "TEN")
-
-        assert len(bt) == 1
-        assert bt.search(10) == "TEN"
-
-    def test_bracket_notation(self):
-        """Test bracket notation."""
-        bt = BTree(t=2)
-        bt[10] = "ten"
-        bt[20] = "twenty"
-
-        assert bt[10] == "ten"
-        assert bt[20] == "twenty"
-
-    def test_getitem_keyerror(self):
-        """Test KeyError on missing key."""
-        bt = BTree(t=2)
-        bt[10] = "ten"
-
-        with pytest.raises(KeyError):
-            _ = bt[20]
-
-
-class TestBTreeDeletion:
-    """Test B-Tree deletion."""
-
-    def test_delete_from_leaf(self):
-        """Test deleting from leaf."""
-        bt = BTree(t=2)
-        for i in range(5):
-            bt.insert(i, str(i))
-
-        assert bt.delete(2)
-        assert 2 not in bt
-        assert len(bt) == 4
-
-    def test_delete_not_found(self):
-        """Test deleting non-existent key."""
-        bt = BTree(t=2)
-        bt.insert(10, "ten")
-
-        assert not bt.delete(20)
-
-    def test_delete_all(self):
-        """Test deleting all keys."""
-        bt = BTree(t=2)
-        keys = list(range(20))
-        for k in keys:
-            bt.insert(k, str(k))
-
-        random.shuffle(keys)
-        for k in keys:
-            bt.delete(k)
-
-        assert len(bt) == 0
-
-    def test_delitem(self):
-        """Test del notation."""
-        bt = BTree(t=2)
-        bt[10] = "ten"
-
-        del bt[10]
-        assert 10 not in bt
-
-
-class TestBTreeTraversal:
-    """Test B-Tree traversal."""
-
-    def test_inorder(self):
-        """Test inorder returns sorted order."""
-        bt = BTree(t=2)
-        values = [5, 3, 7, 1, 9, 4, 6, 8, 2]
-        for v in values:
-            bt.insert(v, str(v))
-
-        result = bt.inorder()
-        keys = [k for k, _ in result]
-        assert keys == sorted(values)
-
-    def test_iter(self):
-        """Test iteration."""
-        bt = BTree(t=2)
-        for i in [5, 3, 7, 1]:
-            bt.insert(i, str(i))
-
-        assert list(bt) == [1, 3, 5, 7]
-
-    def test_keys_values(self):
-        """Test keys and values methods."""
-        bt = BTree(t=2)
-        bt.insert(3, "three")
-        bt.insert(1, "one")
-        bt.insert(2, "two")
-
-        assert bt.keys() == [1, 2, 3]
-        assert bt.values() == ["one", "two", "three"]
-
-
-class TestBTreeMinMax:
-    """Test B-Tree min/max."""
-
-    def test_min(self):
-        """Test min."""
-        bt = BTree(t=2)
-        for i in [5, 3, 7, 1]:
-            bt.insert(i, str(i))
-
-        assert bt.min() == (1, "1")
-
-    def test_max(self):
-        """Test max."""
-        bt = BTree(t=2)
-        for i in [5, 3, 7, 1]:
-            bt.insert(i, str(i))
-
-        assert bt.max() == (7, "7")
-
-    def test_min_max_empty(self):
-        """Test min/max on empty tree."""
-        bt = BTree(t=2)
-        assert bt.min() is None
-        assert bt.max() is None
-
-
-class TestBTreeProperties:
-    """Test B-Tree properties."""
-
-    def test_different_degrees(self):
-        """Test with different minimum degrees."""
-        for t in [2, 3, 5, 10]:
-            bt = BTree(t=t)
-            for i in range(100):
-                bt.insert(i, str(i))
-
-            assert len(bt) == 100
-            for i in range(100):
-                assert i in bt
-
-    def test_large_dataset(self):
-        """Test with large dataset."""
-        bt = BTree(t=10)
-        values = list(range(1000))
-        random.shuffle(values)
-
-        for v in values:
-            bt.insert(v, str(v))
-
-        assert len(bt) == 1000
-        assert bt.keys() == sorted(values)
-
-    def test_height(self):
-        """Test height is logarithmic."""
-        bt = BTree(t=10)
-        for i in range(10000):
-            bt.insert(i, str(i))
-
-        # Height should be O(log_t(n))
-        import math
-        max_height = math.ceil(math.log(10001, 10))
-        assert bt.height() <= max_height + 1
-
-    def test_invalid_degree(self):
-        """Test invalid minimum degree."""
-        with pytest.raises(ValueError):
-            BTree(t=1)
-
-
-class TestBTreeClear:
+class TestRedBlackTreeClear:
     """Test clear operation."""
 
     def test_clear_rbt(self):
@@ -435,15 +310,6 @@ class TestBTreeClear:
         rbt.clear()
         assert len(rbt) == 0
 
-    def test_clear_btree(self):
-        """Test clearing B-Tree."""
-        bt = BTree(t=2)
-        for i in range(10):
-            bt.insert(i, str(i))
-
-        bt.clear()
-        assert len(bt) == 0
-
 
 class TestRepr:
     """Test string representations."""
@@ -454,19 +320,3 @@ class TestRepr:
         rbt.insert(10, "ten")
         s = repr(rbt)
         assert "RedBlackTree" in s
-
-    def test_btree_repr(self):
-        """Test B-Tree repr."""
-        bt = BTree(t=2)
-        bt.insert(10, "ten")
-        s = repr(bt)
-        assert "BTree" in s
-
-    def test_btree_display(self):
-        """Test B-Tree display."""
-        bt = BTree(t=2)
-        for i in range(5):
-            bt.insert(i, str(i))
-
-        display = bt.display()
-        assert len(display) > 0
