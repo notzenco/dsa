@@ -10,6 +10,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 -g -I.
 LDFLAGS =
+# Emit build/*.d files so objects rebuild when an included header changes
+DEPFLAGS = -MMD -MP
 
 # Directories
 SRC_DS = data-structures
@@ -25,7 +27,7 @@ ALG_SOURCES = $(wildcard $(SRC_ALG)/*.c)
 DS_OBJECTS = $(patsubst $(SRC_DS)/%.c,$(BUILD_DIR)/ds_%.o,$(DS_SOURCES))
 ALG_OBJECTS = $(patsubst $(SRC_ALG)/%.c,$(BUILD_DIR)/alg_%.o,$(ALG_SOURCES))
 
-.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache test-range test-bloom test-skiplist test-rb test-btree test-adjmat test-uf test-mq test-ttl
+.PHONY: all clean test test-da test-sll test-dll test-stack test-queue test-bst test-ht test-heap test-sort test-graph test-search test-dp test-string test-trie test-avl test-cache test-range test-bloom test-skiplist test-rb test-btree test-adjmat test-uf test-mq test-ttl
 
 all: $(BUILD_DIR) $(DS_OBJECTS) $(ALG_OBJECTS)
 
@@ -33,12 +35,14 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Data structure object files
-$(BUILD_DIR)/ds_%.o: $(SRC_DS)/%.c $(SRC_DS)/%.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+$(BUILD_DIR)/ds_%.o: $(SRC_DS)/%.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
 
 # Algorithm object files
 $(BUILD_DIR)/alg_%.o: $(SRC_ALG)/%.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
+
+-include $(wildcard $(BUILD_DIR)/*.d)
 
 # Individual test targets
 test-da: $(BUILD_DIR) $(BUILD_DIR)/ds_dynamic_array.o
@@ -78,12 +82,6 @@ test-sort: $(BUILD_DIR) $(BUILD_DIR)/alg_sorting.o
 	./$(BUILD_DIR)/test_sort
 
 # Graph is split into core and algorithms
-$(BUILD_DIR)/ds_graph_core.o: $(SRC_DS)/graph_core.c $(SRC_DS)/graph_core.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/ds_graph_algorithms.o: $(SRC_DS)/graph_algorithms.c $(SRC_DS)/graph_algorithms.h $(SRC_DS)/graph_core.h | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
 test-graph: $(BUILD_DIR) $(BUILD_DIR)/ds_graph_core.o $(BUILD_DIR)/ds_graph_algorithms.o
 	$(CC) $(CFLAGS) $(TEST_DIR)/test_graph.c $(BUILD_DIR)/ds_graph_core.o $(BUILD_DIR)/ds_graph_algorithms.o -o $(BUILD_DIR)/test_graph $(LDFLAGS)
 	./$(BUILD_DIR)/test_graph
