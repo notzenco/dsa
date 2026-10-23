@@ -162,6 +162,9 @@ class SortingTest {
     @Test
     void testBucketSort() {
         testNonNegativeSortAlgorithm(Sorting::bucketSort);
+        assertArrayEquals(new int[]{-1, 0}, Sorting.bucketSort(new int[]{0, -1}));
+        assertArrayEquals(new int[]{Integer.MIN_VALUE, Integer.MAX_VALUE},
+                Sorting.bucketSort(new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE}));
     }
 
     @Test

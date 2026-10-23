@@ -55,6 +55,7 @@ class StringAlgorithmsTest {
         assertEquals(List.of(), StringAlgorithms.zAlgorithm("abcdef", "xyz"));
         assertEquals(List.of(0), StringAlgorithms.zAlgorithm("hello", "hello"));
         assertEquals(List.of(0, 1, 2), StringAlgorithms.zAlgorithm("aaaa", "aa"));
+        assertEquals(List.of(0, 1), StringAlgorithms.zAlgorithm("$$", "$"));
     }
 
     // --- computeZArray ---
@@ -198,6 +199,7 @@ class StringAlgorithmsTest {
         assertEquals("dcbabcd", StringAlgorithms.shortestPalindrome("abcd"));
         assertEquals("a", StringAlgorithms.shortestPalindrome("a"));
         assertEquals("", StringAlgorithms.shortestPalindrome(""));
+        assertEquals("a#a", StringAlgorithms.shortestPalindrome("a#a"));
     }
 
     // --- longestHappyPrefix ---

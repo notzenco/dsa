@@ -78,7 +78,9 @@ public final class Searching {
             if (low == high) {
                 return arr[low] == target ? low : -1;
             }
-            int pos = low + ((target - arr[low]) * (high - low)) / (arr[high] - arr[low]);
+            if (arr[low] == arr[high]) return low;
+            int pos = low + (int)(((long)target - arr[low]) * (high - low)
+                / ((long)arr[high] - arr[low]));
             if (pos < low || pos > high) return -1;
             if (arr[pos] == target) return pos;
             else if (arr[pos] < target) low = pos + 1;

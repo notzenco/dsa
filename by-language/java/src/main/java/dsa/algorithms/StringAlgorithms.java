@@ -133,7 +133,7 @@ public final class StringAlgorithms {
         int[] z = computeZArray(concat);
         int m = pattern.length();
         for (int i = m + 1; i < concat.length(); i++) {
-            if (z[i] == m) {
+            if (z[i] >= m) {
                 result.add(i - m - 1);
             }
         }
@@ -276,9 +276,25 @@ public final class StringAlgorithms {
     public static String shortestPalindrome(String s) {
         if (s == null || s.length() <= 1) return s == null ? "" : s;
         String rev = new StringBuilder(s).reverse().toString();
-        String concat = s + "#" + rev;
-        int[] lps = computeLPSArray(concat);
-        int longestPrefixPalin = lps[concat.length() - 1];
+        int n = s.length();
+        int[] tokens = new int[2 * n + 1];
+        for (int i = 0; i < n; i++) {
+            tokens[i] = s.charAt(i);
+            tokens[n + 1 + i] = rev.charAt(i);
+        }
+        tokens[n] = -1;
+        int[] lps = new int[tokens.length];
+        for (int i = 1; i < tokens.length; i++) {
+            int j = lps[i - 1];
+            while (j > 0 && tokens[i] != tokens[j]) {
+                j = lps[j - 1];
+            }
+            if (tokens[i] == tokens[j]) {
+                j++;
+            }
+            lps[i] = j;
+        }
+        int longestPrefixPalin = lps[tokens.length - 1];
         String suffix = s.substring(longestPrefixPalin);
         return new StringBuilder(suffix).reverse().toString() + s;
     }

@@ -235,11 +235,12 @@ public final class Sorting {
         int[] a = arr.clone();
         int n = a.length;
         if (n <= 1) return a;
-        int max = a[0];
+        int min = a[0], max = a[0];
         for (int v : a) {
+            if (v < min) min = v;
             if (v > max) max = v;
         }
-        if (max == 0) return a; // all elements are zero
+        if (min == max) return a;
         int bucketCount = (int) Math.max(1, Math.sqrt(n));
         @SuppressWarnings("unchecked")
         List<Integer>[] buckets = new List[bucketCount];
@@ -247,7 +248,8 @@ public final class Sorting {
             buckets[i] = new ArrayList<>();
         }
         for (int v : a) {
-            int idx = (int) ((long) v * (bucketCount - 1) / max);
+            int idx = (int) (((long) v - min) * (bucketCount - 1)
+                    / ((long) max - min));
             buckets[idx].add(v);
         }
         // Insertion sort each bucket

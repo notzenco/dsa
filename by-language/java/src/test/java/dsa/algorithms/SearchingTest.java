@@ -94,6 +94,7 @@ class SearchingTest {
         assertEquals(-1, Searching.interpolationSearch(EMPTY, 5));
         assertEquals(0, Searching.interpolationSearch(SINGLE, 42));
         assertEquals(-1, Searching.interpolationSearch(SINGLE, 10));
+        assertEquals(0, Searching.interpolationSearch(new int[]{1, 1}, 1));
     }
 
     // --- exponentialSearch ---
