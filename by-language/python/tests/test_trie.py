@@ -55,6 +55,7 @@ class TestTrieBasics:
 
         assert len(trie) == 1
         assert trie.search("test")
+        assert trie.count_words_with_prefix("test") == 1
 
     def test_empty_string(self):
         """Test handling empty string."""

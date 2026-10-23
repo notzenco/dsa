@@ -110,6 +110,8 @@ class Trie:
         Time: O(m) where m is length of word
         Space: O(m) for new nodes
         """
+        if self.search(word):
+            return
         node = self._root
         for char in word:
             node.count += 1
