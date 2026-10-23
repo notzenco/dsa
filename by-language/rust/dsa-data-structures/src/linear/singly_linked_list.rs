@@ -199,15 +199,14 @@ impl<T> SinglyLinkedList<T> {
     pub fn push_back(&mut self, data: T) {
         let new_node = Box::new(Node::new(data));
 
-        if self.head.is_none() {
-            self.head = Some(new_node);
-        } else {
+        if let Some(mut current) = self.head.as_mut() {
             // Traverse to the end
-            let mut current = self.head.as_mut().unwrap();
             while current.next.is_some() {
                 current = current.next.as_mut().unwrap();
             }
             current.next = Some(new_node);
+        } else {
+            self.head = Some(new_node);
         }
         self.len += 1;
     }
@@ -253,9 +252,7 @@ impl<T> SinglyLinkedList<T> {
     /// assert_eq!(list.pop_back(), Some(20));
     /// ```
     pub fn pop_back(&mut self) -> Option<T> {
-        if self.head.is_none() {
-            return None;
-        }
+        self.head.as_ref()?;
 
         // Single element case
         if self.head.as_ref().unwrap().next.is_none() {
@@ -294,9 +291,7 @@ impl<T> SinglyLinkedList<T> {
     /// O(n)
     #[must_use]
     pub fn back(&self) -> Option<&T> {
-        if self.head.is_none() {
-            return None;
-        }
+        self.head.as_ref()?;
 
         let mut current = self.head.as_ref().unwrap();
         while current.next.is_some() {
@@ -524,9 +519,7 @@ impl<T> SinglyLinkedList<T> {
     /// ```
     #[must_use]
     pub fn middle(&self) -> Option<&T> {
-        if self.head.is_none() {
-            return None;
-        }
+        self.head.as_ref()?;
 
         let mut slow = self.head.as_ref();
         let mut fast = self.head.as_ref();

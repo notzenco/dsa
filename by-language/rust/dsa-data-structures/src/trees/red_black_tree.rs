@@ -201,7 +201,7 @@ impl<T: Ord + Clone> RedBlackTree<T> {
                 // Parent is left child
                 let uncle = self.nodes[gp_idx].right;
 
-                if uncle.map_or(false, |u| self.nodes[u].color == Color::Red) {
+                if uncle.is_some_and(|u| self.nodes[u].color == Color::Red) {
                     // Case 1: Uncle is red
                     self.nodes[p_idx].color = Color::Black;
                     if let Some(u) = uncle {
@@ -227,7 +227,7 @@ impl<T: Ord + Clone> RedBlackTree<T> {
                 // Parent is right child (mirror cases)
                 let uncle = self.nodes[gp_idx].left;
 
-                if uncle.map_or(false, |u| self.nodes[u].color == Color::Red) {
+                if uncle.is_some_and(|u| self.nodes[u].color == Color::Red) {
                     // Case 1: Uncle is red
                     self.nodes[p_idx].color = Color::Black;
                     if let Some(u) = uncle {

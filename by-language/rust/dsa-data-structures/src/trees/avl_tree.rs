@@ -483,8 +483,7 @@ impl<T: Ord> AVLTree<T> {
             None => true,
             Some(n) => {
                 let balance = Self::balance_factor(n);
-                balance >= -1
-                    && balance <= 1
+                (-1..=1).contains(&balance)
                     && Self::check_balanced(&n.left)
                     && Self::check_balanced(&n.right)
             }

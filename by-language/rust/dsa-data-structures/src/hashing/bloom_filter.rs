@@ -61,7 +61,11 @@ impl BloomFilter {
     /// ```
     pub fn new(expected_items: usize, false_positive_rate: f64) -> Self {
         let expected_items = expected_items.max(1);
-        let fp_rate = false_positive_rate.max(0.0001).min(0.5);
+        let fp_rate = if false_positive_rate.is_nan() {
+            0.0001
+        } else {
+            false_positive_rate.clamp(0.0001, 0.5)
+        };
 
         // Optimal number of bits: m = -n * ln(p) / (ln(2)^2)
         let num_bits =
@@ -70,7 +74,7 @@ impl BloomFilter {
 
         // Optimal number of hash functions: k = (m/n) * ln(2)
         let num_hashes = ((num_bits as f64 / expected_items as f64) * 2.0_f64.ln()).ceil() as usize;
-        let num_hashes = num_hashes.max(1).min(16);
+        let num_hashes = num_hashes.clamp(1, 16);
 
         // Number of u64 words needed
         let num_words = (num_bits + 63) / 64;
@@ -94,7 +98,7 @@ impl BloomFilter {
     /// ```
     pub fn with_size(num_bits: usize, num_hashes: usize) -> Self {
         let num_bits = num_bits.max(64);
-        let num_hashes = num_hashes.max(1).min(16);
+        let num_hashes = num_hashes.clamp(1, 16);
         let num_words = (num_bits + 63) / 64;
 
         BloomFilter {
