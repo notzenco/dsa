@@ -2,11 +2,14 @@
 
 A comprehensive collection of data structures and algorithms implemented in **C**, **Go**, **Java**, **Python**, **Rust**, and **TypeScript**.
 
-Each implementation includes:
-- Detailed ASCII visual diagrams
-- Time & space complexity analysis
-- LeetCode problem mappings
-- Comprehensive unit tests
+Every language has:
+- Unit tests for each data structure and algorithm
+- Seeded randomized tests that compare implementations against simple reference models
+- Time & space complexity notes
+
+Most C, Python, and Rust sources also include ASCII diagrams and LeetCode problem
+mappings in their header comments. The Go, Java, and TypeScript sources use shorter
+doc comments.
 
 ## Language Requirements
 
@@ -58,8 +61,8 @@ dsa/
 | Stack | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Queue | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Deque | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Circular Queue | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Min/Max Stack | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Circular Queue | ✓ | ✓ | ✓ | ✓ | - | ✓ |
+| Min/Max Stack | ✓ | ✓ | ✓ | ✓ | - | ✓ |
 | Monotonic Queue | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Trees
@@ -89,7 +92,7 @@ dsa/
 | Structure | C | Go | Java | Python | Rust | TypeScript |
 |-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
 | Adjacency List | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Adjacency Matrix | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Adjacency Matrix | ✓ | ✓ | ✓ | ✓ | - | ✓ |
 | Union-Find | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Caches
@@ -122,7 +125,7 @@ dsa/
 | Algorithm | C | Go | Java | Python | Rust | TypeScript |
 |-----------|:-:|:--:|:----:|:------:|:----:|:----------:|
 | Binary Search | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Two Pointers | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Two Pointers | ✓ | ✓ | ✓ | ✓ | ✓ | - |
 | Sliding Window | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Graph
@@ -136,7 +139,8 @@ dsa/
 | Prim's MST | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Kruskal's MST | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Topological Sort | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Tarjan's SCC | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Tarjan's SCC | ✓ | ✓ | ✓ | ✓ | - | ✓ |
+| Kosaraju's SCC | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Dynamic Programming
 | Problem | C | Go | Java | Python | Rust | TypeScript |
@@ -154,6 +158,16 @@ dsa/
 | KMP | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Rabin-Karp | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Z-Algorithm | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+### Go-only modules
+The Go implementation also has algorithm modules that the other languages do not
+have yet:
+
+| Module | Contents |
+|--------|----------|
+| Backtracking | Permutations, subsets, combinations, combination sum, N-Queens, Sudoku, word search, generate parentheses |
+| Greedy | Activity selection, interval problems, fractional knapsack, job sequencing, Huffman encoding, jump game, gas station, task scheduler |
+| Math | GCD/LCM, primality and sieve, prime factors, fast power, Euler's totient, modular inverse, binomial and Catalan numbers, bit tricks |
 
 ## Quick Start
 
@@ -192,6 +206,7 @@ cargo test
 ```bash
 cd by-language/typescript
 bun install
+bun run typecheck
 bun test
 ```
 
@@ -205,13 +220,17 @@ APIs should update their arguments before using the revised implementations.
 
 ### Git Hooks (Optional)
 ```bash
-# Install pre-commit and pre-push hooks
+# Install pre-commit, pre-push, and commit-msg hooks
 ./.githooks/install.sh
 ```
 
+The pre-commit hook checks Rust formatting and Clippy, Go formatting, and Python
+lint when `ruff` or `black` is installed. The pre-push hook runs the suite for
+each language whose toolchain is installed.
+
 ## Implementation Template
 
-Each implementation follows a consistent format:
+The C, Python, and Rust header comments follow this format:
 
 ```
 /**

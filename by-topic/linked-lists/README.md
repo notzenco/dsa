@@ -4,10 +4,10 @@ Linked lists are linear data structures where elements are stored in nodes, with
 
 ## Implementations
 
-| Structure | Python | C |
-|-----------|--------|---|
-| Singly Linked List | [singly_linked_list.py](../../by-language/python/data_structures/singly_linked_list.py) | [singly_linked_list.c](../../by-language/c/data-structures/singly_linked_list.c) |
-| Doubly Linked List | [doubly_linked_list.py](../../by-language/python/data_structures/doubly_linked_list.py) | [doubly_linked_list.c](../../by-language/c/data-structures/doubly_linked_list.c) |
+| Structure | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| Singly Linked List | [singly_linked_list.py](../../by-language/python/data_structures/singly_linked_list.py) | [singly_linked_list.c](../../by-language/c/data-structures/singly_linked_list.c) | [singly_linked_list.go](../../by-language/go/datastructures/singly_linked_list.go) | [SinglyLinkedList.java](../../by-language/java/src/main/java/dsa/datastructures/SinglyLinkedList.java) | [singly_linked_list.rs](../../by-language/rust/dsa-data-structures/src/linear/singly_linked_list.rs) | [singly-linked-list.ts](../../by-language/typescript/src/data-structures/singly-linked-list.ts) |
+| Doubly Linked List | [doubly_linked_list.py](../../by-language/python/data_structures/doubly_linked_list.py) | [doubly_linked_list.c](../../by-language/c/data-structures/doubly_linked_list.c) | [doubly_linked_list.go](../../by-language/go/datastructures/doubly_linked_list.go) | [DoublyLinkedList.java](../../by-language/java/src/main/java/dsa/datastructures/DoublyLinkedList.java) | [doubly_linked_list.rs](../../by-language/rust/dsa-data-structures/src/linear/doubly_linked_list.rs) | [doubly-linked-list.ts](../../by-language/typescript/src/data-structures/doubly-linked-list.ts) |
 
 ## Complexity
 

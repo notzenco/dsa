@@ -4,11 +4,11 @@ Graphs are data structures consisting of vertices (nodes) connected by edges, us
 
 ## Implementations
 
-| Structure/Algorithm | Python | C |
-|---------------------|--------|---|
-| Adjacency List | [graph.py](../../by-language/python/data_structures/graph.py) | [graph_core.c](../../by-language/c/data-structures/graph_core.c) |
-| Adjacency Matrix | [adjacency_matrix.py](../../by-language/python/data_structures/adjacency_matrix.py) | [adjacency_matrix.c](../../by-language/c/data-structures/adjacency_matrix.c) |
-| Union-Find | [union_find.py](../../by-language/python/data_structures/union_find.py) | [union_find.c](../../by-language/c/data-structures/union_find.c) |
+| Structure/Algorithm | Python | C | Go | Java | Rust | TypeScript |
+|---------------------|--------|---|---|------|------|------------|
+| Adjacency List | [graph.py](../../by-language/python/data_structures/graph.py) | [graph_core.c](../../by-language/c/data-structures/graph_core.c) | [graph_core.go](../../by-language/go/datastructures/graph_core.go) | [GraphCore.java](../../by-language/java/src/main/java/dsa/datastructures/GraphCore.java) | [mod.rs](../../by-language/rust/dsa-algorithms/src/graph/mod.rs) | [graph-core.ts](../../by-language/typescript/src/data-structures/graph-core.ts) |
+| Adjacency Matrix | [adjacency_matrix.py](../../by-language/python/data_structures/adjacency_matrix.py) | [adjacency_matrix.c](../../by-language/c/data-structures/adjacency_matrix.c) | [adjacency_matrix.go](../../by-language/go/datastructures/adjacency_matrix.go) | [AdjacencyMatrix.java](../../by-language/java/src/main/java/dsa/datastructures/AdjacencyMatrix.java) | - | [adjacency-matrix.ts](../../by-language/typescript/src/data-structures/adjacency-matrix.ts) |
+| Union-Find | [union_find.py](../../by-language/python/data_structures/union_find.py) | [union_find.c](../../by-language/c/data-structures/union_find.c) | [union_find.go](../../by-language/go/datastructures/union_find.go) | [UnionFind.java](../../by-language/java/src/main/java/dsa/datastructures/UnionFind.java) | [union_find.rs](../../by-language/rust/dsa-data-structures/src/graphs/union_find.rs) | [union-find.ts](../../by-language/typescript/src/data-structures/union-find.ts) |
 
 ## Complexity
 

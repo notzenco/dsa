@@ -4,15 +4,15 @@ Trees are hierarchical data structures consisting of nodes connected by edges, w
 
 ## Implementations
 
-| Structure | Python | C |
-|-----------|--------|---|
-| Binary Search Tree | [binary_search_tree.py](../../by-language/python/data_structures/binary_search_tree.py) | [binary_search_tree.c](../../by-language/c/data-structures/binary_search_tree.c) |
-| AVL Tree | [avl_tree.py](../../by-language/python/data_structures/avl_tree.py) | [avl_tree.c](../../by-language/c/data-structures/avl_tree.c) |
-| Red-Black Tree | [red_black_tree.py](../../by-language/python/data_structures/red_black_tree.py) | [red_black_tree.c](../../by-language/c/data-structures/red_black_tree.c) |
-| B-Tree | [b_tree.py](../../by-language/python/data_structures/b_tree.py) | [b_tree.c](../../by-language/c/data-structures/b_tree.c) |
-| Trie | [trie.py](../../by-language/python/data_structures/trie.py) | [trie.c](../../by-language/c/data-structures/trie.c) |
-| Segment Tree | [segment_tree.py](../../by-language/python/data_structures/segment_tree.py) | [segment_tree.c](../../by-language/c/data-structures/segment_tree.c) |
-| Fenwick Tree | [fenwick_tree.py](../../by-language/python/data_structures/fenwick_tree.py) | [fenwick_tree.c](../../by-language/c/data-structures/fenwick_tree.c) |
+| Structure | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| Binary Search Tree | [binary_search_tree.py](../../by-language/python/data_structures/binary_search_tree.py) | [binary_search_tree.c](../../by-language/c/data-structures/binary_search_tree.c) | [binary_search_tree.go](../../by-language/go/datastructures/binary_search_tree.go) | [BinarySearchTree.java](../../by-language/java/src/main/java/dsa/datastructures/BinarySearchTree.java) | [binary_search_tree.rs](../../by-language/rust/dsa-data-structures/src/trees/binary_search_tree.rs) | [binary-search-tree.ts](../../by-language/typescript/src/data-structures/binary-search-tree.ts) |
+| AVL Tree | [avl_tree.py](../../by-language/python/data_structures/avl_tree.py) | [avl_tree.c](../../by-language/c/data-structures/avl_tree.c) | [avl_tree.go](../../by-language/go/datastructures/avl_tree.go) | [AvlTree.java](../../by-language/java/src/main/java/dsa/datastructures/AvlTree.java) | [avl_tree.rs](../../by-language/rust/dsa-data-structures/src/trees/avl_tree.rs) | [avl-tree.ts](../../by-language/typescript/src/data-structures/avl-tree.ts) |
+| Red-Black Tree | [red_black_tree.py](../../by-language/python/data_structures/red_black_tree.py) | [red_black_tree.c](../../by-language/c/data-structures/red_black_tree.c) | [red_black_tree.go](../../by-language/go/datastructures/red_black_tree.go) | [RedBlackTree.java](../../by-language/java/src/main/java/dsa/datastructures/RedBlackTree.java) | [red_black_tree.rs](../../by-language/rust/dsa-data-structures/src/trees/red_black_tree.rs) | [red-black-tree.ts](../../by-language/typescript/src/data-structures/red-black-tree.ts) |
+| B-Tree | [b_tree.py](../../by-language/python/data_structures/b_tree.py) | [b_tree.c](../../by-language/c/data-structures/b_tree.c) | [b_tree.go](../../by-language/go/datastructures/b_tree.go) | [BTree.java](../../by-language/java/src/main/java/dsa/datastructures/BTree.java) | [b_tree.rs](../../by-language/rust/dsa-data-structures/src/trees/b_tree.rs) | [b-tree.ts](../../by-language/typescript/src/data-structures/b-tree.ts) |
+| Trie | [trie.py](../../by-language/python/data_structures/trie.py) | [trie.c](../../by-language/c/data-structures/trie.c) | [trie.go](../../by-language/go/datastructures/trie.go) | [Trie.java](../../by-language/java/src/main/java/dsa/datastructures/Trie.java) | [trie.rs](../../by-language/rust/dsa-data-structures/src/trees/trie.rs) | [trie.ts](../../by-language/typescript/src/data-structures/trie.ts) |
+| Segment Tree | [segment_tree.py](../../by-language/python/data_structures/segment_tree.py) | [segment_tree.c](../../by-language/c/data-structures/segment_tree.c) | [segment_tree.go](../../by-language/go/datastructures/segment_tree.go) | [SegmentTree.java](../../by-language/java/src/main/java/dsa/datastructures/SegmentTree.java) | [segment_tree.rs](../../by-language/rust/dsa-data-structures/src/trees/segment_tree.rs) | [segment-tree.ts](../../by-language/typescript/src/data-structures/segment-tree.ts) |
+| Fenwick Tree | [fenwick_tree.py](../../by-language/python/data_structures/fenwick_tree.py) | [fenwick_tree.c](../../by-language/c/data-structures/fenwick_tree.c) | [fenwick_tree.go](../../by-language/go/datastructures/fenwick_tree.go) | [FenwickTree.java](../../by-language/java/src/main/java/dsa/datastructures/FenwickTree.java) | [fenwick_tree.rs](../../by-language/rust/dsa-data-structures/src/trees/fenwick_tree.rs) | [fenwick-tree.ts](../../by-language/typescript/src/data-structures/fenwick-tree.ts) |
 
 ## Complexity
 

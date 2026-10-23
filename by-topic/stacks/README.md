@@ -4,9 +4,9 @@ A stack is a Last-In-First-Out (LIFO) data structure where elements are added an
 
 ## Implementations
 
-| Structure | Python | C |
-|-----------|--------|---|
-| Stack | [stack.py](../../by-language/python/data_structures/stack.py) | [stack.c](../../by-language/c/data-structures/stack.c) |
+| Structure | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| Stack | [stack.py](../../by-language/python/data_structures/stack.py) | [stack.c](../../by-language/c/data-structures/stack.c) | [stack.go](../../by-language/go/datastructures/stack.go) | [Stack.java](../../by-language/java/src/main/java/dsa/datastructures/Stack.java) | [stack.rs](../../by-language/rust/dsa-data-structures/src/linear/stack.rs) | [stack.ts](../../by-language/typescript/src/data-structures/stack.ts) |
 
 ## Complexity
 

@@ -4,9 +4,9 @@ Dynamic Programming (DP) solves complex problems by breaking them into overlappi
 
 ## Implementations
 
-| Algorithm | Python | C |
-|-----------|--------|---|
-| DP Algorithms | [dynamic_programming.py](../../by-language/python/algorithms/dynamic_programming.py) | [dynamic_programming.c](../../by-language/c/algorithms/dynamic_programming.c) |
+| Algorithm | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| DP Algorithms | [dynamic_programming.py](../../by-language/python/algorithms/dynamic_programming.py) | [dynamic_programming.c](../../by-language/c/algorithms/dynamic_programming.c) | [dynamic_programming.go](../../by-language/go/algorithms/dynamic_programming.go) | [DynamicProgramming.java](../../by-language/java/src/main/java/dsa/algorithms/DynamicProgramming.java) | [mod.rs](../../by-language/rust/dsa-algorithms/src/dynamic_programming/mod.rs) | [dynamic-programming.ts](../../by-language/typescript/src/algorithms/dynamic-programming.ts) |
 
 ## Complexity Summary
 

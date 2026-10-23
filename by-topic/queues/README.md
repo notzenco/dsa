@@ -4,10 +4,10 @@ A queue is a First-In-First-Out (FIFO) data structure where elements are added a
 
 ## Implementations
 
-| Structure | Python | C |
-|-----------|--------|---|
-| Queue | [queue.py](../../by-language/python/data_structures/queue.py) | [queue.c](../../by-language/c/data-structures/queue.c) |
-| Monotonic Queue | [queue.py](../../by-language/python/data_structures/queue.py) | [monotonic_queue.c](../../by-language/c/data-structures/monotonic_queue.c) |
+| Structure | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| Queue | [queue.py](../../by-language/python/data_structures/queue.py) | [queue.c](../../by-language/c/data-structures/queue.c) | [queue.go](../../by-language/go/datastructures/queue.go) | [Queue.java](../../by-language/java/src/main/java/dsa/datastructures/Queue.java) | [queue.rs](../../by-language/rust/dsa-data-structures/src/linear/queue.rs) | [queue.ts](../../by-language/typescript/src/data-structures/queue.ts) |
+| Monotonic Queue | [queue.py](../../by-language/python/data_structures/queue.py) | [monotonic_queue.c](../../by-language/c/data-structures/monotonic_queue.c) | [queue.go](../../by-language/go/datastructures/queue.go) | [MonotonicQueue.java](../../by-language/java/src/main/java/dsa/datastructures/MonotonicQueue.java) | [monotonic_queue.rs](../../by-language/rust/dsa-data-structures/src/linear/monotonic_queue.rs) | [monotonic-queue.ts](../../by-language/typescript/src/data-structures/monotonic-queue.ts) |
 
 ## Complexity
 
