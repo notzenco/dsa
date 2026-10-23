@@ -16,7 +16,8 @@ from .heap import MinHeap, MaxHeap, PriorityQueue
 from .graph import Graph
 from .trie import Trie, TrieMap, WordDictionary, CompressedTrie
 from .union_find import UnionFind, UnionFindArray, WeightedUnionFind, PersistentUnionFind
-from .lru_cache import LRUCache, LRUCacheSimple, LFUCache
+from .lru_cache import LRUCache, LRUCacheSimple
+from .lfu_cache import LFUCache
 from .ttl_cache import TTLCache
 from .avl_tree import AVLTree, AVLTreeMap
 from .segment_tree import SegmentTree, SegmentTreeLazy, FenwickTree, FenwickTree2D

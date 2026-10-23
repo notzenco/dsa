@@ -6,6 +6,23 @@ import pytest
 from data_structures.lfu_cache import LFUCache
 
 
+def test_minimum_frequency_after_deleting_last_minimum():
+    cache = LFUCache(2)
+    cache.put('frequent', 1)
+    cache.get('frequent')
+    cache.get('frequent')
+    cache.put('rare', 2)
+    assert cache.delete('rare')
+    assert cache.min_frequency() == 3
+    cache.get('frequent')
+    assert cache.min_frequency() == 4
+    cache.put('new', 3)
+    assert cache.put('replacement', 4) == ('new', 3)
+    assert cache.delete('replacement')
+    assert cache.delete('frequent')
+    assert cache.min_frequency() == 0
+
+
 class TestLFUCacheBasics:
     """Test basic LFU cache operations."""
 
