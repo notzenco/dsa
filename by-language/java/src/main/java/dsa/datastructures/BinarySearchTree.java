@@ -49,14 +49,14 @@ public class BinarySearchTree<T extends Comparable<T>> {
     }
 
     /**
-     * Insert a value into the BST.
+     * Insert a value into the BST. Keys are unique: inserting a value that is
+     * already present leaves the tree unchanged and returns the existing node.
      */
     public TreeNode insert(T value) {
-        TreeNode newNode = new TreeNode(value);
         if (root == null) {
-            root = newNode;
+            root = new TreeNode(value);
             size++;
-            return newNode;
+            return root;
         }
         TreeNode current = root;
         TreeNode parent = null;
@@ -68,10 +68,10 @@ public class BinarySearchTree<T extends Comparable<T>> {
             } else if (cmp > 0) {
                 current = current.right;
             } else {
-                // Duplicate: go right
-                current = current.right;
+                return current;
             }
         }
+        TreeNode newNode = new TreeNode(value);
         newNode.parent = parent;
         if (value.compareTo(parent.value) < 0) {
             parent.left = newNode;
@@ -421,12 +421,18 @@ public class BinarySearchTree<T extends Comparable<T>> {
     }
 
     /**
-     * Build a balanced BST from a sorted list.
+     * Build a balanced BST from a sorted list. Repeated values are kept once.
      */
     public static <T extends Comparable<T>> BinarySearchTree<T> fromSortedList(List<T> sortedList) {
+        List<T> distinct = new ArrayList<>(sortedList.size());
+        for (T item : sortedList) {
+            if (distinct.isEmpty() || item.compareTo(distinct.get(distinct.size() - 1)) != 0) {
+                distinct.add(item);
+            }
+        }
         BinarySearchTree<T> bst = new BinarySearchTree<>();
-        bst.root = bst.buildFromSorted(sortedList, 0, sortedList.size() - 1, null);
-        bst.size = sortedList.size();
+        bst.root = bst.buildFromSorted(distinct, 0, distinct.size() - 1, null);
+        bst.size = distinct.size();
         return bst;
     }
 

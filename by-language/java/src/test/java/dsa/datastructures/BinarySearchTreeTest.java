@@ -3,9 +3,12 @@ package dsa.datastructures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,6 +46,17 @@ class BinarySearchTreeTest {
         BinarySearchTree<Integer>.TreeNode node = bst.insert(42);
         assertNotNull(node);
         assertEquals(42, node.getValue());
+    }
+
+    @Test
+    void testInsertDuplicateKeepsTreeUnchanged() {
+        BinarySearchTree<Integer>.TreeNode first = bst.insert(5);
+        bst.insert(10);
+        BinarySearchTree<Integer>.TreeNode again = bst.insert(5);
+        assertSame(first, again);
+        assertEquals(2, bst.size());
+        assertEquals(Arrays.asList(5, 10), bst.inorder());
+        assertTrue(bst.isValidBst());
     }
 
     // ======================== Search ========================
@@ -419,6 +433,54 @@ class BinarySearchTreeTest {
         assertTrue(tree.isValidBst());
         // A balanced tree from 7 elements should have height 2
         assertEquals(2, tree.height());
+    }
+
+    @Test
+    void testFromSortedListKeepsRepeatedValuesOnce() {
+        BinarySearchTree<Integer> tree = BinarySearchTree.fromSortedList(Arrays.asList(1, 1, 2, 3, 3, 3));
+        assertEquals(3, tree.size());
+        assertEquals(Arrays.asList(1, 2, 3), tree.inorder());
+        assertTrue(tree.isValidBst());
+    }
+
+    @Test
+    void testRandomizedAgainstTreeSet() {
+        long seed = 20261023L;
+        Random rng = new Random(seed);
+        for (int trial = 0; trial < 200; trial++) {
+            BinarySearchTree<Integer> tree = new BinarySearchTree<>();
+            TreeSet<Integer> model = new TreeSet<>();
+            List<String> ops = new ArrayList<>();
+            for (int step = 0; step < 60; step++) {
+                int value = rng.nextInt(41) - 20;
+                String context = "seed=" + seed + " trial=" + trial + " ops=" + ops;
+                if (rng.nextInt(10) < 6) {
+                    ops.add("insert " + value);
+                    tree.insert(value);
+                    model.add(value);
+                } else {
+                    ops.add("delete " + value);
+                    assertEquals(model.remove(value), tree.delete(value), context);
+                }
+                assertEquals(model.size(), tree.size(), context);
+            }
+            String context = "seed=" + seed + " trial=" + trial + " ops=" + ops;
+            assertEquals(new ArrayList<>(model), tree.inorder(), context);
+            assertTrue(tree.isValidBst(), context);
+            for (int q = -22; q <= 22; q++) {
+                assertEquals(Optional.ofNullable(model.floor(q)), tree.floor(q), context + " floor " + q);
+                assertEquals(Optional.ofNullable(model.ceiling(q)), tree.ceiling(q), context + " ceiling " + q);
+                assertEquals(model.contains(q), tree.search(q).isPresent(), context + " search " + q);
+                if (model.contains(q)) {
+                    assertEquals(Optional.ofNullable(model.higher(q)), tree.successor(q), context + " successor " + q);
+                    assertEquals(Optional.ofNullable(model.lower(q)), tree.predecessor(q), context + " predecessor " + q);
+                }
+            }
+            int rank = 1;
+            for (int value : model) {
+                assertEquals(Optional.of(value), tree.kthSmallest(rank++), context);
+            }
+        }
     }
 
     @Test
