@@ -40,6 +40,14 @@ class AdjacencyMatrixTest {
     }
 
     @Test
+    void addEdgeRejectsInfiniteSentinel() {
+        AdjacencyMatrix graph = new AdjacencyMatrix(2, false);
+        assertThrows(IllegalArgumentException.class,
+                () -> graph.addEdge(0, 1, Double.POSITIVE_INFINITY));
+        assertEquals(0, graph.numEdges());
+    }
+
+    @Test
     void addEdgeDirected() {
         AdjacencyMatrix g = new AdjacencyMatrix(4, true);
         g.addEdge(0, 1, 2.5);

@@ -51,10 +51,15 @@ public class AdjacencyMatrix {
      * @param v      the destination vertex
      * @param weight the edge weight
      * @throws IndexOutOfBoundsException if u or v is out of range
+     * @throws IllegalArgumentException if weight is positive infinity, the
+     *         sentinel used for a missing edge
      */
     public void addEdge(int u, int v, double weight) {
         validateVertex(u);
         validateVertex(v);
+        if (weight == NO_EDGE) {
+            throw new IllegalArgumentException("Infinite weight is reserved for missing edges");
+        }
         boolean isNew = !hasEdge(u, v);
         matrix[u][v] = weight;
         if (!directed) {

@@ -215,6 +215,14 @@ class GraphCoreTest {
     }
 
     @Test
+    void edgesKeepDistinctPairsWithDelimiterLabels() {
+        GraphCore graph = new GraphCore(false);
+        graph.addEdge("a||b", "c", 1.0);
+        graph.addEdge("a", "b||c", 2.0);
+        assertEquals(2, graph.edges().size());
+    }
+
+    @Test
     void edgesDirected() {
         GraphCore g = new GraphCore(true);
         g.addEdge("A", "B", 1.0);

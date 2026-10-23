@@ -203,12 +203,12 @@ public class GraphCore {
                 if (directed) {
                     result.add(new Object[]{u, v, entry.getValue()});
                 } else {
-                    String key = u.compareTo(v) <= 0 ? u + "||" + v : v + "||" + u;
-                    if (visited.add(key)) {
+                    if (!visited.contains(v)) {
                         result.add(new Object[]{u, v, entry.getValue()});
                     }
                 }
             }
+            visited.add(u);
         }
         return result;
     }
