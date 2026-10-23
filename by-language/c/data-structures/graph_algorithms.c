@@ -239,6 +239,7 @@ static ShortestPathResult *sp_result_create(int n) {
         result->parent[i] = -1;
     }
     result->has_negative_cycle = false;
+    result->vertex_count = n;
     return result;
 }
 
@@ -436,29 +437,36 @@ ShortestPathResult *graph_bellman_ford(const Graph *g, int source) {
 }
 
 bool shortest_path_reconstruct(const ShortestPathResult *result, int dest,
-                               int *path_out, int *path_len_out) {
+                               int *path_out, size_t path_capacity,
+                               int *path_len_out) {
     if (result == NULL || path_out == NULL || path_len_out == NULL) {
+        return false;
+    }
+    *path_len_out = 0;
+    if (dest < 0 || dest >= result->vertex_count || result->has_negative_cycle) {
         return false;
     }
 
     if (result->distance[dest] == GRAPH_INF) {
-        *path_len_out = 0;
         return false;
     }
 
-    /* Build path backwards */
+    /* Validate the parent chain and output capacity before writing. */
     int len = 0;
     int current = dest;
     while (current != -1) {
-        path_out[len++] = current;
+        if (current < 0 || current >= result->vertex_count ||
+            len >= result->vertex_count || (size_t)len >= path_capacity) {
+            return false;
+        }
+        len++;
         current = result->parent[current];
     }
 
-    /* Reverse path */
-    for (int i = 0; i < len / 2; i++) {
-        int temp = path_out[i];
-        path_out[i] = path_out[len - 1 - i];
-        path_out[len - 1 - i] = temp;
+    current = dest;
+    for (int i = len - 1; i >= 0; i--) {
+        path_out[i] = current;
+        current = result->parent[current];
     }
 
     *path_len_out = len;
@@ -714,7 +722,7 @@ MSTResult *graph_mst_kruskal(const Graph *g) {
     for (int u = 0; u < n; u++) {
         for (Edge *e = g->adj_list[u]; e != NULL; e = e->next) {
             /* For undirected, only add edge once (u < v) */
-            if (!g->directed && u > e->dest) continue;
+            if (u == e->dest || (!g->directed && u > e->dest)) continue;
             edges[idx].src = u;
             edges[idx].dest = e->dest;
             edges[idx].weight = e->weight;

@@ -46,6 +46,7 @@ typedef struct {
 typedef struct {
     int *distance;      /* Distance from source */
     int *parent;        /* Parent in shortest path tree */
+    int vertex_count;   /* Length of distance and parent arrays */
     bool has_negative_cycle;
 } ShortestPathResult;
 

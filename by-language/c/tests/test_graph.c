@@ -173,7 +173,9 @@ TEST(dijkstra_path_reconstruction) {
     int path[4];
     int path_len;
 
-    ASSERT_TRUE(shortest_path_reconstruct(result, 3, path, &path_len));
+    ASSERT_FALSE(shortest_path_reconstruct(result, 3, path, 3, &path_len));
+    ASSERT_EQ(0, path_len);
+    ASSERT_TRUE(shortest_path_reconstruct(result, 3, path, 4, &path_len));
     ASSERT_EQ(4, path_len);
     ASSERT_EQ(0, path[0]);
     ASSERT_EQ(1, path[1]);
@@ -236,6 +238,21 @@ TEST(bellman_ford_negative_cycle) {
     ASSERT_NOT_NULL(result);
     ASSERT_TRUE(result->has_negative_cycle);
 
+    shortest_path_result_free(result);
+    graph_destroy(g);
+}
+
+TEST(bellman_ford_negative_cycle_reconstruct) {
+    Graph *g = graph_create(3, true);
+    graph_add_edge(g, 0, 1, 1);
+    graph_add_edge(g, 1, 2, -2);
+    graph_add_edge(g, 2, 1, -2);
+    ShortestPathResult *result = graph_bellman_ford(g, 0);
+    ASSERT_NOT_NULL(result);
+    ASSERT_TRUE(result->has_negative_cycle);
+    int path[3];
+    int path_len = 0;
+    ASSERT_FALSE(shortest_path_reconstruct(result, 2, path, 3, &path_len));
     shortest_path_result_free(result);
     graph_destroy(g);
 }
@@ -325,6 +342,18 @@ TEST(mst_kruskal_simple) {
     ASSERT_EQ(3, result->num_edges);
     ASSERT_EQ(19, result->total_weight); /* 4 + 5 + 10 = 19 */
 
+    mst_result_free(result);
+    graph_destroy(g);
+}
+
+TEST(mst_kruskal_self_loop) {
+    Graph *g = graph_create(2, false);
+    graph_add_edge(g, 0, 0, -10);
+    graph_add_edge(g, 0, 1, 3);
+    MSTResult *result = graph_mst_kruskal(g);
+    ASSERT_NOT_NULL(result);
+    ASSERT_EQ(1, result->num_edges);
+    ASSERT_EQ(3, result->total_weight);
     mst_result_free(result);
     graph_destroy(g);
 }
@@ -563,6 +592,7 @@ int main(void) {
     RUN_TEST(bellman_ford_simple);
     RUN_TEST(bellman_ford_negative_edges);
     RUN_TEST(bellman_ford_negative_cycle);
+    RUN_TEST(bellman_ford_negative_cycle_reconstruct);
 
     /* Topological sort tests */
     RUN_TEST(topo_sort_kahn_simple);
@@ -571,6 +601,7 @@ int main(void) {
 
     /* MST tests */
     RUN_TEST(mst_kruskal_simple);
+    RUN_TEST(mst_kruskal_self_loop);
     RUN_TEST(mst_prim_simple);
     RUN_TEST(mst_complete_graph);
 

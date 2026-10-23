@@ -100,7 +100,8 @@ bool graph_floyd_warshall(const Graph *g, int **dist_out, int **next_out);
  * @param dest Destination vertex
  * @param path_out Array to store path (caller allocates)
  * @param path_len_out Pointer to store path length
- * @return true if path exists
+ * @return true if a path fits; false for an invalid or unreachable destination,
+ *         a negative-cycle result, or insufficient output capacity
  */
 bool graph_floyd_warshall_path(int **next, int n, int src, int dest,
                                 int *path_out, int *path_len_out);
@@ -110,11 +111,13 @@ bool graph_floyd_warshall_path(int **next, int n, int src, int dest,
  * @param result Shortest path result
  * @param dest Destination vertex
  * @param path_out Array to store path
+ * @param path_capacity Number of int elements in path_out
  * @param path_len_out Pointer to store path length
  * @return true if path exists
  */
 bool shortest_path_reconstruct(const ShortestPathResult *result, int dest,
-                               int *path_out, int *path_len_out);
+                               int *path_out, size_t path_capacity,
+                               int *path_len_out);
 
 /* ============== Topological Sort ============== */
 
