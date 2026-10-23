@@ -1,6 +1,9 @@
 package algorithms
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestLinearSearch(t *testing.T) {
 	arr := []int{5, 3, 8, 1, 9}
@@ -71,6 +74,19 @@ func TestInterpolationSearch(t *testing.T) {
 	}
 	if InterpolationSearch(arr, 35) != -1 {
 		t.Error("expected -1")
+	}
+}
+
+func TestInterpolationSearchWideValues(t *testing.T) {
+	arr := []int{-1 << 62, 0, 1 << 62}
+	if got := InterpolationSearch(arr, 0); got != 1 {
+		t.Fatalf("InterpolationSearch wide = %d, want 1", got)
+	}
+	if got := InterpolationSearch(arr, 1); got != -1 {
+		t.Fatalf("InterpolationSearch missing wide = %d, want -1", got)
+	}
+	if got := InterpolationSearch([]int{math.MinInt, math.MaxInt}, math.MaxInt); got != 1 {
+		t.Fatalf("InterpolationSearch extremes = %d, want 1", got)
 	}
 }
 

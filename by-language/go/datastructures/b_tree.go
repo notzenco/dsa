@@ -87,11 +87,12 @@ func (bt *BTree[K, V]) insertNonFull(node *BTreeNode[K, V], key K, value V) {
 		for i >= 0 && key < node.Keys[i] {
 			i--
 		}
-		i++
-		if i < len(node.Keys) && key == node.Keys[i] {
+		// i is the rightmost key that is <= key, or -1 when every key is larger.
+		if i >= 0 && key == node.Keys[i] {
 			node.Values[i] = value
 			return
 		}
+		i++
 		if len(node.Children[i].Keys) == 2*bt.t-1 {
 			bt.splitChild(node, i)
 			if key > node.Keys[i] {
