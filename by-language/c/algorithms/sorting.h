@@ -100,10 +100,10 @@ void counting_sort(int *arr, size_t n);
 
 /**
  * Radix Sort (LSD) - O(d * n)
- * Non-comparison sort for non-negative integers.
+ * Non-comparison sort for integers. Digits are taken from each value's
+ * distance to the minimum, so negative values are supported.
  * @param arr Array to sort
  * @param n Size of array
- * Note: Only works for non-negative integers
  */
 void radix_sort(int *arr, size_t n);
 
