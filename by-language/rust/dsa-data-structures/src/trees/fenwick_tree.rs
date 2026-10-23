@@ -175,6 +175,7 @@ impl FenwickTree {
     }
 
     /// Adds a value to the element at the given index (1-indexed).
+    /// Panics if the index is outside `1..=len`.
     ///
     /// # Time Complexity
     /// O(log n)
@@ -189,6 +190,10 @@ impl FenwickTree {
     /// assert_eq!(bit.prefix_sum(3), 16); // 1 + 2 + 13
     /// ```
     pub fn update(&mut self, mut index: usize, delta: i64) {
+        assert!(
+            index > 0 && index <= self.len,
+            "Fenwick index out of bounds"
+        );
         while index <= self.len {
             self.tree[index] += delta;
             index += Self::lowbit(index);
@@ -352,8 +357,13 @@ impl FenwickTree2D {
     /// Adds a value to the element at position (row, col) (1-indexed).
     ///
     /// # Time Complexity
-    /// O(log(rows) * log(cols))
+    /// O(log(rows) * log(cols)). Panics if either 1-indexed coordinate is
+    /// outside the tree.
     pub fn update(&mut self, mut row: usize, col: usize, delta: i64) {
+        assert!(
+            row > 0 && row <= self.rows && col > 0 && col <= self.cols,
+            "Fenwick index out of bounds"
+        );
         while row <= self.rows {
             let mut c = col;
             while c <= self.cols {
@@ -395,6 +405,17 @@ impl FenwickTree2D {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    #[should_panic(expected = "Fenwick index out of bounds")]
+    fn rejects_zero_update() {
+        super::FenwickTree::from_slice(&[1]).update(0, 1);
+    }
+
+    #[test]
+    #[should_panic(expected = "Fenwick index out of bounds")]
+    fn rejects_zero_row_update() {
+        super::FenwickTree2D::from_matrix(&[vec![1]]).update(0, 1, 1);
+    }
     use super::*;
 
     mod basics {
