@@ -19,7 +19,6 @@ keywords = ["data-structures", "algorithms", "dsa", "education"]
 categories = ["algorithms", "data-structures"]
 
 [workspace.dependencies]
-thiserror = "1.0"
 criterion = "0.5"
 rand = "0.8"
 

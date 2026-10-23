@@ -3,6 +3,7 @@
 //! These traits define common interfaces that data structures implement,
 //! enabling generic programming and consistent APIs across implementations.
 
+use alloc::vec::Vec;
 use core::cmp::Ordering;
 
 /// A trait for data structures that have a length/size.
