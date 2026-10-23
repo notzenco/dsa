@@ -5,6 +5,15 @@
 #include "test_framework.h"
 #include "../data-structures/avl_tree.h"
 #include <stdlib.h>
+#include <limits.h>
+
+TEST(avl_validates_extreme_keys) {
+    AVLTree *tree = avl_create();
+    ASSERT_TRUE(avl_insert(tree, INT_MIN));
+    ASSERT_TRUE(avl_insert(tree, INT_MAX));
+    ASSERT_TRUE(avl_is_valid(tree));
+    avl_destroy(tree);
+}
 
 /* ============== Creation Tests ============== */
 
@@ -526,6 +535,7 @@ int main(void) {
 
     /* Creation */
     RUN_TEST(avl_create_empty);
+    RUN_TEST(avl_validates_extreme_keys);
 
     /* Insert */
     RUN_TEST(avl_insert_single);

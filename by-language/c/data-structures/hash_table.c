@@ -389,18 +389,22 @@ bool ht_int_put(HashTableInt *table, int key, int value) {
 
     size_t index = ht_int_hash(key, table->capacity);
     size_t start = index;
+    size_t first_deleted = table->capacity;
 
     do {
-        if (!table->entries[index].occupied || table->entries[index].deleted) {
-            table->entries[index].key = key;
-            table->entries[index].value = value;
-            table->entries[index].occupied = true;
-            table->entries[index].deleted = false;
+        if (!table->entries[index].occupied) {
+            size_t target = first_deleted == table->capacity ? index : first_deleted;
+            table->entries[target].key = key;
+            table->entries[target].value = value;
+            table->entries[target].occupied = true;
+            table->entries[target].deleted = false;
             table->size++;
             return true;
         }
 
-        if (table->entries[index].key == key) {
+        if (table->entries[index].deleted) {
+            if (first_deleted == table->capacity) first_deleted = index;
+        } else if (table->entries[index].key == key) {
             table->entries[index].value = value;
             return true;
         }
@@ -408,6 +412,14 @@ bool ht_int_put(HashTableInt *table, int key, int value) {
         index = (index + 1) % table->capacity;
     } while (index != start);
 
+    if (first_deleted != table->capacity) {
+        table->entries[first_deleted].key = key;
+        table->entries[first_deleted].value = value;
+        table->entries[first_deleted].occupied = true;
+        table->entries[first_deleted].deleted = false;
+        table->size++;
+        return true;
+    }
     return false;
 }
 

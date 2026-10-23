@@ -516,7 +516,7 @@ size_t avl_count_range(const AVLTree *tree, int low, int high) {
 
 /* ============== Validation ============== */
 
-static bool is_valid_helper(const AVLNode *node, int min, int max,
+static bool is_valid_helper(const AVLNode *node, const int *min, const int *max,
                             int *height) {
     if (node == NULL) {
         *height = 0;
@@ -524,14 +524,15 @@ static bool is_valid_helper(const AVLNode *node, int min, int max,
     }
 
     /* Check BST property */
-    if (node->data <= min || node->data >= max) {
+    if ((min != NULL && node->data <= *min) ||
+        (max != NULL && node->data >= *max)) {
         return false;
     }
 
     int left_height = 0, right_height = 0;
 
-    if (!is_valid_helper(node->left, min, node->data, &left_height) ||
-        !is_valid_helper(node->right, node->data, max, &right_height)) {
+    if (!is_valid_helper(node->left, min, &node->data, &left_height) ||
+        !is_valid_helper(node->right, &node->data, max, &right_height)) {
         return false;
     }
 
@@ -555,7 +556,7 @@ bool avl_is_valid(const AVLTree *tree) {
     if (tree->root == NULL) return tree->size == 0;
 
     int height = 0;
-    return is_valid_helper(tree->root, INT_MIN, INT_MAX, &height);
+    return is_valid_helper(tree->root, NULL, NULL, &height);
 }
 
 int avl_balance_factor(const AVLTree *tree) {

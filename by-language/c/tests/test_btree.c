@@ -205,6 +205,22 @@ TEST(btree_delete_not_found) {
     btree_destroy(tree);
 }
 
+TEST(btree_absent_delete_shrinks_root) {
+    BTree *tree = btree_create(2);
+    for (int i = 1; i <= 4; i++) ASSERT_TRUE(btree_insert(tree, i, i));
+    ASSERT_TRUE(btree_delete(tree, 4));
+    ASSERT_FALSE(btree_delete(tree, 99));
+    ASSERT_EQ(3, btree_size(tree));
+    ASSERT_TRUE(btree_validate(tree));
+    ASSERT_TRUE(btree_height(tree) > 0);
+    int min, max;
+    ASSERT_TRUE(btree_min(tree, &min));
+    ASSERT_TRUE(btree_max(tree, &max));
+    ASSERT_EQ(1, min);
+    ASSERT_EQ(3, max);
+    btree_destroy(tree);
+}
+
 TEST(btree_delete_all) {
     BTree *tree = btree_create(2);
 
@@ -462,6 +478,7 @@ int main(void) {
     RUN_TEST(btree_delete_from_leaf);
     RUN_TEST(btree_delete_from_internal);
     RUN_TEST(btree_delete_not_found);
+    RUN_TEST(btree_absent_delete_shrinks_root);
     RUN_TEST(btree_delete_all);
     RUN_TEST(btree_delete_with_merge);
 

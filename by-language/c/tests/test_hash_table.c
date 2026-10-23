@@ -407,6 +407,20 @@ TEST(ht_int_null_safety) {
     ASSERT_FALSE(ht_int_remove(NULL, 42));
 }
 
+TEST(ht_int_update_past_tombstone) {
+    HashTableInt *table = ht_int_create();
+    ASSERT_NOT_NULL(table);
+    ASSERT_TRUE(ht_int_put(table, 0, 10));
+    ASSERT_TRUE(ht_int_put(table, 31, 20));
+    ASSERT_TRUE(ht_int_remove(table, 0));
+    ASSERT_TRUE(ht_int_put(table, 31, 30));
+    ASSERT_EQ(1, ht_int_size(table));
+    ASSERT_TRUE(ht_int_remove(table, 31));
+    ASSERT_FALSE(ht_int_contains(table, 31));
+    ASSERT_EQ(0, ht_int_size(table));
+    ht_int_destroy(table);
+}
+
 /* Main test runner */
 int main(void) {
     TEST_SUITE_START("Hash Table");
@@ -443,6 +457,7 @@ int main(void) {
     RUN_TEST(ht_int_linear_probing);
     RUN_TEST(ht_int_remove_and_reinsert);
     RUN_TEST(ht_int_null_safety);
+    RUN_TEST(ht_int_update_past_tombstone);
 
     TEST_SUITE_END();
 

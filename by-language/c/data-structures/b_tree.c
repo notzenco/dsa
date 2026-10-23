@@ -601,16 +601,16 @@ bool btree_delete(BTree *tree, int key) {
 
     if (deleted) {
         tree->size--;
+    }
 
-        /* Shrink tree if root is empty */
-        if (tree->root->num_keys == 0 && !tree->root->is_leaf) {
-            BTreeNode *old_root = tree->root;
-            tree->root = tree->root->children[0];
-            free(old_root->keys);
-            free(old_root->values);
-            free(old_root->children);
-            free(old_root);
-        }
+    /* An unsuccessful deletion may still merge children and empty the root. */
+    if (tree->root->num_keys == 0 && !tree->root->is_leaf) {
+        BTreeNode *old_root = tree->root;
+        tree->root = tree->root->children[0];
+        free(old_root->keys);
+        free(old_root->values);
+        free(old_root->children);
+        free(old_root);
     }
 
     return deleted;
