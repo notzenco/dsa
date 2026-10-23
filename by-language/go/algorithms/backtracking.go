@@ -227,26 +227,30 @@ func WordSearch(board [][]byte, word string) bool {
 	if len(board) == 0 || len(word) == 0 {
 		return false
 	}
-	rows, cols := len(board), len(board[0])
+	rows := len(board)
+	visited := make([][]bool, rows)
+	for r := range board {
+		visited[r] = make([]bool, len(board[r]))
+	}
 
 	var dfs func(int, int, int) bool
 	dfs = func(r, c, idx int) bool {
 		if idx == len(word) {
 			return true
 		}
-		if r < 0 || r >= rows || c < 0 || c >= cols || board[r][c] != word[idx] {
+		if r < 0 || r >= rows || c < 0 || c >= len(board[r]) ||
+			visited[r][c] || board[r][c] != word[idx] {
 			return false
 		}
-		temp := board[r][c]
-		board[r][c] = '#'
+		visited[r][c] = true
 		found := dfs(r+1, c, idx+1) || dfs(r-1, c, idx+1) ||
 			dfs(r, c+1, idx+1) || dfs(r, c-1, idx+1)
-		board[r][c] = temp
+		visited[r][c] = false
 		return found
 	}
 
 	for r := 0; r < rows; r++ {
-		for c := 0; c < cols; c++ {
+		for c := range board[r] {
 			if dfs(r, c, 0) {
 				return true
 			}

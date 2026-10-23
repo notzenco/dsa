@@ -325,6 +325,13 @@ func TestWordSearchSingleCell(t *testing.T) {
 	}
 }
 
+func TestWordSearchMarkerIsOrdinaryCell(t *testing.T) {
+	board := [][]byte{{'#', '#'}}
+	if WordSearch(board, "###") {
+		t.Fatal("word search reused a marked cell")
+	}
+}
+
 func TestCombinations(t *testing.T) {
 	result := Combinations(4, 2)
 	if len(result) != 6 {

@@ -146,7 +146,7 @@ func ZAlgorithmSearch(text, pattern string) []int {
 	m := len(pattern)
 
 	for i := m + 1; i < len(concat); i++ {
-		if z[i] == m {
+		if z[i] >= m {
 			result = append(result, i-m-1)
 		}
 	}
@@ -567,13 +567,24 @@ func ShortestPalindrome(s string) string {
 		return s
 	}
 
-	rev := ReverseString(s)
-	// Find the longest palindrome prefix
-	concat := s + "#" + rev
-	lps := ComputeLPS(concat)
-	longestPalPrefix := lps[len(concat)-1]
-
-	suffix := s[longestPalPrefix:]
+	runes := []rune(s)
+	reversed := []rune(ReverseString(s))
+	tokens := make([]rune, 0, 2*len(runes)+1)
+	tokens = append(tokens, runes...)
+	tokens = append(tokens, -1)
+	tokens = append(tokens, reversed...)
+	lps := make([]int, len(tokens))
+	for i := 1; i < len(tokens); i++ {
+		j := lps[i-1]
+		for j > 0 && tokens[i] != tokens[j] {
+			j = lps[j-1]
+		}
+		if tokens[i] == tokens[j] {
+			j++
+		}
+		lps[i] = j
+	}
+	suffix := string(runes[lps[len(lps)-1]:])
 	return ReverseString(suffix) + s
 }
 

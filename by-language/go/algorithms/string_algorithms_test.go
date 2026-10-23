@@ -77,6 +77,9 @@ func TestComputeZArray(t *testing.T) {
 }
 
 func TestZAlgorithmSearch(t *testing.T) {
+	if got := ZAlgorithmSearch("$$", "$"); !reflect.DeepEqual(got, []int{0, 1}) {
+		t.Fatalf("delimiter matches: got %v", got)
+	}
 	result := ZAlgorithmSearch("AABAACAADAABAABA", "AABA")
 	expected := []int{0, 9, 12}
 	if !reflect.DeepEqual(result, expected) {
@@ -305,6 +308,9 @@ func TestRepeatedSubstringPattern(t *testing.T) {
 }
 
 func TestShortestPalindrome(t *testing.T) {
+	if got := ShortestPalindrome("a#a"); got != "a#a" {
+		t.Fatalf("delimiter palindrome: got %q", got)
+	}
 	result := ShortestPalindrome("aacecaaa")
 	if result != "aaacecaaa" {
 		t.Errorf("expected 'aaacecaaa', got %q", result)
