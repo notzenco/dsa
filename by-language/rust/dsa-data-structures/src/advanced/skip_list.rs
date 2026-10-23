@@ -36,7 +36,7 @@ const MAX_LEVEL: usize = 16;
 /// A node in the skip list.
 #[derive(Clone)]
 struct Node<T: Clone> {
-    value: T,
+    value: Option<T>,
     forward: Vec<Option<usize>>, // Indices into nodes vec
 }
 
@@ -45,6 +45,8 @@ struct Node<T: Clone> {
 /// This implementation uses arena allocation (Vec-based) for safety.
 pub struct SkipList<T: Ord + Clone> {
     nodes: Vec<Node<T>>,
+    free_indices: Vec<usize>,
+    live_len: usize,
     head_forward: Vec<Option<usize>>,
     level: usize,
     rand_state: u64,
@@ -64,6 +66,8 @@ impl<T: Ord + Clone> SkipList<T> {
     pub fn new() -> Self {
         SkipList {
             nodes: Vec::new(),
+            free_indices: Vec::new(),
+            live_len: 0,
             head_forward: vec![None; MAX_LEVEL + 1],
             level: 0,
             rand_state: 0x853c49e6748fea9b,
@@ -72,12 +76,12 @@ impl<T: Ord + Clone> SkipList<T> {
 
     /// Returns the number of elements.
     pub fn len(&self) -> usize {
-        self.nodes.len()
+        self.live_len
     }
 
     /// Returns `true` if empty.
     pub fn is_empty(&self) -> bool {
-        self.nodes.is_empty()
+        self.live_len == 0
     }
 
     fn random(&mut self) -> u64 {
@@ -117,7 +121,7 @@ impl<T: Ord + Clone> SkipList<T> {
         for i in (0..=self.level).rev() {
             loop {
                 if let Some(next_idx) = current_forward[i] {
-                    match self.nodes[next_idx].value.cmp(&value) {
+                    match self.nodes[next_idx].value.as_ref().unwrap().cmp(&value) {
                         core::cmp::Ordering::Less => {
                             current = Some(next_idx);
                             current_forward = &self.nodes[next_idx].forward;
@@ -142,7 +146,7 @@ impl<T: Ord + Clone> SkipList<T> {
         }
 
         // Create new node
-        let new_idx = self.nodes.len();
+        let new_idx = self.free_indices.pop().unwrap_or(self.nodes.len());
         let mut new_forward = vec![None; new_level + 1];
 
         for i in 0..=new_level {
@@ -153,10 +157,15 @@ impl<T: Ord + Clone> SkipList<T> {
             }
         }
 
-        self.nodes.push(Node {
-            value,
+        let node = Node {
+            value: Some(value),
             forward: new_forward,
-        });
+        };
+        if new_idx == self.nodes.len() {
+            self.nodes.push(node);
+        } else {
+            self.nodes[new_idx] = node;
+        }
 
         // Update forward pointers
         for i in 0..=new_level {
@@ -166,6 +175,7 @@ impl<T: Ord + Clone> SkipList<T> {
                 self.head_forward[i] = Some(new_idx);
             }
         }
+        self.live_len += 1;
 
         true
     }
@@ -188,7 +198,7 @@ impl<T: Ord + Clone> SkipList<T> {
         for i in (0..=self.level).rev() {
             loop {
                 if let Some(next_idx) = current_forward[i] {
-                    match self.nodes[next_idx].value.cmp(value) {
+                    match self.nodes[next_idx].value.as_ref().unwrap().cmp(value) {
                         core::cmp::Ordering::Less => {
                             current_forward = &self.nodes[next_idx].forward;
                         }
@@ -228,7 +238,7 @@ impl<T: Ord + Clone> SkipList<T> {
         for i in (0..=self.level).rev() {
             loop {
                 if let Some(next_idx) = current_forward[i] {
-                    match self.nodes[next_idx].value.cmp(value) {
+                    match self.nodes[next_idx].value.as_ref().unwrap().cmp(value) {
                         core::cmp::Ordering::Less => {
                             current = Some(next_idx);
                             current_forward = &self.nodes[next_idx].forward;
@@ -273,6 +283,10 @@ impl<T: Ord + Clone> SkipList<T> {
                 self.level -= 1;
             }
 
+            self.live_len -= 1;
+            self.free_indices.push(target_idx);
+            drop(self.nodes[target_idx].value.take());
+
             return true;
         }
 
@@ -281,7 +295,7 @@ impl<T: Ord + Clone> SkipList<T> {
 
     /// Returns the first (minimum) element.
     pub fn first(&self) -> Option<&T> {
-        self.head_forward[0].map(|idx| &self.nodes[idx].value)
+        self.head_forward[0].map(|idx| self.nodes[idx].value.as_ref().unwrap())
     }
 
     /// Returns an iterator over elements in sorted order.
@@ -309,6 +323,8 @@ impl<T: Ord + Clone> SkipList<T> {
     /// Clears the skip list.
     pub fn clear(&mut self) {
         self.nodes.clear();
+        self.free_indices.clear();
+        self.live_len = 0;
         self.head_forward = vec![None; MAX_LEVEL + 1];
         self.level = 0;
     }
@@ -333,7 +349,7 @@ impl<'a, T: Ord + Clone> Iterator for SkipListIter<'a, T> {
         self.current.map(|idx| {
             let node = &self.list.nodes[idx];
             self.current = node.forward.first().copied().flatten();
-            &node.value
+            node.value.as_ref().unwrap()
         })
     }
 }
@@ -341,6 +357,20 @@ impl<'a, T: Ord + Clone> Iterator for SkipListIter<'a, T> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn removed_nodes_do_not_count_and_slots_are_reused() {
+        let mut list = SkipList::new();
+        assert!(list.insert(1));
+        assert!(list.remove(&1));
+        assert_eq!(list.len(), 0);
+        assert!(list.is_empty());
+        let slots = list.nodes.len();
+        assert!(list.insert(2));
+        assert_eq!(list.len(), 1);
+        assert_eq!(list.nodes.len(), slots);
+        assert_eq!(list.iter().copied().collect::<Vec<_>>(), vec![2]);
+    }
 
     mod basics {
         use super::*;

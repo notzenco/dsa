@@ -438,18 +438,18 @@ where
     /// assert!(cache.is_empty());
     /// ```
     pub fn clear(&mut self) {
-        // Free all nodes
-        let mut current = self.head;
+        // Remove map references and detach the list before any value may panic
+        // while being dropped. A panic can leak remaining nodes, but cannot
+        // leave reachable pointers to freed nodes in the cache.
+        self.map.clear();
+        let mut current = self.head.take();
+        self.tail = None;
         while let Some(node_ptr) = current {
             unsafe {
                 current = (*node_ptr.as_ptr()).next;
                 let _ = Box::from_raw(node_ptr.as_ptr());
             }
         }
-
-        self.map.clear();
-        self.head = None;
-        self.tail = None;
     }
 
     /// Returns the keys in LRU order (most recent first).
@@ -868,6 +868,16 @@ mod tests {
     mod clear {
         use super::*;
 
+        struct PanicOnce(std::sync::Arc<std::sync::atomic::AtomicBool>);
+
+        impl Drop for PanicOnce {
+            fn drop(&mut self) {
+                if self.0.swap(false, std::sync::atomic::Ordering::SeqCst) {
+                    panic!("drop panic");
+                }
+            }
+        }
+
         #[test]
         fn test_clear() {
             let mut cache = LRUCache::new(10);
@@ -896,6 +906,18 @@ mod tests {
             cache.put("b", 2);
             assert_eq!(cache.get(&"b"), Some(&2));
             assert_eq!(cache.len(), 1);
+        }
+
+        #[test]
+        fn test_clear_recovers_after_drop_panic() {
+            let flag = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(true));
+            let mut cache = LRUCache::new(2);
+            cache.put(1, PanicOnce(flag.clone()));
+            let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| cache.clear()));
+            assert!(outcome.is_err());
+            assert!(cache.is_empty());
+            cache.put(2, PanicOnce(flag));
+            assert!(cache.contains(&2));
         }
     }
 
