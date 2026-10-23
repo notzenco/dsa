@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdint.h>
 
 /* ============== Helper Functions ============== */
 
@@ -88,6 +89,7 @@ bool trie_insert(Trie *trie, const char *word) {
     if (trie == NULL || word == NULL || !is_valid_word(word)) {
         return false;
     }
+    if (trie_search(trie, word)) return true;
 
     TrieNode *current = trie->root;
 
@@ -208,33 +210,57 @@ int trie_count_prefix(const Trie *trie, const char *prefix) {
     return current->prefix_count;
 }
 
-static void collect_words(const TrieNode *node, char *buffer, int depth,
-                          char **words, int *count, int max_words) {
-    if (*count >= max_words) return;
+static bool ensure_buffer(char **buffer, size_t *capacity, size_t needed) {
+    if (needed <= *capacity) return true;
+    size_t new_capacity = *capacity;
+    while (new_capacity < needed) {
+        if (new_capacity > SIZE_MAX / 2) {
+            new_capacity = needed;
+            break;
+        }
+        new_capacity *= 2;
+    }
+    char *new_buffer = realloc(*buffer, new_capacity);
+    if (new_buffer == NULL) return false;
+    *buffer = new_buffer;
+    *capacity = new_capacity;
+    return true;
+}
+
+static bool collect_words(const TrieNode *node, char **buffer, size_t *capacity,
+                          size_t depth, char **words, int *count, int max_words) {
+    if (*count >= max_words) return true;
+
+    if (!ensure_buffer(buffer, capacity, depth + 1)) return false;
 
     if (node->is_end_of_word) {
-        buffer[depth] = '\0';
-        words[*count] = strdup(buffer);
-        if (words[*count] != NULL) {
-            (*count)++;
-        }
+        (*buffer)[depth] = '\0';
+        words[*count] = strdup(*buffer);
+        if (words[*count] == NULL) return false;
+        (*count)++;
     }
 
     for (int i = 0; i < ALPHABET_SIZE && *count < max_words; i++) {
         if (node->children[i] != NULL) {
-            buffer[depth] = 'a' + i;
-            collect_words(node->children[i], buffer, depth + 1,
-                          words, count, max_words);
+            if (depth == SIZE_MAX - 1 ||
+                !ensure_buffer(buffer, capacity, depth + 2)) return false;
+            (*buffer)[depth] = 'a' + i;
+            if (!collect_words(node->children[i], buffer, capacity, depth + 1,
+                               words, count, max_words)) return false;
         }
     }
+    return true;
 }
 
 int trie_get_all_words(const Trie *trie, char **words, int max_words) {
     if (trie == NULL || words == NULL || max_words <= 0) return 0;
 
-    char buffer[256];
+    size_t capacity = 32;
+    char *buffer = malloc(capacity);
+    if (buffer == NULL) return 0;
     int count = 0;
-    collect_words(trie->root, buffer, 0, words, &count, max_words);
+    collect_words(trie->root, &buffer, &capacity, 0, words, &count, max_words);
+    free(buffer);
     return count;
 }
 
@@ -257,10 +283,14 @@ int trie_autocomplete(const Trie *trie, const char *prefix,
     }
 
     /* Collect all words from this point */
-    char buffer[256];
+    if (prefix_len == SIZE_MAX) return 0;
+    size_t capacity = prefix_len + 1;
+    char *buffer = malloc(capacity);
+    if (buffer == NULL) return 0;
     memcpy(buffer, prefix, prefix_len);
     int count = 0;
-    collect_words(current, buffer, (int)prefix_len, words, &count, max_words);
+    collect_words(current, &buffer, &capacity, prefix_len, words, &count, max_words);
+    free(buffer);
     return count;
 }
 

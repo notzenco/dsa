@@ -41,6 +41,7 @@ TEST(trie_insert_duplicate) {
     ASSERT_TRUE(trie_insert(trie, "hello"));
     ASSERT_TRUE(trie_insert(trie, "hello")); /* Duplicate */
     ASSERT_EQ(1, trie_word_count(trie));
+    ASSERT_EQ(1, trie_count_prefix(trie, "hello"));
     trie_destroy(trie);
 }
 
@@ -173,6 +174,26 @@ TEST(trie_autocomplete_no_results) {
     char *words[10];
     int count = trie_autocomplete(trie, "xyz", words, 10);
     ASSERT_EQ(0, count);
+    trie_destroy(trie);
+}
+
+TEST(trie_enumerate_long_words) {
+    Trie *trie = trie_create();
+    ASSERT_NOT_NULL(trie);
+    char word[301];
+    memset(word, 'a', 300);
+    word[300] = '\0';
+    ASSERT_TRUE(trie_insert(trie, word));
+
+    char *words[1] = {NULL};
+    ASSERT_EQ(1, trie_get_all_words(trie, words, 1));
+    ASSERT_EQ(0, strcmp(word, words[0]));
+    free(words[0]);
+
+    words[0] = NULL;
+    ASSERT_EQ(1, trie_autocomplete(trie, word, words, 1));
+    ASSERT_EQ(0, strcmp(word, words[0]));
+    free(words[0]);
     trie_destroy(trie);
 }
 
@@ -334,6 +355,7 @@ int main(void) {
     /* Autocomplete */
     RUN_TEST(trie_autocomplete_basic);
     RUN_TEST(trie_autocomplete_no_results);
+    RUN_TEST(trie_enumerate_long_words);
 
     /* Get All Words */
     RUN_TEST(trie_get_all_words_basic);
