@@ -8,6 +8,20 @@ from data_structures.fenwick_tree import (
 )
 
 
+def test_invalid_updates_raise():
+    tree = FenwickTree([1, 2])
+    for index in (-2, -1, 2):
+        with pytest.raises(IndexError):
+            tree.update(index, 3)
+    assert tree.range_sum(0, 1) == 3
+
+    tree2d = FenwickTree2D([[1, 2]])
+    with pytest.raises(IndexError):
+        tree2d.update(-1, 0, 3)
+    with pytest.raises(IndexError):
+        tree2d.update(0, -1, 3)
+
+
 class TestFenwickTreeBasics:
     """Test basic Fenwick tree operations."""
 

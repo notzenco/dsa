@@ -1,4 +1,4 @@
-"""
+r"""
 Segment Tree Implementation.
 
 A data structure for efficient range queries and point/range updates.
@@ -109,8 +109,13 @@ class SegmentTree:
             idx: Index to update
             value: New value
 
+        Raises:
+            IndexError: If idx is outside the logical array.
+
         Time: O(log n)
         """
+        if not 0 <= idx < self._n:
+            raise IndexError("Segment tree index out of bounds")
         self._update(0, 0, self._n - 1, idx, value)
 
     def _update(self, node: int, start: int, end: int, idx: int, value: int) -> None:

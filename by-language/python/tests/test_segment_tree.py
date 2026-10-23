@@ -12,6 +12,13 @@ from data_structures.segment_tree import (
 class TestSegmentTreeBasics:
     """Test basic segment tree operations."""
 
+    def test_update_rejects_out_of_range_index(self):
+        tree = SegmentTree([1, 2])
+        for index in (-1, 2):
+            with pytest.raises(IndexError):
+                tree.update(index, 9)
+        assert tree.query(0, 1) == 3
+
     def test_init(self):
         """Test initialization."""
         st = SegmentTree([1, 3, 5, 7, 9, 11])

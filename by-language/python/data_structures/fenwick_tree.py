@@ -96,8 +96,13 @@ class FenwickTree:
             idx: Index (0-indexed)
             delta: Value to add
 
+        Raises:
+            IndexError: If idx is outside the tree.
+
         Time: O(log n)
         """
+        if not 0 <= idx < self._n:
+            raise IndexError("Fenwick index out of bounds")
         self._add(idx + 1, delta)
 
     def set(self, idx: int, value: int) -> None:
@@ -191,7 +196,9 @@ class FenwickTree2D:
             i += i & (-i)
 
     def update(self, row: int, col: int, delta: int) -> None:
-        """Add delta to position (row, col) - 0-indexed."""
+        """Add delta at zero-based coordinates; raise IndexError if invalid."""
+        if not 0 <= row < self._rows or not 0 <= col < self._cols:
+            raise IndexError("Fenwick index out of bounds")
         self._add(row + 1, col + 1, delta)
 
     def _prefix_sum(self, row: int, col: int) -> int:
