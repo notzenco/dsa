@@ -39,6 +39,38 @@ class TestBSTBasics:
         assert bst.is_valid_bst()
 
 
+@pytest.mark.parametrize('value', [50, 30, 70, 20, 40, 60, 80])
+def test_duplicate_insert_returns_existing_node_without_changing_shape(value):
+    bst = BinarySearchTree.from_list([50, 30, 70, 20, 40, 60, 80])
+    existing = bst.search(value)
+    nodes = [bst.search(key) for key in bst]
+    shape = [(node, node.left, node.right, node.parent) for node in nodes]
+    assert bst.insert(value) is existing
+    assert len(bst) == 7
+    assert bst.to_list() == [20, 30, 40, 50, 60, 70, 80]
+    assert bst.is_valid_bst()
+    assert [(node, node.left, node.right, node.parent) for node in nodes] == shape
+
+
+@pytest.mark.parametrize('factory', [BinarySearchTree.from_list, BinarySearchTree.from_sorted_list])
+def test_factories_ignore_duplicates(factory):
+    bst = factory([1, 1, 2, 3, 3, 3])
+    assert bst.to_list() == [1, 2, 3]
+    assert len(bst) == 3
+    assert bst.is_valid_bst()
+    for key in bst:
+        node = bst.search(key)
+        for child in [node.left, node.right]:
+            if child is not None:
+                assert child.parent is node
+
+
+def test_validity_check_still_rejects_duplicate_keys():
+    bst = BinarySearchTree.from_list([5, 6])
+    bst.search(6).value = 5
+    assert not bst.is_valid_bst()
+
+
 class TestBSTSearch:
     """Test search operations."""
 
