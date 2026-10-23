@@ -1,4 +1,4 @@
-"""
+r"""
 AVL Tree Implementation.
 
 A self-balancing binary search tree where the heights of left and right
@@ -54,9 +54,10 @@ USE CASES:
 - When frequent insertions/deletions need guaranteed O(log n)
 """
 
-from typing import TypeVar, Generic, Optional, List, Iterator, Tuple
+from typing import Any, TypeVar, Generic, Optional, List, Iterator, Tuple
 
 T = TypeVar('T')
+_MISSING = object()
 
 
 class AVLNode(Generic[T]):
@@ -64,10 +65,10 @@ class AVLNode(Generic[T]):
 
     __slots__ = ['key', 'value', 'height', 'left', 'right']
 
-    def __init__(self, key: T, value: any = None) -> None:
+    def __init__(self, key: T, value: Any = _MISSING) -> None:
         """Initialize AVL node."""
         self.key = key
-        self.value = value if value is not None else key
+        self.value = key if value is _MISSING else value
         self.height = 1
         self.left: Optional['AVLNode[T]'] = None
         self.right: Optional['AVLNode[T]'] = None
@@ -87,7 +88,7 @@ class AVLTree(Generic[T]):
         >>> tree.search(5)
         True
         >>> tree.inorder()
-        [1, 1, 2, 3, 4, 5, 6, 9]
+        [1, 2, 3, 4, 5, 6, 9]
     """
 
     def __init__(self) -> None:
@@ -110,7 +111,7 @@ class AVLTree(Generic[T]):
         node.height = 1 + max(self._height(node.left), self._height(node.right))
 
     def _rotate_right(self, z: AVLNode[T]) -> AVLNode[T]:
-        """
+        r"""
         Right rotation for LL imbalance.
 
             z                y
@@ -131,7 +132,7 @@ class AVLTree(Generic[T]):
         return y
 
     def _rotate_left(self, z: AVLNode[T]) -> AVLNode[T]:
-        """
+        r"""
         Left rotation for RR imbalance.
 
           z                    y
@@ -174,20 +175,20 @@ class AVLTree(Generic[T]):
 
         return node
 
-    def insert(self, key: T, value: any = None) -> None:
+    def insert(self, key: T, value: Any = _MISSING) -> None:
         """
         Insert a key-value pair into the tree.
 
         Args:
             key: The key to insert
-            value: Optional value (defaults to key)
+            value: Value to store, including None (defaults to key if omitted)
 
         Time: O(log n)
         """
         self._root = self._insert(self._root, key, value)
         self._size += 1
 
-    def _insert(self, node: Optional[AVLNode[T]], key: T, value: any) -> AVLNode[T]:
+    def _insert(self, node: Optional[AVLNode[T]], key: T, value: Any) -> AVLNode[T]:
         """Recursive insert helper."""
         if not node:
             return AVLNode(key, value)
@@ -198,7 +199,7 @@ class AVLTree(Generic[T]):
             node.right = self._insert(node.right, key, value)
         else:
             # Key exists, update value
-            node.value = value if value is not None else key
+            node.value = key if value is _MISSING else value
             self._size -= 1  # Compensate for increment in insert()
             return node
 
@@ -273,7 +274,7 @@ class AVLTree(Generic[T]):
         else:
             return self._search(node.right, key)
 
-    def get(self, key: T) -> Optional[any]:
+    def get(self, key: T) -> Optional[Any]:
         """Get value for key."""
         node = self._search(self._root, key)
         return node.value if node else None
@@ -403,11 +404,11 @@ class AVLTreeMap(Generic[T]):
         """Initialize empty map."""
         self._tree = AVLTree()
 
-    def __setitem__(self, key: T, value: any) -> None:
+    def __setitem__(self, key: T, value: Any) -> None:
         """Set key-value pair."""
         self._tree.insert(key, value)
 
-    def __getitem__(self, key: T) -> any:
+    def __getitem__(self, key: T) -> Any:
         """Get value for key."""
         value = self._tree.get(key)
         if value is None and not self._tree.search(key):
@@ -431,7 +432,7 @@ class AVLTreeMap(Generic[T]):
         """Iterate over keys in sorted order."""
         return iter(self._tree)
 
-    def get(self, key: T, default: any = None) -> any:
+    def get(self, key: T, default: Any = None) -> Any:
         """Get value with default."""
         value = self._tree.get(key)
         if value is None and not self._tree.search(key):
@@ -442,7 +443,7 @@ class AVLTreeMap(Generic[T]):
         """Return sorted keys."""
         return self._tree.inorder()
 
-    def items(self) -> List[Tuple[T, any]]:
+    def items(self) -> List[Tuple[T, Any]]:
         """Return sorted (key, value) pairs."""
         result = []
         self._collect_items(self._tree._root, result)
