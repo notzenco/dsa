@@ -57,8 +57,12 @@ export class FenwickTree {
   /**
    * Add delta to element at index (0-indexed).
    * O(log n)
+   * @throws RangeError if index is not a valid element index.
    */
   update(index: number, delta: number): void {
+    if (!Number.isInteger(index) || index < 0 || index >= this._n) {
+      throw new RangeError("Fenwick index out of bounds");
+    }
     this._add(index + 1, delta);
   }
 
@@ -156,8 +160,13 @@ export class FenwickTree2D {
   /**
    * Add delta to position (row, col) - 0-indexed.
    * O(log(rows) * log(cols))
+   * @throws RangeError if either coordinate is outside the matrix.
    */
   update(row: number, col: number, delta: number): void {
+    if (!Number.isInteger(row) || !Number.isInteger(col) ||
+        row < 0 || row >= this._rows || col < 0 || col >= this._cols) {
+      throw new RangeError("Fenwick index out of bounds");
+    }
     this._add(row + 1, col + 1, delta);
   }
 

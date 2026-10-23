@@ -10,6 +10,16 @@ import {
 // FenwickTree (1D)
 // ============================================================================
 describe("FenwickTree", () => {
+  test("rejects invalid updates", () => {
+    const tree = FenwickTree.fromArray([1, 2]);
+    for (const index of [-2, -1, 2, 0.5]) {
+      expect(() => tree.update(index, 1)).toThrow(RangeError);
+    }
+    expect(tree.prefixSum(1)).toBe(3);
+    const tree2d = FenwickTree2D.fromMatrix([[1]]);
+    expect(() => tree2d.update(-1, 0, 1)).toThrow(RangeError);
+    expect(() => tree2d.update(0, -1, 1)).toThrow(RangeError);
+  });
   test("fromArray and prefixSum", () => {
     const ft = FenwickTree.fromArray([3, 2, -1, 6, 5, 4, -3, 3]);
     expect(ft.prefixSum(0)).toBe(3);
