@@ -4,6 +4,14 @@
 
 #include "test_framework.h"
 #include "../data-structures/queue.h"
+#include <stdint.h>
+
+TEST(queues_reject_overflow_capacity) {
+    size_t capacity = SIZE_MAX / sizeof(int) + 1;
+    ASSERT_TRUE(queue_create_with_capacity(capacity) == NULL);
+    ASSERT_TRUE(circular_queue_create(capacity) == NULL);
+    ASSERT_TRUE(deque_create_with_capacity(capacity) == NULL);
+}
 
 /* ============== Queue Tests ============== */
 
@@ -441,6 +449,7 @@ TEST(deque_as_queue) {
 /* Main test runner */
 int main(void) {
     TEST_SUITE_START("Queue and Deque");
+    RUN_TEST(queues_reject_overflow_capacity);
 
     /* Queue tests */
     RUN_TEST(queue_create_empty);

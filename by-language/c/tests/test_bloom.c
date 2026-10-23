@@ -6,6 +6,11 @@
 #include "../data-structures/bloom_filter.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+
+TEST(bloom_rejects_overflow_hash_count) {
+    ASSERT_TRUE(bloom_create(8, SIZE_MAX / sizeof(size_t) + 1) == NULL);
+}
 
 /* ============== Creation Tests ============== */
 
@@ -235,6 +240,7 @@ TEST(bloom_stress_test) {
 /* Main test runner */
 int main(void) {
     TEST_SUITE_START("Bloom Filter");
+    RUN_TEST(bloom_rejects_overflow_hash_count);
 
     /* Creation */
     RUN_TEST(bloom_create_basic);

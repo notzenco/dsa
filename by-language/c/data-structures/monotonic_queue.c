@@ -8,6 +8,7 @@
 #include "monotonic_queue.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 /* ============== Helper Functions ============== */
 
@@ -15,6 +16,7 @@
  * Resize the queue when capacity is reached.
  */
 static bool mq_resize(MonotonicQueue *mq, size_t new_capacity) {
+    if (new_capacity > SIZE_MAX / sizeof(MQEntry)) return false;
     MQEntry *new_data = malloc(new_capacity * sizeof(MQEntry));
     if (new_data == NULL) {
         return false;
@@ -62,6 +64,10 @@ MonotonicQueue *mq_create_with_capacity(size_t capacity) {
         return NULL;
     }
 
+    if (capacity > SIZE_MAX / sizeof(MQEntry)) {
+        free(mq);
+        return NULL;
+    }
     mq->data = malloc(capacity * sizeof(MQEntry));
     if (mq->data == NULL) {
         free(mq);
@@ -111,7 +117,8 @@ bool mq_push(MonotonicQueue *mq, int index, int value) {
 
     /* Resize if needed */
     if (mq->size >= mq->capacity) {
-        if (!mq_resize(mq, mq->capacity * 2)) {
+        if (mq->capacity > SIZE_MAX / 2 ||
+            !mq_resize(mq, mq->capacity * 2)) {
             return false;
         }
     }
@@ -179,6 +186,10 @@ int *mq_sliding_window_max(const int *nums, size_t n, size_t k, size_t *result_s
     }
 
     *result_size = n - k + 1;
+    if (*result_size > SIZE_MAX / sizeof(int)) {
+        *result_size = 0;
+        return NULL;
+    }
     int *result = malloc(*result_size * sizeof(int));
     if (result == NULL) {
         *result_size = 0;
@@ -220,6 +231,10 @@ int *mq_sliding_window_min(const int *nums, size_t n, size_t k, size_t *result_s
     }
 
     *result_size = n - k + 1;
+    if (*result_size > SIZE_MAX / sizeof(int)) {
+        *result_size = 0;
+        return NULL;
+    }
     int *result = malloc(*result_size * sizeof(int));
     if (result == NULL) {
         *result_size = 0;
@@ -275,6 +290,7 @@ static size_t mqmin_rear_prev(const MonotonicQueueMin *mq) {
  * Resize the min queue when capacity is reached.
  */
 static bool mqmin_resize(MonotonicQueueMin *mq, size_t new_capacity) {
+    if (new_capacity > SIZE_MAX / sizeof(MQEntry)) return false;
     MQEntry *new_data = malloc(new_capacity * sizeof(MQEntry));
     if (new_data == NULL) {
         return false;
@@ -310,6 +326,10 @@ MonotonicQueueMin *mqmin_create_with_capacity(size_t capacity) {
         return NULL;
     }
 
+    if (capacity > SIZE_MAX / sizeof(MQEntry)) {
+        free(mq);
+        return NULL;
+    }
     mq->data = malloc(capacity * sizeof(MQEntry));
     if (mq->data == NULL) {
         free(mq);
@@ -357,7 +377,8 @@ bool mqmin_push(MonotonicQueueMin *mq, int index, int value) {
 
     /* Resize if needed */
     if (mq->size >= mq->capacity) {
-        if (!mqmin_resize(mq, mq->capacity * 2)) {
+        if (mq->capacity > SIZE_MAX / 2 ||
+            !mqmin_resize(mq, mq->capacity * 2)) {
             return false;
         }
     }

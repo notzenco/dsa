@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdint.h>
 
 /* ============== Hash Functions ============== */
 
@@ -72,13 +73,14 @@ static inline bool get_bit(const uint8_t *bits, size_t index) {
 /* ============== Creation/Destruction ============== */
 
 BloomFilter *bloom_create(size_t num_bits, size_t num_hashes) {
-    if (num_bits == 0 || num_hashes == 0) return NULL;
+    if (num_bits == 0 || num_hashes == 0 ||
+        num_hashes > SIZE_MAX / sizeof(size_t)) return NULL;
 
     BloomFilter *filter = malloc(sizeof(BloomFilter));
     if (filter == NULL) return NULL;
 
     /* Round up to nearest byte */
-    size_t num_bytes = (num_bits + 7) / 8;
+    size_t num_bytes = num_bits / 8 + (num_bits % 8 != 0);
 
     filter->bits = calloc(num_bytes, sizeof(uint8_t));
     if (filter->bits == NULL) {
@@ -106,6 +108,8 @@ BloomFilter *bloom_create_optimal(size_t expected_elements, double false_positiv
     /* Optimal number of hashes: k = (m/n) * ln(2) */
     double k = (m / (double)expected_elements) * ln2;
 
+    if (!isfinite(m) || !isfinite(k) || m < 1 || k < 0 ||
+        m >= (double)SIZE_MAX || k >= (double)SIZE_MAX) return NULL;
     size_t num_bits = (size_t)ceil(m);
     size_t num_hashes = (size_t)ceil(k);
 
@@ -123,7 +127,7 @@ void bloom_destroy(BloomFilter *filter) {
 
 void bloom_clear(BloomFilter *filter) {
     if (filter == NULL) return;
-    size_t num_bytes = (filter->num_bits + 7) / 8;
+    size_t num_bytes = filter->num_bits / 8 + (filter->num_bits % 8 != 0);
     memset(filter->bits, 0, num_bytes);
     filter->count = 0;
 }
@@ -182,7 +186,7 @@ size_t bloom_bits_set(const BloomFilter *filter) {
     if (filter == NULL) return 0;
 
     size_t count = 0;
-    size_t num_bytes = (filter->num_bits + 7) / 8;
+    size_t num_bytes = filter->num_bits / 8 + (filter->num_bits % 8 != 0);
 
     for (size_t i = 0; i < num_bytes; i++) {
         uint8_t byte = filter->bits[i];
@@ -227,7 +231,7 @@ bool bloom_merge(BloomFilter *dest, const BloomFilter *src) {
     if (dest->num_bits != src->num_bits) return false;
     if (dest->num_hashes != src->num_hashes) return false;
 
-    size_t num_bytes = (dest->num_bits + 7) / 8;
+    size_t num_bytes = dest->num_bits / 8 + (dest->num_bits % 8 != 0);
     for (size_t i = 0; i < num_bytes; i++) {
         dest->bits[i] |= src->bits[i];
     }

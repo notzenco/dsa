@@ -4,6 +4,11 @@
 
 #include "test_framework.h"
 #include "../data-structures/stack.h"
+#include <stdint.h>
+
+TEST(stack_rejects_overflow_capacity) {
+    ASSERT_TRUE(stack_create_with_capacity(SIZE_MAX / sizeof(int) + 1) == NULL);
+}
 
 /* ============== Basic Stack Tests ============== */
 
@@ -360,6 +365,7 @@ TEST(max_stack_empty_get_max) {
 /* Main test runner */
 int main(void) {
     TEST_SUITE_START("Stack");
+    RUN_TEST(stack_rejects_overflow_capacity);
 
     /* Basic Stack tests */
     RUN_TEST(stack_create_empty);

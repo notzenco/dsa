@@ -7,10 +7,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 /* Internal: Resize the array to new capacity */
 static bool da_resize(DynamicArray *arr, size_t new_capacity) {
-    if (new_capacity < arr->size) {
+    if (new_capacity < arr->size || new_capacity > SIZE_MAX / sizeof(int)) {
         return false;
     }
 
@@ -38,6 +39,10 @@ DynamicArray *da_create_with_capacity(size_t capacity) {
         capacity = DA_INITIAL_CAPACITY;
     }
 
+    if (capacity > SIZE_MAX / sizeof(int)) {
+        free(arr);
+        return NULL;
+    }
     arr->data = malloc(capacity * sizeof(int));
     if (arr->data == NULL) {
         free(arr);
@@ -91,6 +96,7 @@ bool da_push_back(DynamicArray *arr, int value) {
 
     /* Resize if necessary */
     if (arr->size >= arr->capacity) {
+        if (arr->capacity > SIZE_MAX / DA_GROWTH_FACTOR) return false;
         size_t new_capacity = arr->capacity * DA_GROWTH_FACTOR;
         if (!da_resize(arr, new_capacity)) {
             return false;
@@ -126,6 +132,7 @@ bool da_insert(DynamicArray *arr, size_t index, int value) {
 
     /* Resize if necessary */
     if (arr->size >= arr->capacity) {
+        if (arr->capacity > SIZE_MAX / DA_GROWTH_FACTOR) return false;
         size_t new_capacity = arr->capacity * DA_GROWTH_FACTOR;
         if (!da_resize(arr, new_capacity)) {
             return false;

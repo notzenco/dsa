@@ -6,6 +6,7 @@
 #include "fenwick_tree.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 /* ============== Helper Functions ============== */
 
@@ -17,7 +18,7 @@ static inline size_t lowbit(size_t x) {
 /* ============== Creation/Destruction ============== */
 
 FenwickTree *fenwick_create(const int *arr, size_t n) {
-    if (n == 0) return NULL;
+    if (n == 0 || n >= SIZE_MAX / sizeof(int)) return NULL;
 
     FenwickTree *ft = malloc(sizeof(FenwickTree));
     if (ft == NULL) return NULL;

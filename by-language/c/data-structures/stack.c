@@ -7,10 +7,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <stdint.h>
 
 /* ============== Basic Stack Implementation ============== */
 
 static bool stack_resize(Stack *stack, size_t new_capacity) {
+    if (new_capacity > SIZE_MAX / sizeof(int)) return false;
     int *new_data = realloc(stack->data, new_capacity * sizeof(int));
     if (new_data == NULL && new_capacity > 0) {
         return false;
@@ -34,6 +36,10 @@ Stack *stack_create_with_capacity(size_t capacity) {
         capacity = STACK_INITIAL_CAPACITY;
     }
 
+    if (capacity > SIZE_MAX / sizeof(int)) {
+        free(stack);
+        return NULL;
+    }
     stack->data = malloc(capacity * sizeof(int));
     if (stack->data == NULL) {
         free(stack);
@@ -58,7 +64,8 @@ bool stack_push(Stack *stack, int value) {
     }
 
     if (stack->size >= stack->capacity) {
-        if (!stack_resize(stack, stack->capacity * 2)) {
+        if (stack->capacity > SIZE_MAX / 2 ||
+            !stack_resize(stack, stack->capacity * 2)) {
             return false;
         }
     }

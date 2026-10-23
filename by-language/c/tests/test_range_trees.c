@@ -5,6 +5,11 @@
 #include "test_framework.h"
 #include "../data-structures/segment_tree.h"
 #include "../data-structures/fenwick_tree.h"
+#include <stdint.h>
+
+TEST(fenwick_rejects_overflow_size) {
+    ASSERT_TRUE(fenwick_create_empty(SIZE_MAX) == NULL);
+}
 #include <stdlib.h>
 
 /* ============== Segment Tree Creation Tests ============== */
@@ -273,6 +278,7 @@ TEST(fenwick_stress) {
 /* Main test runner */
 int main(void) {
     TEST_SUITE_START("Segment Tree & Fenwick Tree");
+    RUN_TEST(fenwick_rejects_overflow_size);
 
     /* Segment Tree Creation */
     RUN_TEST(segtree_create_sum);

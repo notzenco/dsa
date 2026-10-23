@@ -4,6 +4,11 @@
 
 #include "test_framework.h"
 #include "../data-structures/dynamic_array.h"
+#include <stdint.h>
+
+TEST(da_rejects_overflow_capacity) {
+    ASSERT_TRUE(da_create_with_capacity(SIZE_MAX / sizeof(int) + 1) == NULL);
+}
 
 /* Test creation */
 TEST(da_create_default) {
@@ -377,6 +382,7 @@ TEST(da_null_safety) {
 /* Main test runner */
 int main(void) {
     TEST_SUITE_START("Dynamic Array");
+    RUN_TEST(da_rejects_overflow_capacity);
 
     /* Creation tests */
     RUN_TEST(da_create_default);

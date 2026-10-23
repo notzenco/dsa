@@ -4,6 +4,13 @@
 
 #include "test_framework.h"
 #include "../data-structures/monotonic_queue.h"
+#include <stdint.h>
+
+TEST(monotonic_queues_reject_overflow_capacity) {
+    size_t capacity = SIZE_MAX / sizeof(MQEntry) + 1;
+    ASSERT_TRUE(mq_create_with_capacity(capacity) == NULL);
+    ASSERT_TRUE(mqmin_create_with_capacity(capacity) == NULL);
+}
 #include <stdlib.h>
 
 /* ============== Creation Tests ============== */
@@ -350,6 +357,7 @@ TEST(sliding_window_max_with_negatives) {
 
 int main(void) {
     TEST_SUITE_START("Monotonic Queue Tests");
+    RUN_TEST(monotonic_queues_reject_overflow_capacity);
 
     /* Creation tests */
     RUN_TEST(mq_create_empty);

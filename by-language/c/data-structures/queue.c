@@ -7,10 +7,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 /* ============== Queue Implementation ============== */
 
 static bool queue_resize(Queue *queue, size_t new_capacity) {
+    if (new_capacity > SIZE_MAX / sizeof(int)) return false;
     int *new_data = malloc(new_capacity * sizeof(int));
     if (new_data == NULL) {
         return false;
@@ -43,6 +45,10 @@ Queue *queue_create_with_capacity(size_t capacity) {
         capacity = QUEUE_INITIAL_CAPACITY;
     }
 
+    if (capacity > SIZE_MAX / sizeof(int)) {
+        free(queue);
+        return NULL;
+    }
     queue->data = malloc(capacity * sizeof(int));
     if (queue->data == NULL) {
         free(queue);
@@ -69,7 +75,8 @@ bool queue_enqueue(Queue *queue, int value) {
     }
 
     if (queue->size >= queue->capacity) {
-        if (!queue_resize(queue, queue->capacity * 2)) {
+        if (queue->capacity > SIZE_MAX / 2 ||
+            !queue_resize(queue, queue->capacity * 2)) {
             return false;
         }
     }
@@ -158,6 +165,10 @@ CircularQueue *circular_queue_create(size_t capacity) {
         return NULL;
     }
 
+    if (capacity > SIZE_MAX / sizeof(int)) {
+        free(queue);
+        return NULL;
+    }
     queue->data = malloc(capacity * sizeof(int));
     if (queue->data == NULL) {
         free(queue);
@@ -235,6 +246,7 @@ size_t circular_queue_size(const CircularQueue *queue) {
 /* ============== Deque Implementation ============== */
 
 static bool deque_resize(Deque *deque, size_t new_capacity) {
+    if (new_capacity > SIZE_MAX / sizeof(int)) return false;
     int *new_data = malloc(new_capacity * sizeof(int));
     if (new_data == NULL) {
         return false;
@@ -267,6 +279,10 @@ Deque *deque_create_with_capacity(size_t capacity) {
         capacity = QUEUE_INITIAL_CAPACITY;
     }
 
+    if (capacity > SIZE_MAX / sizeof(int)) {
+        free(deque);
+        return NULL;
+    }
     deque->data = malloc(capacity * sizeof(int));
     if (deque->data == NULL) {
         free(deque);
@@ -293,7 +309,8 @@ bool deque_push_front(Deque *deque, int value) {
     }
 
     if (deque->size >= deque->capacity) {
-        if (!deque_resize(deque, deque->capacity * 2)) {
+        if (deque->capacity > SIZE_MAX / 2 ||
+            !deque_resize(deque, deque->capacity * 2)) {
             return false;
         }
     }
@@ -310,7 +327,8 @@ bool deque_push_back(Deque *deque, int value) {
     }
 
     if (deque->size >= deque->capacity) {
-        if (!deque_resize(deque, deque->capacity * 2)) {
+        if (deque->capacity > SIZE_MAX / 2 ||
+            !deque_resize(deque, deque->capacity * 2)) {
             return false;
         }
     }
