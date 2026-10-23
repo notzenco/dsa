@@ -1,6 +1,7 @@
 package algorithms
 
 import (
+	"math"
 	"testing"
 )
 
@@ -92,16 +93,80 @@ func TestCountingSort(t *testing.T) {
 	arr := []int{4, 2, 2, 8, 3, 3, 1}
 	CountingSort(arr)
 	verifySorted(t, "CountingSort", arr)
+	want := []int{1, 2, 2, 3, 3, 4, 8}
+	for i := range want {
+		if arr[i] != want[i] {
+			t.Fatalf("CountingSort = %v, want %v", arr, want)
+		}
+	}
 
 	arr2 := []int{-3, -1, 0, 2, 5, -2}
 	CountingSort(arr2)
 	verifySorted(t, "CountingSort negative", arr2)
+
+	// Narrow ranges around the int extremes still use counting sort.
+	nearMin := []int{math.MinInt + 2, math.MinInt, math.MinInt + 2, math.MinInt + 1}
+	CountingSort(nearMin)
+	wantNearMin := []int{math.MinInt, math.MinInt + 1, math.MinInt + 2, math.MinInt + 2}
+	for i := range wantNearMin {
+		if nearMin[i] != wantNearMin[i] {
+			t.Fatalf("CountingSort near MinInt = %v, want %v", nearMin, wantNearMin)
+		}
+	}
+	nearMax := []int{math.MaxInt, math.MaxInt - 2, math.MaxInt - 1}
+	CountingSort(nearMax)
+	wantNearMax := []int{math.MaxInt - 2, math.MaxInt - 1, math.MaxInt}
+	for i := range wantNearMax {
+		if nearMax[i] != wantNearMax[i] {
+			t.Fatalf("CountingSort near MaxInt = %v, want %v", nearMax, wantNearMax)
+		}
+	}
+
+	// The full int domain and a sparse wide range must not overflow or allocate.
+	extremes := []int{math.MaxInt, -1, math.MinInt, 0, 1}
+	CountingSort(extremes)
+	wantExtremes := []int{math.MinInt, -1, 0, 1, math.MaxInt}
+	for i := range wantExtremes {
+		if extremes[i] != wantExtremes[i] {
+			t.Fatalf("CountingSort extremes = %v, want %v", extremes, wantExtremes)
+		}
+	}
+
+	sparse := []int{1 << 40, 0, 1 << 40}
+	CountingSort(sparse)
+	wantSparse := []int{0, 1 << 40, 1 << 40}
+	for i := range wantSparse {
+		if sparse[i] != wantSparse[i] {
+			t.Fatalf("CountingSort sparse = %v, want %v", sparse, wantSparse)
+		}
+	}
+
+	single := []int{math.MinInt}
+	CountingSort(single)
+	if single[0] != math.MinInt {
+		t.Fatalf("CountingSort single = %d", single[0])
+	}
+	var empty []int
+	CountingSort(empty)
 }
 
 func TestRadixSort(t *testing.T) {
 	arr := []int{170, 45, 75, 90, 802, 24, 2, 66}
 	RadixSort(arr)
 	verifySorted(t, "RadixSort", arr)
+
+	negative := []int{3, -12, 7, -5, 1, 0, -12}
+	RadixSort(negative)
+	verifySorted(t, "RadixSort negative", negative)
+
+	extremes := []int{math.MaxInt, -1, math.MinInt, 0, 1}
+	RadixSort(extremes)
+	want := []int{math.MinInt, -1, 0, 1, math.MaxInt}
+	for i := range want {
+		if extremes[i] != want[i] {
+			t.Fatalf("RadixSort extremes = %v, want %v", extremes, want)
+		}
+	}
 }
 
 func TestBucketSort(t *testing.T) {
