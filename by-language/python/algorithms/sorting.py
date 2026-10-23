@@ -1,4 +1,4 @@
-"""
+r"""
 Sorting Algorithms
 
 ╔════════════════════════════════════════════════════════════════════════════╗
@@ -410,10 +410,11 @@ def radix_sort(arr: List[int]) -> List[int]:
     Space Complexity: O(n + k)
     Stable: Yes
 
-    Works for non-negative integers.
+    Works for any integers. Negative values are sorted by magnitude
+    separately and placed, reversed, before the non-negative values.
 
     Args:
-        arr: List of non-negative integers to sort.
+        arr: List of integers to sort.
 
     Returns:
         New sorted list.

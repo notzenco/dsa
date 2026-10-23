@@ -1,4 +1,4 @@
-"""
+r"""
 Union-Find (Disjoint Set Union) Implementation.
 
 A data structure that tracks elements partitioned into disjoint (non-overlapping) sets.

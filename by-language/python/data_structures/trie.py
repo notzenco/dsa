@@ -1,4 +1,4 @@
-"""
+r"""
 Trie (Prefix Tree) Implementation.
 
 A Trie is a tree-like data structure for storing strings that allows
@@ -504,7 +504,7 @@ class WordDictionary:
 
 
 class CompressedTrie:
-    """
+    r"""
     Compressed Trie (Radix Tree / Patricia Trie).
 
     A space-optimized trie where chains of single-child nodes are merged.
