@@ -120,7 +120,7 @@ def binary_search(arr: List[T], target: T) -> int:
 
 
 def binary_search_recursive(arr: List[T], target: T,
-                            left: int = 0, right: int = -1) -> int:
+                            left: int = 0, right: Optional[int] = None) -> int:
     """
     Recursive binary search.
 
@@ -136,7 +136,7 @@ def binary_search_recursive(arr: List[T], target: T,
     Time: O(log n)
     Space: O(log n) for recursion stack
     """
-    if right == -1:
+    if right is None:
         right = len(arr) - 1
 
     if left > right:
@@ -367,6 +367,8 @@ def interpolation_search(arr: List[int], target: int) -> int:
 
     while low <= high and arr[low] <= target <= arr[high]:
         if low == high:
+            return low if arr[low] == target else -1
+        if arr[low] == arr[high]:
             return low if arr[low] == target else -1
 
         # Estimate position using linear interpolation

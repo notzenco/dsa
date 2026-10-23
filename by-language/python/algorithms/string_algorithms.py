@@ -426,7 +426,7 @@ def z_algorithm_search(text: str, pattern: str) -> List[int]:
 
     result = []
     for i in range(m + 1, len(concat)):
-        if z[i] == m:
+        if z[i] >= m:
             result.append(i - m - 1)
 
     return result
@@ -811,12 +811,18 @@ def shortest_palindrome(s: str) -> str:
     if not s:
         return ""
 
-    # Create pattern: s + '#' + reversed(s)
+    # Keep the separator outside the input character domain.
     rev = s[::-1]
-    concat = s + '#' + rev
-
-    # Compute LPS array
-    lps = compute_lps(concat)
+    separator = object()
+    tokens = [*s, separator, *rev]
+    lps = [0] * len(tokens)
+    for i in range(1, len(tokens)):
+        j = lps[i - 1]
+        while j > 0 and tokens[i] != tokens[j]:
+            j = lps[j - 1]
+        if tokens[i] == tokens[j]:
+            j += 1
+        lps[i] = j
 
     # Length of longest palindromic prefix
     palindrome_len = lps[-1]

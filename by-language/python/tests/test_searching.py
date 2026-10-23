@@ -58,6 +58,7 @@ class TestBasicSearch:
         arr = [1, 3, 5, 7, 9]
         assert binary_search_recursive(arr, 5) == 2
         assert binary_search_recursive(arr, 10) == -1
+        assert binary_search_recursive([1], 0) == -1
 
 
 class TestBinarySearchVariants:
@@ -133,6 +134,7 @@ class TestSpecializedSearch:
         assert interpolation_search(arr, 10) == 0
         assert interpolation_search(arr, 100) == 9
         assert interpolation_search(arr, 55) == -1
+        assert interpolation_search([1, 1], 1) in (0, 1)
 
     def test_exponential_search(self):
         """Test exponential search."""

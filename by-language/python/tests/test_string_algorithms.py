@@ -112,6 +112,7 @@ class TestZAlgorithm:
         """Test Z-algorithm search."""
         assert z_algorithm_search("ABABDABACDABABCABAB", "ABABCABAB") == [10]
         assert z_algorithm_search("aaaa", "aa") == [0, 1, 2]
+        assert z_algorithm_search("$$", "$") == [0, 1]
 
     def test_z_search_no_match(self):
         """Test when pattern not found."""
@@ -216,6 +217,7 @@ class TestUtilities:
         assert shortest_palindrome("aacecaaa") == "aaacecaaa"
         assert shortest_palindrome("abcd") == "dcbabcd"
         assert shortest_palindrome("") == ""
+        assert shortest_palindrome("a#a") == "a#a"
 
     def test_longest_happy_prefix(self):
         """Test longest happy prefix."""
