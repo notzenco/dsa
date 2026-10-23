@@ -9,10 +9,10 @@ import (
 
 // BloomFilter is a space-efficient probabilistic data structure.
 type BloomFilter struct {
-	bits     []bool
-	size     int
-	numHash  int
-	count    int
+	bits    []bool
+	size    int
+	numHash int
+	count   int
 }
 
 func NewBloomFilter(expectedItems int, falsePositiveRate float64) *BloomFilter {
@@ -172,12 +172,12 @@ func (cbf *CountingBloomFilter) FalsePositiveRate() float64 {
 
 // ScalableBloomFilter grows automatically when the current filter becomes too full.
 type ScalableBloomFilter struct {
-	filters           []*BloomFilter
-	targetFPRate      float64
-	growthFactor      float64
-	initialCapacity   int
-	totalCount        int
-	maxFillRatio      float64
+	filters         []*BloomFilter
+	targetFPRate    float64
+	growthFactor    float64
+	initialCapacity int
+	totalCount      int
+	maxFillRatio    float64
 }
 
 func NewScalableBloomFilter(initialCapacity int, targetFPRate float64) *ScalableBloomFilter {
