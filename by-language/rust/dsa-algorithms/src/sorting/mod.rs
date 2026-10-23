@@ -460,6 +460,9 @@ pub fn radix_sort(arr: &mut [u32]) {
     let mut exp = 1u32;
     while max / exp > 0 {
         counting_sort_by_digit(arr, exp);
+        if exp > max / 10 {
+            break;
+        }
         exp *= 10;
     }
 }
@@ -815,6 +818,13 @@ mod tests {
 
     mod radix_sort_tests {
         use super::*;
+
+        #[test]
+        fn large_final_digit_does_not_overflow_exponent() {
+            let mut values = [1_000_000_000, 0];
+            radix_sort(&mut values);
+            assert_eq!(values, [0, 1_000_000_000]);
+        }
 
         #[test]
         fn test_empty() {

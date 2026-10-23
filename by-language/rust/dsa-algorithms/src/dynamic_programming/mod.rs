@@ -565,7 +565,7 @@ pub fn word_break(s: &str, word_dict: &[&str]) -> bool {
     for i in 1..=n {
         for &word in word_dict {
             let word_len = word.len();
-            if word_len <= i && dp[i - word_len] && &s[i - word_len..i] == word {
+            if word_len <= i && dp[i - word_len] && s.get(i - word_len..i) == Some(word) {
                 dp[i] = true;
                 break;
             }
@@ -752,6 +752,12 @@ mod tests {
 
             let dict = vec!["cats", "dog", "sand", "and", "cat"];
             assert!(!word_break("catsandog", &dict));
+        }
+
+        #[test]
+        fn word_break_handles_non_ascii_boundaries() {
+            assert!(!word_break("é", &["a"]));
+            assert!(word_break("é", &["é"]));
         }
     }
 }

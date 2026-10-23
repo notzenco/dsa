@@ -269,7 +269,7 @@ pub fn z_search(text: &str, pattern: &str) -> Vec<usize> {
 
     // Find matches
     for i in pattern_len + 1..z.len() {
-        if z[i] == pattern_len {
+        if z[i] >= pattern_len {
             result.push(i - pattern_len - 1);
         }
     }
@@ -541,6 +541,7 @@ mod tests {
         fn test_z_search() {
             assert_eq!(z_search("GEEKS FOR GEEKS", "GEEK"), vec![0, 10]);
             assert_eq!(z_search("AABAACAADAABAABA", "AABA"), vec![0, 9, 12]);
+            assert_eq!(z_search("\0\0", "\0"), vec![0, 1]);
         }
 
         #[test]

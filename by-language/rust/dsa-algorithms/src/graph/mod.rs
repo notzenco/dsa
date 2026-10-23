@@ -436,7 +436,7 @@ pub fn floyd_warshall(graph: &Graph) -> Vec<Vec<i64>> {
     for i in 0..n {
         dist[i][i] = 0;
         for edge in &graph[i] {
-            dist[i][edge.to] = edge.weight;
+            dist[i][edge.to] = dist[i][edge.to].min(edge.weight);
         }
     }
 
@@ -777,7 +777,9 @@ fn kosaraju_dfs2(graph: &Graph, v: usize, visited: &mut [bool], scc: &mut Vec<us
     }
 }
 
-/// Reconstruct path from parent array.
+/// Reconstruct a path from `source` to `target` using a parent array.
+/// Returns `None` for out-of-bounds or unreachable targets and malformed
+/// parent chains.
 ///
 /// # Example
 ///
@@ -790,30 +792,29 @@ fn kosaraju_dfs2(graph: &Graph, v: usize, visited: &mut [bool], scc: &mut Vec<us
 /// add_edge(&mut g, 2, 3, 1);
 ///
 /// let (_, parent) = dijkstra(&g, 0);
-/// let path = reconstruct_path(&parent, 3);
+/// let path = reconstruct_path(&parent, 0, 3);
 /// assert_eq!(path, Some(vec![0, 1, 2, 3]));
 /// ```
-pub fn reconstruct_path(parent: &[i64], target: usize) -> Option<Vec<usize>> {
-    if parent[target] == -1 && target != 0 {
-        return None; // Check if target is the start or unreachable
+pub fn reconstruct_path(parent: &[i64], source: usize, target: usize) -> Option<Vec<usize>> {
+    if source >= parent.len() || target >= parent.len() {
+        return None;
     }
 
-    let mut path = Vec::new();
-    let mut current = target as i64;
-
-    while current != -1 {
-        path.push(current as usize);
-        current = parent[current as usize];
+    let mut path = vec![target];
+    let mut current = target;
+    while current != source {
+        if path.len() >= parent.len() {
+            return None;
+        }
+        let next = usize::try_from(parent[current]).ok()?;
+        if next >= parent.len() {
+            return None;
+        }
+        path.push(next);
+        current = next;
     }
-
     path.reverse();
-
-    // If path starts with 0 or only has target (start==target), it's valid
-    if path.is_empty() {
-        None
-    } else {
-        Some(path)
-    }
+    Some(path)
 }
 
 #[cfg(test)]
@@ -930,6 +931,14 @@ mod tests {
         use super::*;
 
         #[test]
+        fn reconstruct_path_from_nonzero_source() {
+            let graph = new_graph(3);
+            let (_, parent) = dijkstra(&graph, 1);
+            assert_eq!(reconstruct_path(&parent, 1, 1), Some(vec![1]));
+            assert_eq!(reconstruct_path(&parent, 1, 0), None);
+        }
+
+        #[test]
         fn test_single_vertex() {
             let g = new_graph(1);
             let (dist, _) = dijkstra(&g, 0);
@@ -962,7 +971,7 @@ mod tests {
             assert_eq!(dist[2], 3); // 0 -> 1 -> 2
             assert_eq!(dist[3], 4);
 
-            let path = reconstruct_path(&parent, 3);
+            let path = reconstruct_path(&parent, 0, 3);
             assert_eq!(path, Some(vec![0, 1, 2, 3]));
         }
 
@@ -1028,6 +1037,14 @@ mod tests {
 
     mod floyd_warshall_tests {
         use super::*;
+
+        #[test]
+        fn parallel_edges_use_minimum_weight() {
+            let mut g = new_graph(2);
+            add_edge(&mut g, 0, 1, 1);
+            add_edge(&mut g, 0, 1, 9);
+            assert_eq!(floyd_warshall(&g)[0][1], 1);
+        }
 
         #[test]
         fn test_basic() {
