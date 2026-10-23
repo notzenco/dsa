@@ -123,10 +123,46 @@ func TestBSTSuccessorPredecessor(t *testing.T) {
 	if !ok || succ != 6 {
 		t.Errorf("expected successor 6, got %d", succ)
 	}
+	succ, ok = tree.Successor(4)
+	if !ok || succ != 5 {
+		t.Errorf("expected successor of 4 to be 5, got %d", succ)
+	}
+	succ, ok = tree.Successor(1)
+	if !ok || succ != 3 {
+		t.Errorf("expected successor of 1 to be 3, got %d", succ)
+	}
+	succ, ok = tree.Successor(6)
+	if !ok || succ != 7 {
+		t.Errorf("expected successor of 6 to be 7, got %d", succ)
+	}
+	if _, ok = tree.Successor(8); ok {
+		t.Error("maximum should have no successor")
+	}
+	if _, ok = tree.Successor(99); ok {
+		t.Error("missing value should have no successor")
+	}
 
 	pred, ok := tree.Predecessor(5)
 	if !ok || pred != 4 {
 		t.Errorf("expected predecessor 4, got %d", pred)
+	}
+	pred, ok = tree.Predecessor(6)
+	if !ok || pred != 5 {
+		t.Errorf("expected predecessor of 6 to be 5, got %d", pred)
+	}
+	pred, ok = tree.Predecessor(4)
+	if !ok || pred != 3 {
+		t.Errorf("expected predecessor of 4 to be 3, got %d", pred)
+	}
+	pred, ok = tree.Predecessor(7)
+	if !ok || pred != 6 {
+		t.Errorf("expected predecessor of 7 to be 6, got %d", pred)
+	}
+	if _, ok = tree.Predecessor(1); ok {
+		t.Error("minimum should have no predecessor")
+	}
+	if _, ok = tree.Predecessor(99); ok {
+		t.Error("missing value should have no predecessor")
 	}
 }
 
@@ -199,6 +235,17 @@ func TestBSTFromSorted(t *testing.T) {
 	if tree.Height() > 3 {
 		t.Error("tree from sorted should be balanced")
 	}
+
+	repeated := BSTFromSortedSlice([]int{1, 1, 2, 3, 3, 3})
+	if repeated.Size() != 3 {
+		t.Errorf("expected repeated values to be kept once, got size %d", repeated.Size())
+	}
+	if got := repeated.Inorder(); len(got) != 3 || got[0] != 1 || got[1] != 2 || got[2] != 3 {
+		t.Errorf("expected in-order [1 2 3], got %v", got)
+	}
+	if !repeated.IsValidBST() {
+		t.Error("tree built from repeated values should be valid")
+	}
 }
 
 func TestBSTLowestCommonAncestor(t *testing.T) {
@@ -215,6 +262,19 @@ func TestBSTLowestCommonAncestor(t *testing.T) {
 	lca, ok = tree.LowestCommonAncestor(2, 4)
 	if !ok || lca != 2 {
 		t.Errorf("expected LCA 2, got %d", lca)
+	}
+
+	lca, ok = tree.LowestCommonAncestor(7, 9)
+	if !ok || lca != 8 {
+		t.Errorf("expected LCA 8, got %d", lca)
+	}
+	if _, ok = tree.LowestCommonAncestor(-2, -1); ok {
+		t.Error("keys past the minimum should have no ancestor")
+	}
+
+	empty := NewBST[int]()
+	if _, ok = empty.LowestCommonAncestor(1, 2); ok {
+		t.Error("empty tree should have no ancestor")
 	}
 }
 
@@ -426,10 +486,31 @@ func TestBSTMinMaxEmpty(t *testing.T) {
 
 func TestBSTDuplicate(t *testing.T) {
 	tree := NewBST[int]()
-	tree.Insert(5)
-	tree.Insert(5)
-	if tree.Size() != 1 {
-		t.Errorf("expected 1 after duplicate insert, got %d", tree.Size())
+	first := tree.Insert(5)
+	tree.Insert(3)
+	tree.Insert(7)
+	again := tree.Insert(5)
+	if again != first {
+		t.Fatal("duplicate insert should return the existing node")
+	}
+	if tree.Size() != 3 {
+		t.Fatalf("size = %d, want 3", tree.Size())
+	}
+	if !tree.IsValidBST() {
+		t.Fatal("duplicate insert should leave a valid BST")
+	}
+	if tree.Root != first || tree.Root.Left.Value != 3 || tree.Root.Right.Value != 7 {
+		t.Fatalf("duplicate insert changed the tree shape: %+v", tree.Root)
+	}
+	got := tree.Inorder()
+	want := []int{3, 5, 7}
+	if len(got) != len(want) {
+		t.Fatalf("inorder = %v, want %v", got, want)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("inorder = %v, want %v", got, want)
+		}
 	}
 }
 
