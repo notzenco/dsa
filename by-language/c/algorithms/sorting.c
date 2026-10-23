@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <stdint.h>
 
 /* ============== Helper Functions ============== */
 
@@ -231,6 +232,12 @@ void quick_sort_median(int *arr, size_t n) {
 
 /* ============== Counting Sort ============== */
 
+static int int_compare(const void *left, const void *right) {
+    int a = *(const int *)left;
+    int b = *(const int *)right;
+    return (a > b) - (a < b);
+}
+
 void counting_sort(int *arr, size_t n) {
     if (arr == NULL || n <= 1) {
         return;
@@ -244,8 +251,15 @@ void counting_sort(int *arr, size_t n) {
         if (arr[i] > max_val) max_val = arr[i];
     }
 
-    size_t range = (size_t)(max_val - min_val + 1);
-    int *count = calloc(range, sizeof(int));
+    uint64_t wide_range = (uint64_t)((int64_t)max_val - (int64_t)min_val) + 1;
+    if (n > SIZE_MAX / sizeof(int) ||
+        wide_range > SIZE_MAX / sizeof(size_t) ||
+        (n <= UINT64_MAX / 16 && wide_range > (uint64_t)n * 16)) {
+        qsort(arr, n, sizeof(int), int_compare);
+        return;
+    }
+    size_t range = (size_t)wide_range;
+    size_t *count = calloc(range, sizeof(size_t));
     int *output = malloc(n * sizeof(int));
 
     if (count == NULL || output == NULL) {
@@ -256,7 +270,7 @@ void counting_sort(int *arr, size_t n) {
 
     /* Count occurrences */
     for (size_t i = 0; i < n; i++) {
-        count[arr[i] - min_val]++;
+        count[(size_t)((int64_t)arr[i] - min_val)]++;
     }
 
     /* Cumulative count */
@@ -266,8 +280,9 @@ void counting_sort(int *arr, size_t n) {
 
     /* Build output (stable) */
     for (size_t i = n; i > 0; i--) {
-        output[count[arr[i - 1] - min_val] - 1] = arr[i - 1];
-        count[arr[i - 1] - min_val]--;
+        size_t index = (size_t)((int64_t)arr[i - 1] - min_val);
+        output[count[index] - 1] = arr[i - 1];
+        count[index]--;
     }
 
     /* Copy back */
@@ -323,8 +338,10 @@ void radix_sort(int *arr, size_t n) {
     }
 
     /* Sort by each digit */
-    for (int exp = 1; max_val / exp > 0; exp *= 10) {
+    for (int exp = 1; max_val / exp > 0; ) {
         counting_sort_digit(arr, n, exp);
+        if (exp > max_val / 10) break;
+        exp *= 10;
     }
 }
 

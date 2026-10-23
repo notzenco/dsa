@@ -244,6 +244,14 @@ TEST(counting_sort_all_same) {
     ASSERT_TRUE(is_sorted(arr, 5));
 }
 
+TEST(counting_sort_extreme_range) {
+    int arr[] = {INT_MAX, 0, INT_MIN};
+    counting_sort(arr, 3);
+    ASSERT_EQ(INT_MIN, arr[0]);
+    ASSERT_EQ(0, arr[1]);
+    ASSERT_EQ(INT_MAX, arr[2]);
+}
+
 /* ============== Radix Sort Tests ============== */
 
 TEST(radix_sort_basic) {
@@ -268,6 +276,14 @@ TEST(radix_sort_duplicates) {
     int arr[] = {100, 200, 100, 300, 200, 100};
     radix_sort(arr, 6);
     ASSERT_TRUE(is_sorted(arr, 6));
+}
+
+TEST(radix_sort_max_int_exponent) {
+    int arr[] = {INT_MAX, 0, 1};
+    radix_sort(arr, 3);
+    ASSERT_EQ(0, arr[0]);
+    ASSERT_EQ(1, arr[1]);
+    ASSERT_EQ(INT_MAX, arr[2]);
 }
 
 /* ============== Shell Sort Tests ============== */
@@ -501,12 +517,14 @@ int main(void) {
     RUN_TEST(counting_sort_duplicates);
     RUN_TEST(counting_sort_negative);
     RUN_TEST(counting_sort_all_same);
+    RUN_TEST(counting_sort_extreme_range);
 
     /* Radix Sort */
     RUN_TEST(radix_sort_basic);
     RUN_TEST(radix_sort_single_digit);
     RUN_TEST(radix_sort_large_numbers);
     RUN_TEST(radix_sort_duplicates);
+    RUN_TEST(radix_sort_max_int_exponent);
 
     /* Shell Sort */
     RUN_TEST(shell_sort_basic);

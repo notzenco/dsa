@@ -140,6 +140,11 @@ TEST(interpolation_search_not_found) {
     ASSERT_EQ(-1, interpolation_search(arr, 5, 5));
 }
 
+TEST(interpolation_search_equal_endpoints) {
+    int arr[] = {1, 1};
+    ASSERT_EQ(0, interpolation_search(arr, 2, 1));
+}
+
 TEST(exponential_search_found) {
     int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     ASSERT_EQ(0, exponential_search(arr, 15, 1));
@@ -452,6 +457,11 @@ TEST(min_subarray_sum_not_found) {
     ASSERT_EQ(0, min_subarray_sum(arr, 3, 100));
 }
 
+TEST(min_subarray_sum_zero_target) {
+    int arr[] = {2, 3};
+    ASSERT_EQ(1, min_subarray_sum(arr, 2, 0));
+}
+
 TEST(longest_unique_substring_basic) {
     ASSERT_EQ(3, longest_unique_substring("abcabcbb")); /* "abc" */
     ASSERT_EQ(1, longest_unique_substring("bbbbb"));    /* "b" */
@@ -484,6 +494,12 @@ TEST(find_anagrams_basic) {
     ASSERT_EQ(6, indices[1]); /* "bac" */
 }
 
+TEST(find_anagrams_nonletters) {
+    size_t indices[2];
+    ASSERT_EQ(1, find_anagrams("{a", "a{", indices, 2));
+    ASSERT_EQ(0, indices[0]);
+}
+
 TEST(min_window_substring_basic) {
     size_t start, len;
     ASSERT_TRUE(min_window_substring("ADOBECODEBANC", "ABC", &start, &len));
@@ -493,6 +509,13 @@ TEST(min_window_substring_basic) {
 TEST(min_window_substring_not_found) {
     size_t start, len;
     ASSERT_FALSE(min_window_substring("a", "aa", &start, &len));
+}
+
+TEST(min_window_substring_high_byte) {
+    size_t start, len;
+    ASSERT_TRUE(min_window_substring("\xC3\xA9x", "\xA9", &start, &len));
+    ASSERT_EQ(1, start);
+    ASSERT_EQ(1, len);
 }
 
 /* ============== NULL Safety Tests ============== */
@@ -544,6 +567,7 @@ int main(void) {
     /* Advanced Search */
     RUN_TEST(interpolation_search_found);
     RUN_TEST(interpolation_search_not_found);
+    RUN_TEST(interpolation_search_equal_endpoints);
     RUN_TEST(exponential_search_found);
     RUN_TEST(exponential_search_not_found);
     RUN_TEST(jump_search_found);
@@ -598,12 +622,15 @@ int main(void) {
     RUN_TEST(max_sum_subarray_k_basic);
     RUN_TEST(min_subarray_sum_basic);
     RUN_TEST(min_subarray_sum_not_found);
+    RUN_TEST(min_subarray_sum_zero_target);
     RUN_TEST(longest_unique_substring_basic);
     RUN_TEST(count_subarrays_sum_basic);
     RUN_TEST(sliding_window_max_basic);
     RUN_TEST(find_anagrams_basic);
+    RUN_TEST(find_anagrams_nonletters);
     RUN_TEST(min_window_substring_basic);
     RUN_TEST(min_window_substring_not_found);
+    RUN_TEST(min_window_substring_high_byte);
 
     /* NULL Safety */
     RUN_TEST(null_safety);

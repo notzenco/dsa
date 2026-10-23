@@ -169,9 +169,11 @@ int interpolation_search(const int *arr, size_t n, int target) {
             if (arr[left] == target) return (int)left;
             return -1;
         }
+        if (arr[left] == arr[right]) return (int)left;
 
         /* Interpolation formula */
-        size_t pos = left + (((double)(right - left) / (arr[right] - arr[left])) * (target - arr[left]));
+        double fraction = ((double)target - arr[left]) / ((double)arr[right] - arr[left]);
+        size_t pos = left + (size_t)(fraction * (right - left));
 
         if (pos > right) pos = right;
 
@@ -718,6 +720,7 @@ int max_sum_subarray_k(const int *arr, size_t n, size_t k) {
 
 size_t min_subarray_sum(const int *arr, size_t n, int target) {
     if (arr == NULL || n == 0) return 0;
+    if (target <= 0) return 1;  /* Elements are positive; one is sufficient. */
 
     size_t min_len = n + 1;  /* Impossible value */
     int sum = 0;
@@ -831,19 +834,19 @@ size_t find_anagrams(const char *s, const char *p, size_t *indices, size_t max_i
     if (s_len < p_len) return 0;
 
     /* Count characters in pattern */
-    int p_count[26] = {0};
-    int s_count[26] = {0};
+    int p_count[256] = {0};
+    int s_count[256] = {0};
 
     for (size_t i = 0; i < p_len; i++) {
-        p_count[p[i] - 'a']++;
-        s_count[s[i] - 'a']++;
+        p_count[(unsigned char)p[i]]++;
+        s_count[(unsigned char)s[i]]++;
     }
 
     size_t count = 0;
 
     /* Check first window */
     bool match = true;
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < 256; i++) {
         if (p_count[i] != s_count[i]) {
             match = false;
             break;
@@ -855,11 +858,11 @@ size_t find_anagrams(const char *s, const char *p, size_t *indices, size_t max_i
 
     /* Slide window */
     for (size_t i = p_len; i < s_len && count < max_indices; i++) {
-        s_count[s[i] - 'a']++;
-        s_count[s[i - p_len] - 'a']--;
+        s_count[(unsigned char)s[i]]++;
+        s_count[(unsigned char)s[i - p_len]]--;
 
         match = true;
-        for (int j = 0; j < 26; j++) {
+        for (int j = 0; j < 256; j++) {
             if (p_count[j] != s_count[j]) {
                 match = false;
                 break;
@@ -883,15 +886,15 @@ bool min_window_substring(const char *s, const char *t, size_t *start_out, size_
     if (s_len < t_len || t_len == 0) return false;
 
     /* Count characters in target */
-    int t_count[128] = {0};
-    int window_count[128] = {0};
+    int t_count[256] = {0};
+    int window_count[256] = {0};
 
     for (size_t i = 0; i < t_len; i++) {
         t_count[(unsigned char)t[i]]++;
     }
 
     size_t required = 0;
-    for (int i = 0; i < 128; i++) {
+    for (int i = 0; i < 256; i++) {
         if (t_count[i] > 0) required++;
     }
 
