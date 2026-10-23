@@ -6,6 +6,23 @@ import pytest
 from data_structures.graph import Graph
 
 
+def test_dijkstra_equal_cost_unorderable_vertices():
+    graph = Graph()
+    graph.add_edge(0j, 1j, 1)
+    graph.add_edge(0j, 2j, 1)
+    distances, _ = graph.dijkstra(0j)
+    assert distances[1j] == distances[2j] == 1
+
+
+def test_prim_equal_weight_unorderable_vertices():
+    graph = Graph()
+    graph.add_edge(0j, 1j, 1)
+    graph.add_edge(0j, 2j, 1)
+    edges, weight = graph.prim_mst()
+    assert len(edges) == 2
+    assert weight == 2
+
+
 class TestGraphBasics:
     """Test basic graph operations."""
 
@@ -339,6 +356,22 @@ class TestGraphUtilities:
         # Modify original, copy should be unchanged
         g.remove_edge(1, 2)
         assert g2.has_edge(1, 2)
+
+    def test_copy_preserves_isolated_and_unorderable_vertices(self):
+        g = Graph()
+        a, b, isolated = 1j, 2j, 3j
+        g.add_edge(a, b, 4)
+        g.add_vertex(isolated)
+        copied = g.copy()
+        assert set(copied.vertices) == {a, b, isolated}
+        assert copied.get_weight(a, b) == 4
+
+    def test_self_loop_count_and_remove(self):
+        g = Graph()
+        g.add_edge('x', 'x')
+        assert g.edge_count == 1
+        assert g.remove_edge('x', 'x')
+        assert g.edge_count == 0
 
     def test_to_adjacency_matrix(self):
         """Test conversion to adjacency matrix."""

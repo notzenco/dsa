@@ -101,10 +101,13 @@ class Graph(GraphAlgorithmsMixin, GraphCore[T]):
     def copy(self) -> "Graph[T]":
         """Create a deep copy of the graph."""
         new_graph: Graph[T] = Graph(directed=self._directed)
+        visited: set[T] = set()
         for u in self._adj:
+            new_graph.add_vertex(u)
             for v, weight in self._adj[u].items():
-                if self._directed or u <= v:  # Avoid duplicate edges in undirected
+                if self._directed or v not in visited:
                     new_graph.add_edge(u, v, weight)
+            visited.add(u)
         return new_graph
 
     @classmethod

@@ -263,6 +263,13 @@ class TestGraphProperties:
 class TestFloydWarshall:
     """Test Floyd-Warshall algorithm."""
 
+    def test_positive_self_loop_preserves_zero_distance(self):
+        graph = AdjacencyMatrix(1, directed=True, weighted=True)
+        graph.add_edge(0, 0, 5)
+        distances, ok = graph.floyd_warshall()
+        assert ok
+        assert distances[0][0] == 0
+
     def test_floyd_warshall_basic(self):
         """Test basic Floyd-Warshall."""
         g = AdjacencyMatrix(4, weighted=True)

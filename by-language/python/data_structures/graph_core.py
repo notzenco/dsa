@@ -71,7 +71,10 @@ class GraphCore(Generic[T]):
     def edge_count(self) -> int:
         """Return number of edges."""
         count = sum(len(neighbors) for neighbors in self._adj.values())
-        return count if self._directed else count // 2
+        if self._directed:
+            return count
+        loops = sum(vertex in neighbors for vertex, neighbors in self._adj.items())
+        return (count + loops) // 2
 
     def add_vertex(self, vertex: T) -> None:
         """
@@ -116,7 +119,7 @@ class GraphCore(Generic[T]):
 
         del self._adj[u][v]
 
-        if not self._directed:
+        if not self._directed and u != v:
             del self._adj[v][u]
 
         return True
@@ -221,10 +224,13 @@ class GraphCore(Generic[T]):
     def copy(self) -> "GraphCore[T]":
         """Create a deep copy of the graph."""
         new_graph: GraphCore[T] = GraphCore(directed=self._directed)
+        visited: set[T] = set()
         for u in self._adj:
+            new_graph.add_vertex(u)
             for v, weight in self._adj[u].items():
-                if self._directed or u <= v:  # Avoid duplicate edges in undirected
+                if self._directed or v not in visited:
                     new_graph.add_edge(u, v, weight)
+            visited.add(u)
         return new_graph
 
     def to_adjacency_matrix(self) -> Tuple[List[T], List[List[float]]]:

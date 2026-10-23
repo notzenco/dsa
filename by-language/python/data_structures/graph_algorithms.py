@@ -34,6 +34,7 @@ LEETCODE PROBLEMS:
 from typing import TypeVar, Dict, List, Set, Optional, Tuple
 from collections import deque, defaultdict
 import heapq
+from itertools import count
 
 T = TypeVar('T')
 
@@ -201,12 +202,13 @@ class GraphAlgorithmsMixin:
         distances[start] = 0
         predecessors: Dict[T, Optional[T]] = {v: None for v in self._adj}
 
-        # Priority queue: (distance, vertex)
-        pq: List[Tuple[float, T]] = [(0, start)]
+        # Sequence numbers break equal-distance ties without ordering vertices.
+        sequence = count()
+        pq: List[Tuple[float, int, T]] = [(0, next(sequence), start)]
         visited: Set[T] = set()
 
         while pq:
-            dist, vertex = heapq.heappop(pq)
+            dist, _, vertex = heapq.heappop(pq)
 
             if vertex in visited:
                 continue
@@ -222,7 +224,7 @@ class GraphAlgorithmsMixin:
                 if new_dist < distances[neighbor]:
                     distances[neighbor] = new_dist
                     predecessors[neighbor] = vertex
-                    heapq.heappush(pq, (new_dist, neighbor))
+                    heapq.heappush(pq, (new_dist, next(sequence), neighbor))
 
         return distances, predecessors
 
@@ -457,15 +459,15 @@ class GraphAlgorithmsMixin:
         total_weight = 0.0
         visited: Set[T] = {start}
 
-        # Priority queue: (weight, from_vertex, to_vertex)
-        edges_pq: List[Tuple[float, T, T]] = []
+        sequence = count()
+        edges_pq: List[Tuple[float, int, T, T]] = []
 
         # Add all edges from start vertex
         for neighbor, weight in self._adj[start].items():
-            heapq.heappush(edges_pq, (weight, start, neighbor))
+            heapq.heappush(edges_pq, (weight, next(sequence), start, neighbor))
 
         while edges_pq and len(visited) < len(self._adj):
-            weight, u, v = heapq.heappop(edges_pq)
+            weight, _, u, v = heapq.heappop(edges_pq)
 
             if v in visited:
                 continue
@@ -477,7 +479,7 @@ class GraphAlgorithmsMixin:
             # Add all edges from newly added vertex
             for neighbor, edge_weight in self._adj[v].items():
                 if neighbor not in visited:
-                    heapq.heappush(edges_pq, (edge_weight, v, neighbor))
+                    heapq.heappush(edges_pq, (edge_weight, next(sequence), v, neighbor))
 
         return mst_edges, total_weight
 

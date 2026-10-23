@@ -450,7 +450,7 @@ class AdjacencyMatrix:
         for i in range(n):
             for j in range(n):
                 if self._matrix[i][j] != 0:
-                    dist[i][j] = self._matrix[i][j]
+                    dist[i][j] = min(dist[i][j], self._matrix[i][j])
 
         # Floyd-Warshall
         for k in range(n):
