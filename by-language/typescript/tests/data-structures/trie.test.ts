@@ -6,6 +6,13 @@ import {
   TrieNode,
 } from "../../src/data-structures/trie";
 
+test("WordDictionary matches Unicode code points consistently", () => {
+  const dictionary = new WordDictionary();
+  dictionary.insert("😀");
+  expect(dictionary.search("😀")).toBe(true);
+  expect(dictionary.search(".")).toBe(true);
+});
+
 describe("TrieNode", () => {
   test("creates node with correct defaults", () => {
     const node = new TrieNode();
@@ -76,6 +83,7 @@ describe("Trie", () => {
       trie.insert("hello");
 
       expect(trie.size).toBe(1);
+      expect(trie.countWordsWithPrefix("hello")).toBe(1);
     });
 
     test("insert empty string", () => {

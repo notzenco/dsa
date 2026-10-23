@@ -2,6 +2,13 @@ import { describe, test, expect } from "bun:test";
 import { LFUCache } from "../../src/data-structures/lfu-cache";
 
 describe("LFUCache", () => {
+  test("does not retain empty frequency buckets", () => {
+    const cache = new LFUCache<string, number>(1);
+    cache.put("a", 1);
+    for (let i = 0; i < 1000; i++) cache.get("a");
+    const buckets = Reflect.get(cache, "_freqMap") as Map<number, unknown>;
+    expect(buckets.size).toBe(1);
+  });
   describe("constructor", () => {
     test("should create with given capacity", () => {
       const cache = new LFUCache<string, number>(5);

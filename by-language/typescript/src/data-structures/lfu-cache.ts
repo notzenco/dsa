@@ -172,8 +172,11 @@ export class LFUCache<K, V> {
     if (oldList) {
       oldList.remove(node);
 
-      if (oldList.isEmpty() && this._minFreq === oldFreq) {
-        this._minFreq = newFreq;
+      if (oldList.isEmpty()) {
+        this._freqMap.delete(oldFreq);
+        if (this._minFreq === oldFreq) {
+          this._minFreq = newFreq;
+        }
       }
     }
 
@@ -193,6 +196,10 @@ export class LFUCache<K, V> {
 
     const node = minList.removeTail();
     if (!node) return;
+
+    if (minList.isEmpty()) {
+      this._freqMap.delete(this._minFreq);
+    }
 
     this._keyMap.delete(node.key);
     this._size--;

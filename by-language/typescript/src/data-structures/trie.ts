@@ -39,6 +39,7 @@ export class Trie {
   }
 
   insert(word: string): void {
+    if (this.search(word)) return;
     let node = this._root;
     for (const char of word) {
       node.count++;
@@ -282,11 +283,11 @@ export class WordDictionary {
   }
 
   search(word: string): boolean {
-    return this._searchHelper(word, 0, this._root);
+    return this._searchHelper(Array.from(word), 0, this._root);
   }
 
   private _searchHelper(
-    word: string,
+    word: string[],
     index: number,
     node: TrieNode,
   ): boolean {
