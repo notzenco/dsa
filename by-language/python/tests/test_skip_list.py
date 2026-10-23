@@ -9,6 +9,12 @@ from data_structures.skip_list import SkipList
 class TestSkipListBasics:
     """Test basic skip list operations."""
 
+    def test_contains_none_value(self):
+        sl = SkipList()
+        sl.insert(1, None)
+        assert sl.contains(1)
+        assert 1 in sl
+
     def test_init(self):
         """Test skip list initialization."""
         sl = SkipList()

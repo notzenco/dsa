@@ -165,14 +165,22 @@ class BTree(Generic[K, V]):
 
     def __contains__(self, key: K) -> bool:
         """Check if key exists."""
-        return self.search(key) is not None
+        node = self._root
+        while True:
+            i = 0
+            while i < len(node.keys) and key > node.keys[i]:
+                i += 1
+            if i < len(node.keys) and key == node.keys[i]:
+                return True
+            if node.leaf:
+                return False
+            node = node.children[i]
 
     def __getitem__(self, key: K) -> V:
         """Get value by key."""
-        result = self.search(key)
-        if result is None:
+        if key not in self:
             raise KeyError(key)
-        return result
+        return self.search(key)  # type: ignore[return-value]
 
     # =========================================================================
     # INSERTION

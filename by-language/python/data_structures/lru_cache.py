@@ -294,8 +294,9 @@ class LRUCache(Generic[K, V]):
 
     def __delitem__(self, key: K) -> None:
         """Delete item, raises KeyError if not found."""
-        if self.delete(key) is None:
+        if key not in self._cache:
             raise KeyError(key)
+        self.delete(key)
 
     def __iter__(self) -> Iterator[K]:
         """Iterate over keys from most to least recently used."""

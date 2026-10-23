@@ -2,10 +2,17 @@
 Tests for LRU Cache implementations.
 """
 
-import pytest
 import time
+import pytest
 from data_structures.lru_cache import LRUCache, LRUCacheSimple, LFUCache
 from data_structures.ttl_cache import TTLCache
+
+
+def test_delitem_accepts_stored_none():
+    cache = LRUCache(2)
+    cache["none"] = None
+    del cache["none"]
+    assert "none" not in cache
 
 
 class TestLRUCacheBasics:

@@ -276,7 +276,12 @@ class SkipList(Generic[K, V]):
 
         Time: O(log n) expected
         """
-        return self.search(key) is not None
+        current = self._head
+        for i in range(self._level - 1, -1, -1):
+            while current.forward[i] is not None and current.forward[i].key < key:
+                current = current.forward[i]
+        current = current.forward[0]
+        return current is not None and current.key == key
 
     def get(self, key: K, default: Optional[V] = None) -> Optional[V]:
         """
