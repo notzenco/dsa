@@ -255,20 +255,6 @@ impl Trie {
         Some(current)
     }
 
-    /// Helper function to find a mutable node matching the given prefix.
-    fn find_node_mut(&mut self, prefix: &str) -> Option<&mut TrieNode> {
-        let mut current = &mut self.root;
-
-        for ch in prefix.chars() {
-            match current.children.get_mut(&ch) {
-                Some(node) => current = node,
-                None => return None,
-            }
-        }
-
-        Some(current)
-    }
-
     /// Returns all words with the given prefix (autocomplete).
     ///
     /// # Time Complexity
@@ -335,14 +321,34 @@ impl Trie {
     /// assert!(!trie.search("hello"));
     /// ```
     pub fn remove(&mut self, word: &str) -> bool {
-        if let Some(node) = self.find_node_mut(word) {
-            if node.is_end_of_word {
-                node.is_end_of_word = false;
-                self.size -= 1;
-                return true;
-            }
+        let (removed, _) = Self::remove_from_node(&mut self.root, &mut word.chars());
+        if removed {
+            self.size -= 1;
         }
-        false
+        removed
+    }
+
+    fn remove_from_node(node: &mut TrieNode, chars: &mut core::str::Chars<'_>) -> (bool, bool) {
+        let removed = if let Some(ch) = chars.next() {
+            if let Some(child) = node.children.get_mut(&ch) {
+                let (removed, prune_child) = Self::remove_from_node(child, chars);
+                if prune_child {
+                    node.children.remove(&ch);
+                }
+                removed
+            } else {
+                false
+            }
+        } else if node.is_end_of_word {
+            node.is_end_of_word = false;
+            true
+        } else {
+            false
+        };
+        (
+            removed,
+            removed && !node.is_end_of_word && node.children.is_empty(),
+        )
     }
 
     /// Returns the number of words with the given prefix.
@@ -685,6 +691,15 @@ mod tests {
 
     mod longest_common_prefix {
         use super::*;
+
+        #[test]
+        fn deleted_branch_does_not_affect_prefix() {
+            let mut trie = Trie::new();
+            trie.insert("a");
+            trie.insert("b");
+            assert!(trie.remove("b"));
+            assert_eq!(trie.longest_common_prefix(), "a");
+        }
 
         #[test]
         fn test_longest_common_prefix() {

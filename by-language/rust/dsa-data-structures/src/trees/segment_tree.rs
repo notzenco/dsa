@@ -289,6 +289,7 @@ pub struct LazySegmentTree {
     tree: Vec<i64>,
     lazy: Vec<i64>,
     n: usize,
+    size: usize,
 }
 
 impl LazySegmentTree {
@@ -303,6 +304,7 @@ impl LazySegmentTree {
             tree: vec![0; 2 * n],
             lazy: vec![0; 2 * n],
             n,
+            size,
         }
     }
 
@@ -327,21 +329,26 @@ impl LazySegmentTree {
             tree[i] = tree[2 * i] + tree[2 * i + 1];
         }
 
-        LazySegmentTree { tree, lazy, n }
+        LazySegmentTree {
+            tree,
+            lazy,
+            n,
+            size,
+        }
     }
 
     /// Returns the size of the underlying array.
     #[inline]
     #[must_use]
     pub fn len(&self) -> usize {
-        self.n
+        self.size
     }
 
     /// Returns `true` if the tree is empty.
     #[inline]
     #[must_use]
     pub fn is_empty(&self) -> bool {
-        self.n == 0
+        self.size == 0
     }
 
     fn push_down(&mut self, node: usize, left_size: usize, right_size: usize) {
@@ -359,7 +366,10 @@ impl LazySegmentTree {
     /// # Time Complexity
     /// O(log n)
     pub fn range_add(&mut self, left: usize, right: usize, delta: i64) {
-        self.range_add_helper(1, 0, self.n, left, right, delta);
+        if left >= self.size {
+            return;
+        }
+        self.range_add_helper(1, 0, self.n, left, right.min(self.size), delta);
     }
 
     fn range_add_helper(
@@ -396,7 +406,10 @@ impl LazySegmentTree {
     /// O(log n)
     #[must_use]
     pub fn query(&mut self, left: usize, right: usize) -> i64 {
-        self.query_helper(1, 0, self.n, left, right)
+        if left >= self.size {
+            return 0;
+        }
+        self.query_helper(1, 0, self.n, left, right.min(self.size))
     }
 
     fn query_helper(
@@ -561,6 +574,15 @@ mod tests {
 
     mod lazy_segment_tree {
         use super::*;
+
+        #[test]
+        fn logical_length_excludes_padding() {
+            assert_eq!(LazySegmentTree::new(0).len(), 0);
+            assert!(LazySegmentTree::new(0).is_empty());
+            let tree = LazySegmentTree::from_slice(&[1, 2, 3]);
+            assert_eq!(tree.len(), 3);
+            assert!(!tree.is_empty());
+        }
 
         #[test]
         fn test_new() {

@@ -328,7 +328,7 @@ impl<T: Ord + Clone> Default for BTree<T> {
 /// In-order iterator for B-tree.
 pub struct BTreeIter<'a, T: Ord + Clone> {
     tree: &'a BTree<T>,
-    stack: Vec<(usize, usize)>, // (node_idx, key_index)
+    stack: Vec<(usize, usize)>, // (node_idx, next in-order slot)
 }
 
 impl<'a, T: Ord + Clone> Iterator for BTreeIter<'a, T> {
@@ -337,29 +337,20 @@ impl<'a, T: Ord + Clone> Iterator for BTreeIter<'a, T> {
     fn next(&mut self) -> Option<Self::Item> {
         while let Some(&(node_idx, key_idx)) = self.stack.last() {
             let node = &self.tree.nodes[node_idx];
-
-            // If we have more children to explore
-            if !node.is_leaf && key_idx < node.children.len() {
-                let child_idx = node.children[key_idx];
-                self.stack.last_mut().unwrap().1 += 1;
-                self.stack.push((child_idx, 0));
-                continue;
-            }
-
-            // Return key if available
-            let key_to_return = key_idx.checked_sub(if node.is_leaf { 0 } else { 1 });
-
             if node.is_leaf {
                 if key_idx < node.keys.len() {
                     self.stack.last_mut().unwrap().1 += 1;
                     return Some(&node.keys[key_idx]);
                 }
             } else {
-                // We've explored child at key_idx, check if we already returned the key at key_idx-1
-                if let Some(ki) = key_to_return {
-                    if ki < node.keys.len() && key_idx == ki + 1 {
-                        // Already incremented, now return the key
+                // Internal nodes alternate child and separator-key slots.
+                if key_idx < node.keys.len() * 2 + 1 {
+                    self.stack.last_mut().unwrap().1 += 1;
+                    if key_idx % 2 == 0 {
+                        self.stack.push((node.children[key_idx / 2], 0));
+                        continue;
                     }
+                    return Some(&node.keys[key_idx / 2]);
                 }
             }
 
@@ -402,6 +393,15 @@ impl<T: Ord + Clone> BTree<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn iterator_yields_internal_keys() {
+        let mut tree = BTree::new(2);
+        for key in 1..=4 {
+            tree.insert(key);
+        }
+        assert_eq!(tree.iter().copied().collect::<Vec<_>>(), vec![1, 2, 3, 4]);
+    }
 
     mod basics {
         use super::*;
