@@ -6,7 +6,7 @@ Graphs are data structures consisting of vertices (nodes) connected by edges, us
 
 | Structure/Algorithm | Python | C |
 |---------------------|--------|---|
-| Adjacency List | [graph.py](../../by-language/python/data_structures/graph.py) | [graph.c](../../by-language/c/data-structures/graph.c) |
+| Adjacency List | [graph.py](../../by-language/python/data_structures/graph.py) | [graph_core.c](../../by-language/c/data-structures/graph_core.c) |
 | Adjacency Matrix | [adjacency_matrix.py](../../by-language/python/data_structures/adjacency_matrix.py) | [adjacency_matrix.c](../../by-language/c/data-structures/adjacency_matrix.c) |
 | Union-Find | [union_find.py](../../by-language/python/data_structures/union_find.py) | [union_find.c](../../by-language/c/data-structures/union_find.c) |
 
@@ -137,23 +137,34 @@ def dfs(graph, start, visited=None):
 ### Dijkstra's Algorithm
 ```python
 import heapq
+from itertools import count
 
 def dijkstra(graph, start):
     dist = {start: 0}
-    heap = [(0, start)]
+    sequence = count()
+    heap = [(0, next(sequence), start)]
 
     while heap:
-        d, u = heapq.heappop(heap)
+        d, _, u = heapq.heappop(heap)
         if d > dist.get(u, float('inf')):
             continue
 
         for v, weight in graph[u]:
             if d + weight < dist.get(v, float('inf')):
                 dist[v] = d + weight
-                heapq.heappush(heap, (dist[v], v))
+                heapq.heappush(heap, (dist[v], next(sequence), v))
 
     return dist
 ```
+
+The sequence number keeps equal-priority heap entries comparable even when
+vertex objects have no ordering. The Python graph copy preserves isolated
+vertices, and undirected self-loops count as one edge.
+
+For path reconstruction, C callers must pass the output array capacity to
+`shortest_path_reconstruct`. Rust callers must pass the source to
+`reconstruct_path(parent, source, target)`. Reject a Bellman-Ford result with
+a negative cycle before reconstructing a path.
 
 ### Topological Sort (Kahn's Algorithm)
 ```python

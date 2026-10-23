@@ -80,11 +80,15 @@ Build max-heap, repeatedly extract maximum.
 Count occurrences, calculate positions, place elements.
 - **Best for**: Small integer range, many duplicates
 - **Requirement**: Know range of values
+- **C implementation**: Falls back to comparison sorting when the range is
+  too large for practical count storage; this case takes O(n log n).
 
 #### Radix Sort
 Sort by each digit, from least to most significant.
 - **Best for**: Fixed-length integers, strings
 - **Variants**: LSD (least significant digit first), MSD
+- **Integer implementations**: Stop after the highest required digit so the
+  exponent does not overflow after the final pass.
 
 #### Bucket Sort
 Distribute into buckets, sort each bucket, concatenate.

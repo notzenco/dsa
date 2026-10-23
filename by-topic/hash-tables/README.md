@@ -72,9 +72,16 @@ Each bucket contains a linked list of entries.
 
 ### Open Addressing
 Probe for next available slot.
+- When inserting after a deletion, continue probing past a tombstone for an
+  existing key before reusing the tombstone. This prevents duplicate keys.
 - **Linear Probing**: Check next slot sequentially
 - **Quadratic Probing**: Check i² slots away
 - **Double Hashing**: Use second hash function
+
+Java chaining tables can store `null` values; `containsKey` checks key
+presence independently of the stored value. Python cache and tree membership
+likewise treats a stored `None` as present. LFU caches should discard empty
+frequency buckets as entries are promoted.
 
 | Aspect | Chaining | Open Addressing |
 |--------|----------|-----------------|

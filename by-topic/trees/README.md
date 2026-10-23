@@ -63,6 +63,17 @@ m = key length, n = number of keys
 └─────────────┴─────────┴─────────┘
 ```
 
+Point updates must use a valid logical index. Rust Fenwick updates are
+one-indexed (`1..=len`); Go, Python, and TypeScript Fenwick updates are
+zero-indexed (`0..len`). Invalid updates are rejected. Python segment-tree
+point updates raise `IndexError` outside `0..len`. Rust lazy segment-tree
+`len()` reports the logical input length, excluding power-of-two padding.
+
+Trie insertion is set-like: inserting a word already present leaves unique
+size and prefix counts unchanged. Deletion removes dead branches from prefix
+queries. The Rust skip list reports its live element count and reuses slots
+freed by removal.
+
 ## Tree Types Comparison
 
 ### AVL vs Red-Black Tree

@@ -4,8 +4,8 @@ A comprehensive collection of data structures and algorithms implemented in Rust
 
 ## Features
 
-- **No-std compatible**: Works in embedded and bare-metal environments
-- **Comprehensive testing**: 840+ tests (697 unit tests, 143 doc tests)
+- **No-std compatible**: All workspace crates compile with default features disabled
+- **Comprehensive testing**: Unit and documentation tests across all crates
 - **Educational**: Detailed documentation with complexity analysis
 
 ## Project Structure
@@ -133,7 +133,17 @@ cargo test --lib trees::avl
 
 # Run doc tests
 cargo test --doc
+
+# Check all crates without the std feature
+cargo check --offline --workspace --no-default-features
 ```
+
+## Path reconstruction
+
+`dsa_algorithms::graph::reconstruct_path` takes the predecessor array, the
+source vertex, and the target vertex in that order. It returns `None` for an
+invalid or unreachable target, including malformed parent chains. Callers of
+the earlier two-argument form must pass the source explicitly.
 
 ## Complexity Reference
 

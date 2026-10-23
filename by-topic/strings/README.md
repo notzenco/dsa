@@ -116,6 +116,8 @@ Computes Z-array where Z[i] is length of longest substring starting at i that ma
 ```python
 def z_function(s):
     n = len(s)
+    if n == 0:
+        return []
     z = [0] * n
     z[0] = n
     l = r = 0
@@ -131,12 +133,18 @@ def z_function(s):
     return z
 
 def z_search(text, pattern):
+    if not text or not pattern or len(pattern) > len(text):
+        return []
     combined = pattern + "$" + text
     z = z_function(combined)
     m = len(pattern)
 
-    return [i - m - 1 for i in range(m + 1, len(combined)) if z[i] == m]
+    return [i - m - 1 for i in range(m + 1, len(combined)) if z[i] >= m]
 ```
+
+`>= m` matters when the separator also appears in the input: the match may
+extend past the pattern length. Shortest-palindrome implementations use a
+separator token outside the input domain for the same reason.
 
 **Best for**: Finding all occurrences, string compression
 
@@ -145,8 +153,12 @@ Finds longest palindromic substring in O(n).
 
 ```python
 def manacher(s):
-    # Transform: "abc" -> "^#a#b#c#$"
-    t = "^#" + "#".join(s) + "#$"
+    # Distinct objects cannot collide with user-supplied characters.
+    start_token, separator, end_token = object(), object(), object()
+    t = [start_token, separator]
+    for char in s:
+        t.extend((char, separator))
+    t.append(end_token)
     n = len(t)
     p = [0] * n
     center = right = 0

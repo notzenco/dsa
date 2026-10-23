@@ -543,6 +543,10 @@ Implementation: Hash Map + Doubly Linked List
 n = number of elements, k = range of values
 ```
 
+The C counting-sort implementation uses a comparison-sort fallback when the
+value range is too large for practical counting storage. That case takes
+O(n log n) time instead of O(n + k).
+
 **Choosing a Sorting Algorithm:**
 
 | Situation | Best Choice | Why |

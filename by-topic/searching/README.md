@@ -23,6 +23,11 @@ Searching algorithms find elements or determine their absence in data structures
 i = position of target
 ```
 
+Interpolation search requires sorted numeric data. Equal endpoint values are
+handled before division, so a constant range can return a matching index
+without dividing by zero. Python's recursive binary search uses `None` for an
+omitted right bound; `-1` remains a valid recursive boundary.
+
 ## Binary Search
 
 The most important searching algorithm. Requires sorted data.

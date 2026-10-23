@@ -43,7 +43,8 @@ dsa/
 │   ├── searching/        # Binary search, two pointers, sliding window
 │   ├── strings/          # KMP, Rabin-Karp, Z-algorithm
 │   └── dynamic-programming/  # DP patterns and problems
-└── COMPLEXITY.md         # Master complexity cheat sheet
+├── COMPLEXITY.md         # Master complexity cheat sheet
+└── REMEDIATION.md        # Boundary contracts and regression checks
 ```
 
 ## Data Structures
@@ -171,7 +172,7 @@ go test ./...
 ### Java
 ```bash
 cd by-language/java
-gradle test
+./gradlew test
 ```
 
 ### Python
@@ -193,6 +194,14 @@ cd by-language/typescript
 bun install
 bun test
 ```
+
+## Correctness and API contracts
+
+The [remediation notes](REMEDIATION.md) record the boundary cases covered by
+the regression suites and the commands used to verify them. Two path APIs now
+require an explicit bound: C `shortest_path_reconstruct` takes the output array
+capacity, and Rust `reconstruct_path` takes the source vertex. Callers of those
+APIs should update their arguments before using the revised implementations.
 
 ### Git Hooks (Optional)
 ```bash
