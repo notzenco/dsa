@@ -103,23 +103,32 @@ func min(a, b int) int {
 }
 
 // InterpolationSearch for uniformly distributed sorted slices.
+// The probe is an integer ratio of unsigned distances, so the full int
+// domain cannot overflow the way a float64 conversion of int subtraction can.
 func InterpolationSearch(arr []int, target int) int {
 	low, high := 0, len(arr)-1
 
 	for low <= high && target >= arr[low] && target <= arr[high] {
-		if low == high {
+		if arr[low] == arr[high] {
 			if arr[low] == target {
 				return low
 			}
 			return -1
 		}
-		pos := low + int(float64(high-low)*float64(target-arr[low])/float64(arr[high]-arr[low]))
-		if pos < low || pos > high {
-			break
+		span := uint(arr[high]) - uint(arr[low])
+		offset := uint(target) - uint(arr[low])
+		dist := uint(high - low)
+		var step uint
+		if offset > ^uint(0)/dist {
+			step = dist / 2
+		} else {
+			step = (dist * offset) / span
 		}
+		pos := low + int(step)
 		if arr[pos] == target {
 			return pos
-		} else if arr[pos] < target {
+		}
+		if arr[pos] < target {
 			low = pos + 1
 		} else {
 			high = pos - 1

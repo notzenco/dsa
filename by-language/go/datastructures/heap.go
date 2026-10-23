@@ -18,7 +18,7 @@ func MinHeapFromSlice[T Ordered](items []T) *MinHeap[T] {
 	return h
 }
 
-func (h *MinHeap[T]) Size() int    { return len(h.data) }
+func (h *MinHeap[T]) Size() int     { return len(h.data) }
 func (h *MinHeap[T]) IsEmpty() bool { return len(h.data) == 0 }
 
 func (h *MinHeap[T]) Peek() (T, bool) {
@@ -129,7 +129,7 @@ func MaxHeapFromSlice[T Ordered](items []T) *MaxHeap[T] {
 	return h
 }
 
-func (h *MaxHeap[T]) Size() int    { return len(h.data) }
+func (h *MaxHeap[T]) Size() int     { return len(h.data) }
 func (h *MaxHeap[T]) IsEmpty() bool { return len(h.data) == 0 }
 
 func (h *MaxHeap[T]) Peek() (T, bool) {
@@ -277,7 +277,7 @@ func NewPriorityQueue[T any]() *PriorityQueue[T] {
 	return &PriorityQueue[T]{}
 }
 
-func (pq *PriorityQueue[T]) Size() int    { return len(pq.items) }
+func (pq *PriorityQueue[T]) Size() int     { return len(pq.items) }
 func (pq *PriorityQueue[T]) IsEmpty() bool { return len(pq.items) == 0 }
 
 func (pq *PriorityQueue[T]) Enqueue(value T, priority int) {

@@ -54,6 +54,8 @@ USE CASES:
 from typing import TypeVar, Generic, Dict, Optional, Callable, Iterator, Tuple, Any
 from collections import OrderedDict
 
+from .lfu_cache import LFUCache  # Backwards-compatible re-export.
+
 K = TypeVar('K')
 V = TypeVar('V')
 
@@ -374,101 +376,6 @@ class LRUCacheSimple(Generic[K, V]):
     def delete(self, key: K) -> Optional[V]:
         """Delete key from cache."""
         return self._cache.pop(key, None)
-
-    def __len__(self) -> int:
-        """Return number of items."""
-        return len(self._cache)
-
-    def __contains__(self, key: K) -> bool:
-        """Check if key exists."""
-        return key in self._cache
-
-
-class LFUCache(Generic[K, V]):
-    """
-    LFU (Least Frequently Used) Cache implementation.
-
-    Evicts the least frequently used item. If multiple items have
-    the same frequency, evicts the least recently used among them.
-
-    LeetCode #460
-
-    Example:
-        >>> cache = LFUCache(2)
-        >>> cache.put(1, 'a')
-        >>> cache.put(2, 'b')
-        >>> cache.get(1)  # freq[1] = 2
-        'a'
-        >>> cache.put(3, 'c')  # Evicts key 2 (lower frequency)
-        >>> cache.get(2)
-    """
-
-    def __init__(self, capacity: int) -> None:
-        """Initialize LFU cache."""
-        if capacity < 1:
-            raise ValueError("Capacity must be at least 1")
-
-        self._capacity = capacity
-        self._cache: Dict[K, V] = {}
-        self._freq: Dict[K, int] = {}
-        self._freq_to_keys: Dict[int, OrderedDict[K, None]] = {}
-        self._min_freq = 0
-
-    def get(self, key: K) -> Optional[V]:
-        """Get value and increment frequency."""
-        if key not in self._cache:
-            return None
-
-        self._increment_freq(key)
-        return self._cache[key]
-
-    def put(self, key: K, value: V) -> None:
-        """Insert or update key-value pair."""
-        if key in self._cache:
-            self._cache[key] = value
-            self._increment_freq(key)
-            return
-
-        # Evict if at capacity
-        if len(self._cache) >= self._capacity:
-            self._evict()
-
-        # Insert new key
-        self._cache[key] = value
-        self._freq[key] = 1
-        self._min_freq = 1
-
-        if 1 not in self._freq_to_keys:
-            self._freq_to_keys[1] = OrderedDict()
-        self._freq_to_keys[1][key] = None
-
-    def _increment_freq(self, key: K) -> None:
-        """Increment frequency of key."""
-        freq = self._freq[key]
-        self._freq[key] = freq + 1
-
-        # Remove from current frequency bucket
-        del self._freq_to_keys[freq][key]
-
-        # Update min_freq if this was the last key at min_freq
-        if not self._freq_to_keys[freq] and freq == self._min_freq:
-            self._min_freq += 1
-
-        # Add to new frequency bucket
-        new_freq = freq + 1
-        if new_freq not in self._freq_to_keys:
-            self._freq_to_keys[new_freq] = OrderedDict()
-        self._freq_to_keys[new_freq][key] = None
-
-    def _evict(self) -> None:
-        """Evict least frequently used key."""
-        # Get LFU keys and remove the LRU among them
-        lfu_keys = self._freq_to_keys[self._min_freq]
-        evict_key = next(iter(lfu_keys))
-
-        del lfu_keys[evict_key]
-        del self._cache[evict_key]
-        del self._freq[evict_key]
 
     def __len__(self) -> int:
         """Return number of items."""

@@ -6,7 +6,7 @@
 //!
 //! - [`kmp_search`] - Knuth-Morris-Pratt algorithm
 //! - [`rabin_karp`] - Rabin-Karp algorithm with rolling hash
-//! - [`z_algorithm`] - Z-function based matching
+//! - [`z_search`] - Z-function based matching
 //!
 //! ## String Processing
 //!
@@ -23,8 +23,8 @@ use alloc::vec::Vec;
 
 /// Build the KMP failure function (prefix function).
 ///
-/// For each position i, lps[i] is the length of the longest proper prefix
-/// of pattern[0..=i] that is also a suffix.
+/// For each position i, `lps[i]` is the length of the longest proper prefix
+/// of `pattern[0..=i]` that is also a suffix.
 ///
 /// # Example
 ///
@@ -190,7 +190,7 @@ pub fn rabin_karp(text: &str, pattern: &str) -> Vec<usize> {
 // Z Algorithm
 // ============================================================================
 
-/// Z-function - For each position i, z[i] is the length of the longest
+/// Z-function - For each position i, `z[i]` is the length of the longest
 /// substring starting at i that matches a prefix of the string.
 ///
 /// # Complexity
@@ -268,8 +268,8 @@ pub fn z_search(text: &str, pattern: &str) -> Vec<usize> {
     let z = z_function(&concat);
 
     // Find matches
-    for i in pattern_len + 1..z.len() {
-        if z[i] >= pattern_len {
+    for (i, &length) in z.iter().enumerate().skip(pattern_len + 1) {
+        if length >= pattern_len {
             result.push(i - pattern_len - 1);
         }
     }
@@ -454,7 +454,7 @@ pub fn manacher(s: &str) -> (usize, usize) {
         }
 
         // Expand around center
-        while i >= p[i] + 1 && i + p[i] + 1 < n && t[i - p[i] - 1] == t[i + p[i] + 1] {
+        while i > p[i] && i + p[i] + 1 < n && t[i - p[i] - 1] == t[i + p[i] + 1] {
             p[i] += 1;
         }
 

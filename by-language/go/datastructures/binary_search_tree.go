@@ -366,10 +366,18 @@ func (t *BST[T]) height(node *BSTNode[T]) int {
 	return rh + 1
 }
 
+// BSTFromSortedSlice builds a balanced BST from a sorted slice. Repeated
+// values are kept once.
 func BSTFromSortedSlice[T Ordered](arr []T) *BST[T] {
+	distinct := make([]T, 0, len(arr))
+	for i, v := range arr {
+		if i == 0 || v != arr[i-1] {
+			distinct = append(distinct, v)
+		}
+	}
 	tree := NewBST[T]()
-	tree.Root = buildBST(arr, 0, len(arr)-1, nil)
-	tree.size = len(arr)
+	tree.Root = buildBST(distinct, 0, len(distinct)-1, nil)
+	tree.size = len(distinct)
 	return tree
 }
 

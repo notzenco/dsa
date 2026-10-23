@@ -215,6 +215,46 @@ describe("countingSort", () => {
     const expected = Array.from({ length: 500 }, (_, i) => i + 1);
     expect(countingSort(input)).toEqual(expected);
   });
+
+  test("falls back to a comparison sort when the range exceeds 16n", () => {
+    const wide = [0, 1_000_000, -5, 1_000_000];
+    expect(countingSort(wide)).toEqual([-5, 0, 1_000_000, 1_000_000]);
+    const copy = [...wide];
+    countingSort(wide);
+    expect(wide).toEqual(copy);
+
+    // range 33 > 16 * 2, so this takes the fallback path
+    expect(countingSort([0, 32])).toEqual([0, 32]);
+    // range 32 === 16 * 2, so this still uses the count array
+    expect(countingSort([0, 31])).toEqual([0, 31]);
+  });
+
+  test("safe integer extremes", () => {
+    const input = [
+      Number.MAX_SAFE_INTEGER,
+      Number.MIN_SAFE_INTEGER,
+      0,
+      -1,
+      1,
+    ];
+    expect(countingSort(input)).toEqual([...input].sort((a, b) => a - b));
+  });
+
+  test("rejects values that are not safe integers", () => {
+    const bad = [
+      NaN,
+      Infinity,
+      -Infinity,
+      1.5,
+      -0.1,
+      Number.MAX_SAFE_INTEGER + 1,
+      Number.MIN_SAFE_INTEGER - 1,
+    ];
+    for (const value of bad) {
+      expect(() => countingSort([value])).toThrow(RangeError);
+      expect(() => countingSort([0, value, -3])).toThrow(RangeError);
+    }
+  });
 });
 
 describe("radixSort", () => {
@@ -265,6 +305,49 @@ describe("radixSort", () => {
     const input = Array.from({ length: 500 }, (_, i) => 500 - i);
     const expected = Array.from({ length: 500 }, (_, i) => i + 1);
     expect(radixSort(input)).toEqual(expected);
+  });
+
+  test("with negative numbers", () => {
+    expect(radixSort([-3, 5, -1, 0, 4, -2, 3])).toEqual([
+      -3, -2, -1, 0, 3, 4, 5,
+    ]);
+  });
+
+  test("all negative numbers", () => {
+    expect(radixSort([-10, -1, -20, -3, -1])).toEqual([-20, -10, -3, -1, -1]);
+  });
+
+  test("safe integer extremes", () => {
+    const input = [
+      Number.MAX_SAFE_INTEGER,
+      Number.MIN_SAFE_INTEGER,
+      0,
+      -1,
+      1,
+      42,
+      -42,
+      Number.MIN_SAFE_INTEGER + 2,
+    ];
+    expect(radixSort(input)).toEqual([...input].sort((a, b) => a - b));
+    const copy = [...input];
+    radixSort(input);
+    expect(input).toEqual(copy);
+  });
+
+  test("rejects values that are not safe integers", () => {
+    const bad = [
+      NaN,
+      Infinity,
+      -Infinity,
+      1.5,
+      -0.1,
+      Number.MAX_SAFE_INTEGER + 1,
+      Number.MIN_SAFE_INTEGER - 1,
+    ];
+    for (const value of bad) {
+      expect(() => radixSort([value])).toThrow(RangeError);
+      expect(() => radixSort([-2, value, 4])).toThrow(RangeError);
+    }
   });
 });
 

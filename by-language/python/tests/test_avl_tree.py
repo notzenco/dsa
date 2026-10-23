@@ -7,6 +7,28 @@ import random
 from data_structures.avl_tree import AVLTree, AVLTreeMap
 
 
+def test_map_preserves_none_on_insert_and_update():
+    mapping = AVLTreeMap()
+    mapping['a'] = None
+    assert mapping['a'] is None
+    assert mapping.get('a', 'missing') is None
+    mapping['a'] = 10
+    mapping['a'] = None
+    assert mapping.items() == [('a', None)]
+    assert len(mapping) == 1
+
+
+def test_omitted_tree_value_still_defaults_to_key():
+    tree = AVLTree()
+    tree.insert(5)
+    assert tree.get(5) == 5
+    tree.insert(5, None)
+    assert tree.get(5) is None
+    tree.insert(5)
+    assert tree.get(5) == 5
+    assert len(tree) == 1
+
+
 class TestAVLTreeBasics:
     """Test basic AVL tree operations."""
 

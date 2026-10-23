@@ -342,6 +342,9 @@ fn heapify<T: Ord>(arr: &mut [T], n: usize, i: usize) {
 ///
 /// Counts occurrences of each value and uses arithmetic to determine positions.
 ///
+/// Ranges larger than 16 times the input length, or counting buffers that
+/// cannot be allocated, fall back to `sort_unstable` (O(n log n) time).
+///
 /// # Complexity
 ///
 /// - Time: O(n + k) where k is the range of input
@@ -366,31 +369,36 @@ pub fn counting_sort(arr: &mut [u32]) {
         return;
     }
 
-    // Find the maximum value
-    let max = match arr.iter().max() {
-        Some(&m) => m as usize,
-        None => return,
+    let min = *arr.iter().min().unwrap();
+    let max = *arr.iter().max().unwrap();
+    let range = u64::from(max) - u64::from(min) + 1;
+    let mut count = match counting_buffer(range, arr.len()) {
+        Some(count) => count,
+        None => {
+            arr.sort_unstable();
+            return;
+        }
     };
-
-    // Create counting array
-    let mut count = vec![0usize; max + 1];
 
     // Count occurrences
     for &val in arr.iter() {
-        count[val as usize] += 1;
+        count[(val - min) as usize] += 1;
     }
 
     // Reconstruct sorted array
     let mut idx = 0;
-    for (val, &cnt) in count.iter().enumerate() {
+    for (offset, &cnt) in count.iter().enumerate() {
         for _ in 0..cnt {
-            arr[idx] = val as u32;
+            arr[idx] = (u64::from(min) + offset as u64) as u32;
             idx += 1;
         }
     }
 }
 
 /// Counting Sort for i32 - Handles negative numbers by shifting values.
+///
+/// Falls back to `sort_unstable` for ranges larger than 16 times the input
+/// length or when the counting buffer cannot be allocated.
 ///
 /// # Example
 ///
@@ -408,22 +416,38 @@ pub fn counting_sort_i32(arr: &mut [i32]) {
 
     let min = *arr.iter().min().unwrap();
     let max = *arr.iter().max().unwrap();
-    let range = (max - min + 1) as usize;
-
-    let mut count = vec![0usize; range];
+    let range = (i64::from(max) - i64::from(min) + 1) as u64;
+    let mut count = match counting_buffer(range, arr.len()) {
+        Some(count) => count,
+        None => {
+            arr.sort_unstable();
+            return;
+        }
+    };
 
     for &val in arr.iter() {
-        count[(val - min) as usize] += 1;
+        count[(i64::from(val) - i64::from(min)) as usize] += 1;
     }
 
     let mut idx = 0;
     for (offset, &cnt) in count.iter().enumerate() {
-        let val = min + offset as i32;
+        let val = (i64::from(min) + offset as i64) as i32;
         for _ in 0..cnt {
             arr[idx] = val;
             idx += 1;
         }
     }
+}
+
+fn counting_buffer(range: u64, len: usize) -> Option<Vec<usize>> {
+    let range = usize::try_from(range).ok()?;
+    if range > len.saturating_mul(16) {
+        return None;
+    }
+    let mut count = Vec::new();
+    count.try_reserve_exact(range).ok()?;
+    count.resize(range, 0);
+    Some(count)
 }
 
 /// Radix Sort - Non-comparison integer sorting algorithm.
@@ -513,6 +537,13 @@ pub fn is_sorted<T: Ord>(arr: &[T]) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn counting_buffer_limits() {
+        assert_eq!(counting_buffer(32, 2), Some(vec![0; 32]));
+        assert_eq!(counting_buffer(33, 2), None);
+        assert_eq!(counting_buffer(u64::MAX, usize::MAX), None);
+    }
 
     mod bubble_sort_tests {
         use super::*;

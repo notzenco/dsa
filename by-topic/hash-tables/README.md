@@ -4,13 +4,13 @@ Hash tables provide O(1) average-case lookup, insertion, and deletion by mapping
 
 ## Implementations
 
-| Structure | Python | C |
-|-----------|--------|---|
-| Hash Table | [hash_table.py](../../by-language/python/data_structures/hash_table.py) | [hash_table.c](../../by-language/c/data-structures/hash_table.c) |
-| Bloom Filter | [bloom_filter.py](../../by-language/python/data_structures/bloom_filter.py) | [bloom_filter.c](../../by-language/c/data-structures/bloom_filter.c) |
-| LRU Cache | [lru_cache.py](../../by-language/python/data_structures/lru_cache.py) | [lru_cache.c](../../by-language/c/data-structures/lru_cache.c) |
-| LFU Cache | [lfu_cache.py](../../by-language/python/data_structures/lfu_cache.py) | [lfu_cache.c](../../by-language/c/data-structures/lfu_cache.c) |
-| TTL Cache | [lru_cache.py](../../by-language/python/data_structures/lru_cache.py) | [ttl_cache.c](../../by-language/c/data-structures/ttl_cache.c) |
+| Structure | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| Hash Table | [hash_table.py](../../by-language/python/data_structures/hash_table.py) | [hash_table.c](../../by-language/c/data-structures/hash_table.c) | [hash_table.go](../../by-language/go/datastructures/hash_table.go) | [HashTable.java](../../by-language/java/src/main/java/dsa/datastructures/HashTable.java) | [hash_table.rs](../../by-language/rust/dsa-data-structures/src/hashing/hash_table.rs) | [hash-table.ts](../../by-language/typescript/src/data-structures/hash-table.ts) |
+| Bloom Filter | [bloom_filter.py](../../by-language/python/data_structures/bloom_filter.py) | [bloom_filter.c](../../by-language/c/data-structures/bloom_filter.c) | [bloom_filter.go](../../by-language/go/datastructures/bloom_filter.go) | [BloomFilter.java](../../by-language/java/src/main/java/dsa/datastructures/BloomFilter.java) | [bloom_filter.rs](../../by-language/rust/dsa-data-structures/src/hashing/bloom_filter.rs) | [bloom-filter.ts](../../by-language/typescript/src/data-structures/bloom-filter.ts) |
+| LRU Cache | [lru_cache.py](../../by-language/python/data_structures/lru_cache.py) | [lru_cache.c](../../by-language/c/data-structures/lru_cache.c) | [lru_cache.go](../../by-language/go/datastructures/lru_cache.go) | [LruCache.java](../../by-language/java/src/main/java/dsa/datastructures/LruCache.java) | [lru_cache.rs](../../by-language/rust/dsa-data-structures/src/caches/lru_cache.rs) | [lru-cache.ts](../../by-language/typescript/src/data-structures/lru-cache.ts) |
+| LFU Cache | [lfu_cache.py](../../by-language/python/data_structures/lfu_cache.py) | [lfu_cache.c](../../by-language/c/data-structures/lfu_cache.c) | [lfu_cache.go](../../by-language/go/datastructures/lfu_cache.go) | [LfuCache.java](../../by-language/java/src/main/java/dsa/datastructures/LfuCache.java) | [lfu_cache.rs](../../by-language/rust/dsa-data-structures/src/caches/lfu_cache.rs) | [lfu-cache.ts](../../by-language/typescript/src/data-structures/lfu-cache.ts) |
+| TTL Cache | [ttl_cache.py](../../by-language/python/data_structures/ttl_cache.py) | [ttl_cache.c](../../by-language/c/data-structures/ttl_cache.c) | [ttl_cache.go](../../by-language/go/datastructures/ttl_cache.go) | [TtlCache.java](../../by-language/java/src/main/java/dsa/datastructures/TtlCache.java) | - | [ttl-cache.ts](../../by-language/typescript/src/data-structures/ttl-cache.ts) |
 
 ## Complexity
 

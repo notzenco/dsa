@@ -255,11 +255,11 @@ pub fn edit_distance(s1: &str, s2: &str) -> usize {
     let mut dp = vec![vec![0usize; n + 1]; m + 1];
 
     // Base cases
-    for i in 0..=m {
-        dp[i][0] = i;
+    for (i, row) in dp.iter_mut().enumerate() {
+        row[0] = i;
     }
-    for j in 0..=n {
-        dp[0][j] = j;
+    for (j, cell) in dp[0].iter_mut().enumerate() {
+        *cell = j;
     }
 
     for i in 1..=m {
@@ -474,7 +474,7 @@ pub fn max_subarray_with_indices(arr: &[i32]) -> (i32, usize, usize) {
             max_ending_here = num;
             temp_start = i;
         } else {
-            max_ending_here = max_ending_here + num;
+            max_ending_here += num;
         }
 
         if max_ending_here > max_so_far {

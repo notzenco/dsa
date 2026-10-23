@@ -1075,3 +1075,101 @@ func TestGraphDegreeDirected(t *testing.T) {
 		t.Errorf("expected degree 2 (in=1, out=1), got %d", deg)
 	}
 }
+
+func TestGraphCoreAccessors(t *testing.T) {
+	undirected := NewGraphCore(false)
+	if undirected.IsDirected() {
+		t.Fatal("undirected graph reports directed")
+	}
+	if _, ok := undirected.GetWeight(0, 1); ok {
+		t.Fatal("missing vertex should have no weight")
+	}
+	if undirected.NeighborsWeighted(0) != nil {
+		t.Fatal("missing vertex should have nil weighted neighbors")
+	}
+
+	undirected.AddVertex(4)
+	if got := undirected.NeighborsWeighted(4); len(got) != 0 {
+		t.Fatalf("isolated vertex neighbors = %+v", got)
+	}
+	undirected.AddEdge(0, 1, 2.5)
+	undirected.AddEdge(0, 2, 4)
+
+	w, ok := undirected.GetWeight(0, 1)
+	if !ok || w != 2.5 {
+		t.Fatalf("weight 0-1 = %v, %v", w, ok)
+	}
+	w, ok = undirected.GetWeight(1, 0)
+	if !ok || w != 2.5 {
+		t.Fatalf("undirected reverse weight = %v, %v", w, ok)
+	}
+	if _, ok = undirected.GetWeight(1, 2); ok {
+		t.Fatal("unexpected edge 1-2")
+	}
+
+	nbrs := undirected.NeighborsWeighted(0)
+	gotW := map[int]float64{}
+	for _, n := range nbrs {
+		gotW[n.Vertex] = n.Weight
+	}
+	if len(gotW) != 2 || gotW[1] != 2.5 || gotW[2] != 4 {
+		t.Fatalf("weighted neighbors = %v", gotW)
+	}
+
+	verts, matrix := undirected.ToAdjacencyMatrix()
+	if len(verts) != 4 || len(matrix) != 4 {
+		t.Fatalf("matrix shape vertices=%v rows=%d", verts, len(matrix))
+	}
+	index := make(map[int]int, len(verts))
+	for i, v := range verts {
+		index[v] = i
+		if len(matrix[i]) != len(verts) {
+			t.Fatalf("row %d len = %d", i, len(matrix[i]))
+		}
+		if matrix[i][i] != 0 {
+			t.Fatalf("diagonal %d = %v", i, matrix[i][i])
+		}
+	}
+	if matrix[index[0]][index[1]] != 2.5 || matrix[index[1]][index[0]] != 2.5 {
+		t.Fatal("matrix missing undirected edge 0-1")
+	}
+	if !math.IsInf(matrix[index[1]][index[2]], 1) {
+		t.Fatal("missing edge should be +Inf")
+	}
+	if !math.IsInf(matrix[index[0]][index[4]], 1) {
+		t.Fatal("edge to isolated vertex should be +Inf")
+	}
+
+	emptyVerts, emptyMatrix := NewGraphCore(true).ToAdjacencyMatrix()
+	if len(emptyVerts) != 0 || len(emptyMatrix) != 0 {
+		t.Fatalf("empty matrix = %v, %v", emptyVerts, emptyMatrix)
+	}
+
+	directed := GraphCoreFromEdgeList([][3]int{{1, 2, 5}, {2, 3, -1}}, true)
+	if !directed.IsDirected() {
+		t.Fatal("edge list should build a directed graph")
+	}
+	if !directed.HasEdge(1, 2) || directed.HasEdge(2, 1) {
+		t.Fatal("directed edge list edges")
+	}
+	w, ok = directed.GetWeight(2, 3)
+	if !ok || w != -1 {
+		t.Fatalf("weight 2-3 = %v, %v", w, ok)
+	}
+	dVerts, dMatrix := directed.ToAdjacencyMatrix()
+	dIndex := make(map[int]int, len(dVerts))
+	for i, v := range dVerts {
+		dIndex[v] = i
+	}
+	if dMatrix[dIndex[1]][dIndex[2]] != 5 {
+		t.Fatal("directed matrix weight")
+	}
+	if !math.IsInf(dMatrix[dIndex[2]][dIndex[1]], 1) {
+		t.Fatal("directed matrix should not mirror the edge")
+	}
+
+	none := GraphCoreFromEdgeList(nil, false)
+	if none.IsDirected() || none.NumVertices() != 0 {
+		t.Fatalf("empty edge list directed=%v vertices=%d", none.IsDirected(), none.NumVertices())
+	}
+}

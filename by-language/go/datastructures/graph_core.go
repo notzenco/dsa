@@ -105,11 +105,20 @@ func (g *GraphCore) Neighbors(v int) []int {
 	return nil
 }
 
-func (g *GraphCore) NeighborsWeighted(v int) []struct{ Vertex int; Weight float64 } {
+func (g *GraphCore) NeighborsWeighted(v int) []struct {
+	Vertex int
+	Weight float64
+} {
 	if neighbors, ok := g.adj[v]; ok {
-		result := make([]struct{ Vertex int; Weight float64 }, 0, len(neighbors))
+		result := make([]struct {
+			Vertex int
+			Weight float64
+		}, 0, len(neighbors))
 		for u, w := range neighbors {
-			result = append(result, struct{ Vertex int; Weight float64 }{u, w})
+			result = append(result, struct {
+				Vertex int
+				Weight float64
+			}{u, w})
 		}
 		return result
 	}

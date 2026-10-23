@@ -294,17 +294,22 @@ void counting_sort(int *arr, size_t n) {
 
 /* ============== Radix Sort (LSD) ============== */
 
-static void counting_sort_digit(int *arr, size_t n, int exp) {
-    int *output = malloc(n * sizeof(int));
-    int count[10] = {0};
+/*
+ * Digits are taken from the distance to the minimum, computed in unsigned
+ * arithmetic, so negative values sort correctly and INT_MIN..INT_MAX cannot
+ * overflow.
+ */
+static unsigned int radix_key(int value, int min_val) {
+    return (unsigned int)value - (unsigned int)min_val;
+}
 
-    if (output == NULL) {
-        return;
-    }
+static void counting_sort_digit(int *arr, int *output, size_t n, int min_val,
+                                unsigned int exp) {
+    size_t count[10] = {0};
 
     /* Count occurrences of each digit */
     for (size_t i = 0; i < n; i++) {
-        count[(arr[i] / exp) % 10]++;
+        count[(radix_key(arr[i], min_val) / exp) % 10]++;
     }
 
     /* Cumulative count */
@@ -314,14 +319,13 @@ static void counting_sort_digit(int *arr, size_t n, int exp) {
 
     /* Build output (stable) */
     for (size_t i = n; i > 0; i--) {
-        int digit = (arr[i - 1] / exp) % 10;
+        unsigned int digit = (radix_key(arr[i - 1], min_val) / exp) % 10;
         output[count[digit] - 1] = arr[i - 1];
         count[digit]--;
     }
 
     /* Copy back */
     memcpy(arr, output, n * sizeof(int));
-    free(output);
 }
 
 void radix_sort(int *arr, size_t n) {
@@ -329,20 +333,31 @@ void radix_sort(int *arr, size_t n) {
         return;
     }
 
-    /* Find max to know number of digits */
+    /* Find the range to know the number of digits */
+    int min_val = arr[0];
     int max_val = arr[0];
     for (size_t i = 1; i < n; i++) {
+        if (arr[i] < min_val) {
+            min_val = arr[i];
+        }
         if (arr[i] > max_val) {
             max_val = arr[i];
         }
     }
 
-    /* Sort by each digit */
-    for (int exp = 1; max_val / exp > 0; ) {
-        counting_sort_digit(arr, n, exp);
-        if (exp > max_val / 10) break;
-        exp *= 10;
+    int *output = malloc(n * sizeof(int));
+    if (output == NULL) {
+        return;
     }
+
+    /* Sort by each digit */
+    unsigned int max_key = radix_key(max_val, min_val);
+    for (unsigned int exp = 1; max_key / exp > 0; exp *= 10) {
+        counting_sort_digit(arr, output, n, min_val, exp);
+        if (exp > max_key / 10) break;
+    }
+
+    free(output);
 }
 
 /* ============== Shell Sort ============== */

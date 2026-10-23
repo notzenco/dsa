@@ -215,8 +215,7 @@ impl Trie {
     /// ```
     #[must_use]
     pub fn search(&self, word: &str) -> bool {
-        self.find_node(word)
-            .map_or(false, |node| node.is_end_of_word)
+        self.find_node(word).is_some_and(|node| node.is_end_of_word)
     }
 
     /// Checks if any word in the trie starts with the given prefix.
@@ -246,10 +245,7 @@ impl Trie {
         let mut current = &self.root;
 
         for ch in prefix.chars() {
-            match current.children.get(&ch) {
-                Some(node) => current = node,
-                None => return None,
-            }
+            current = current.children.get(&ch)?;
         }
 
         Some(current)
@@ -739,7 +735,7 @@ mod tests {
             trie.insert("dad");
             trie.insert("mad");
 
-            assert!(trie.search_with_wildcard("pad") == false);
+            assert!(!trie.search_with_wildcard("pad"));
             assert!(trie.search_with_wildcard("bad"));
             assert!(trie.search_with_wildcard(".ad"));
             assert!(trie.search_with_wildcard("b.."));

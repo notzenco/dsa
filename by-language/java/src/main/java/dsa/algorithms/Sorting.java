@@ -155,52 +155,72 @@ public final class Sorting {
         }
     }
 
+    /**
+     * LSD radix sort. Digits are taken from each value's distance to the
+     * minimum, held in a long, so negative values and the full int range are
+     * supported.
+     */
     public static int[] radixSort(int[] arr) {
         int[] a = arr.clone();
         if (a.length <= 1) return a;
+        int min = a[0];
         int max = a[0];
         for (int v : a) {
+            if (v < min) min = v;
             if (v > max) max = v;
         }
-        for (int exp = 1; max / exp > 0; exp *= 10) {
-            countingSortByDigit(a, exp);
+        long maxKey = (long) max - min;
+        int[] output = new int[a.length];
+        for (long exp = 1; maxKey / exp > 0; exp *= 10) {
+            countingSortByDigit(a, output, min, exp);
         }
         return a;
     }
 
-    private static void countingSortByDigit(int[] a, int exp) {
+    private static void countingSortByDigit(int[] a, int[] output, int min, long exp) {
         int n = a.length;
-        int[] output = new int[n];
         int[] count = new int[10];
         for (int v : a) {
-            count[(v / exp) % 10]++;
+            count[(int) ((((long) v - min) / exp) % 10)]++;
         }
         for (int i = 1; i < 10; i++) {
             count[i] += count[i - 1];
         }
         for (int i = n - 1; i >= 0; i--) {
-            int digit = (a[i] / exp) % 10;
+            int digit = (int) ((((long) a[i] - min) / exp) % 10);
             output[count[digit] - 1] = a[i];
             count[digit]--;
         }
         System.arraycopy(output, 0, a, 0, n);
     }
 
+    /**
+     * Counting sort over the range [min, max]. Falls back to a comparison sort
+     * when the range is more than 16 times the input length, which keeps the
+     * count array proportional to the input.
+     */
     public static int[] countingSort(int[] arr) {
         int[] a = arr.clone();
         if (a.length <= 1) return a;
+        int min = a[0];
         int max = a[0];
         for (int v : a) {
+            if (v < min) min = v;
             if (v > max) max = v;
         }
-        int[] count = new int[max + 1];
+        long range = (long) max - min + 1;
+        if (range > 16L * a.length || range > Integer.MAX_VALUE) {
+            Arrays.sort(a);
+            return a;
+        }
+        int[] count = new int[(int) range];
         for (int v : a) {
-            count[v]++;
+            count[v - min]++;
         }
         int idx = 0;
-        for (int i = 0; i <= max; i++) {
+        for (int i = 0; i < range; i++) {
             while (count[i] > 0) {
-                a[idx++] = i;
+                a[idx++] = min + i;
                 count[i]--;
             }
         }

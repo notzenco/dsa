@@ -3,6 +3,8 @@ package dsa.algorithms;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -18,6 +20,9 @@ class SortingTest {
     private static final int[] RANDOM = {38, 27, 43, 3, 9, 82, 10};
     private static final int[] ALL_SAME = {7, 7, 7, 7, 7};
     private static final int[] TWO_ELEMENTS = {2, 1};
+    private static final int[] NEGATIVES = {3, -12, 7, -5, 1, 0, -12};
+    private static final int[] ALL_NEGATIVE = {-3, -1, -2};
+    private static final int[] EXTREMES = {Integer.MAX_VALUE, -1, Integer.MIN_VALUE, 0, 1};
 
     private void assertSortsCorrectly(Function<int[], int[]> sortFn, int[] input) {
         int[] original = input.clone();
@@ -43,18 +48,9 @@ class SortingTest {
         assertSortsCorrectly(sortFn, RANDOM);
         assertSortsCorrectly(sortFn, ALL_SAME);
         assertSortsCorrectly(sortFn, TWO_ELEMENTS);
-    }
-
-    // Non-negative only sort algorithms
-    private void testNonNegativeSortAlgorithm(Function<int[], int[]> sortFn) {
-        assertSortsCorrectly(sortFn, EMPTY);
-        assertSortsCorrectly(sortFn, SINGLE);
-        assertSortsCorrectly(sortFn, SORTED);
-        assertSortsCorrectly(sortFn, REVERSE);
-        assertSortsCorrectly(sortFn, DUPLICATES);
-        assertSortsCorrectly(sortFn, RANDOM);
-        assertSortsCorrectly(sortFn, ALL_SAME);
-        assertSortsCorrectly(sortFn, TWO_ELEMENTS);
+        assertSortsCorrectly(sortFn, NEGATIVES);
+        assertSortsCorrectly(sortFn, ALL_NEGATIVE);
+        assertSortsCorrectly(sortFn, EXTREMES);
         assertSortsCorrectly(sortFn, new int[]{0, 0, 0});
         assertSortsCorrectly(sortFn, new int[]{100, 0, 50, 25, 75});
     }
@@ -91,12 +87,12 @@ class SortingTest {
 
     @Test
     void testRadixSort() {
-        testNonNegativeSortAlgorithm(Sorting::radixSort);
+        testSortAlgorithm(Sorting::radixSort);
     }
 
     @Test
     void testCountingSort() {
-        testNonNegativeSortAlgorithm(Sorting::countingSort);
+        testSortAlgorithm(Sorting::countingSort);
     }
 
     @Test
@@ -122,6 +118,49 @@ class SortingTest {
         int[] copy = input.clone();
         Sorting.bubbleSort(input);
         assertArrayEquals(copy, input);
+    }
+
+    @Test
+    void testRandomizedAgainstArraysSort() {
+        Map<String, Function<int[], int[]>> sorts = new LinkedHashMap<>();
+        sorts.put("bubbleSort", Sorting::bubbleSort);
+        sorts.put("selectionSort", Sorting::selectionSort);
+        sorts.put("insertionSort", Sorting::insertionSort);
+        sorts.put("mergeSort", Sorting::mergeSort);
+        sorts.put("quickSort", Sorting::quickSort);
+        sorts.put("heapSort", Sorting::heapSort);
+        sorts.put("radixSort", Sorting::radixSort);
+        sorts.put("countingSort", Sorting::countingSort);
+        sorts.put("shellSort", Sorting::shellSort);
+        sorts.put("bucketSort", Sorting::bucketSort);
+        sorts.put("timSort", Sorting::timSort);
+        sorts.put("stableSort", Sorting::stableSort);
+
+        long seed = 20261023L;
+        Random rng = new Random(seed);
+        for (int trial = 0; trial < 300; trial++) {
+            int[] input = new int[rng.nextInt(60)];
+            for (int i = 0; i < input.length; i++) {
+                switch (trial % 3) {
+                    case 0 -> input[i] = rng.nextInt(41) - 20;
+                    case 1 -> input[i] = rng.nextInt();
+                    default -> input[i] = rng.nextInt(2001) - 1000;
+                }
+            }
+            int[] expected = input.clone();
+            Arrays.sort(expected);
+            for (Map.Entry<String, Function<int[], int[]>> sort : sorts.entrySet()) {
+                int[] actual = sort.getValue().apply(input.clone());
+                assertArrayEquals(expected, actual, sort.getKey() + " seed=" + seed
+                        + " trial=" + trial + " input=" + Arrays.toString(input));
+            }
+            if (input.length > 0) {
+                int k = rng.nextInt(input.length);
+                assertEquals(expected[k], Sorting.quickSelect(input.clone(), k),
+                        "quickSelect seed=" + seed + " trial=" + trial + " k=" + k
+                                + " input=" + Arrays.toString(input));
+            }
+        }
     }
 
     @Test
@@ -161,7 +200,7 @@ class SortingTest {
     // --- bucketSort ---
     @Test
     void testBucketSort() {
-        testNonNegativeSortAlgorithm(Sorting::bucketSort);
+        testSortAlgorithm(Sorting::bucketSort);
         assertArrayEquals(new int[]{-1, 0}, Sorting.bucketSort(new int[]{0, -1}));
         assertArrayEquals(new int[]{Integer.MIN_VALUE, Integer.MAX_VALUE},
                 Sorting.bucketSort(new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE}));

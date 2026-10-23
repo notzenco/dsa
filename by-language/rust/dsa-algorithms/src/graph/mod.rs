@@ -142,8 +142,8 @@ pub fn bfs(graph: &Graph, start: usize) -> Vec<usize> {
 /// BFS with distance tracking - Returns distances from start vertex.
 ///
 /// Returns (distances, parents) where:
-/// - distances[v] = shortest number of edges from start to v (-1 if unreachable)
-/// - parents[v] = predecessor of v in shortest path (-1 if start or unreachable)
+/// - `distances[v]` = shortest number of edges from start to v (-1 if unreachable)
+/// - `parents[v]` = predecessor of v in shortest path (-1 if start or unreachable)
 ///
 /// # Example
 ///
@@ -271,8 +271,8 @@ pub fn dfs_iterative(graph: &Graph, start: usize) -> Vec<usize> {
 /// Dijkstra's Algorithm - Single-source shortest path for non-negative weights.
 ///
 /// Returns (distances, parents) where:
-/// - distances[v] = shortest distance from start to v (i64::MAX if unreachable)
-/// - parents[v] = predecessor of v in shortest path (-1 if start or unreachable)
+/// - `distances[v]` = shortest distance from start to v (i64::MAX if unreachable)
+/// - `parents[v]` = predecessor of v in shortest path (-1 if start or unreachable)
 ///
 /// # Complexity
 ///
@@ -404,7 +404,7 @@ pub fn bellman_ford(graph: &Graph, start: usize) -> Option<(Vec<i64>, Vec<i64>)>
 
 /// Floyd-Warshall Algorithm - All-pairs shortest path.
 ///
-/// Returns a matrix where result[i][j] = shortest distance from i to j.
+/// Returns a matrix where `result[i][j]` = shortest distance from i to j.
 /// Uses i64::MAX for unreachable pairs.
 ///
 /// # Complexity
@@ -599,8 +599,8 @@ pub fn kruskal(graph: &Graph) -> (i64, Vec<(usize, usize, i64)>) {
 
     // Collect all edges
     let mut edges: Vec<(i64, usize, usize)> = Vec::new();
-    for u in 0..n {
-        for edge in &graph[u] {
+    for (u, neighbors) in graph.iter().enumerate() {
+        for edge in neighbors {
             if u < edge.to {
                 // Avoid duplicates for undirected graphs
                 edges.push((edge.weight, u, edge.to));
@@ -736,8 +736,8 @@ pub fn kosaraju_scc(graph: &Graph) -> Vec<Vec<usize>> {
 
     // Build reverse graph
     let mut reverse: Graph = vec![Vec::new(); n];
-    for u in 0..n {
-        for edge in &graph[u] {
+    for (u, neighbors) in graph.iter().enumerate() {
+        for edge in neighbors {
             reverse[edge.to].push(Edge::new(u, edge.weight));
         }
     }

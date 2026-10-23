@@ -66,6 +66,11 @@ func TestRabinKarpSearch(t *testing.T) {
 	if len(result) != 0 {
 		t.Errorf("expected empty when pattern longer than text, got %v", result)
 	}
+
+	result = RabinKarpSearch("abc", "")
+	if len(result) != 0 {
+		t.Errorf("expected empty for empty pattern, got %v", result)
+	}
 }
 
 func TestComputeZArray(t *testing.T) {
@@ -89,6 +94,11 @@ func TestZAlgorithmSearch(t *testing.T) {
 	result = ZAlgorithmSearch("hello", "xyz")
 	if len(result) != 0 {
 		t.Errorf("expected empty, got %v", result)
+	}
+
+	result = ZAlgorithmSearch("abc", "")
+	if len(result) != 0 {
+		t.Errorf("expected empty for empty pattern, got %v", result)
 	}
 }
 

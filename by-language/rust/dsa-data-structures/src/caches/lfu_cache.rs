@@ -177,10 +177,7 @@ where
 
         // Insert new key with frequency 1
         self.cache.insert(key.clone(), (value, 1));
-        self.freq_to_keys
-            .entry(1)
-            .or_insert_with(Vec::new)
-            .push(key.clone());
+        self.freq_to_keys.entry(1).or_default().push(key.clone());
         let pos = self.freq_to_keys.get(&1).unwrap().len() - 1;
         self.key_to_pos.insert(key, pos);
         self.min_freq = 1;
@@ -229,7 +226,7 @@ where
         // Add to new frequency list
         self.freq_to_keys
             .entry(new_freq)
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(key.clone());
         let pos = self.freq_to_keys.get(&new_freq).unwrap().len() - 1;
         self.key_to_pos.insert(key.clone(), pos);
@@ -251,8 +248,8 @@ where
                 if pos < keys.len() && &keys[pos] == key {
                     keys.remove(pos);
                     // Update positions for keys after this one
-                    for i in pos..keys.len() {
-                        self.key_to_pos.insert(keys[i].clone(), i);
+                    for (i, key) in keys.iter().enumerate().skip(pos) {
+                        self.key_to_pos.insert(key.clone(), i);
                     }
                 }
             }
@@ -264,8 +261,8 @@ where
             if !keys.is_empty() {
                 let evict_key = keys.remove(0);
                 // Update positions
-                for i in 0..keys.len() {
-                    self.key_to_pos.insert(keys[i].clone(), i);
+                for (i, key) in keys.iter().enumerate() {
+                    self.key_to_pos.insert(key.clone(), i);
                 }
                 self.cache.remove(&evict_key);
                 self.key_to_pos.remove(&evict_key);

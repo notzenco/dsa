@@ -28,7 +28,7 @@ func NewSkipList[K Ordered, V any]() *SkipList[K, V] {
 	return &SkipList[K, V]{head: head, level: 0}
 }
 
-func (sl *SkipList[K, V]) Size() int    { return sl.size }
+func (sl *SkipList[K, V]) Size() int     { return sl.size }
 func (sl *SkipList[K, V]) IsEmpty() bool { return sl.size == 0 }
 
 func (sl *SkipList[K, V]) randomLevel() int {

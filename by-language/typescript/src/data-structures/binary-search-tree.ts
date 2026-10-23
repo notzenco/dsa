@@ -5,6 +5,9 @@
  *   - All values in left subtree < node value
  *   - All values in right subtree > node value
  *
+ * Keys are unique. Inserting a value already present returns that node
+ * and leaves the size and shape unchanged.
+ *
  * COMPLEXITY:
  * | Operation          | Average   | Worst  | Space |
  * |--------------------|-----------|--------|-------|
@@ -93,36 +96,39 @@ export class BinarySearchTree<T> {
   }
 
   insert(value: T): TreeNode<T> {
-    const newNode = new TreeNode(value);
-
     if (this._root === null) {
-      this._root = newNode;
+      const node = new TreeNode(value);
+      this._root = node;
       this._size++;
-      return newNode;
+      return node;
     }
 
     let current: TreeNode<T> = this._root;
     while (true) {
       const cmp = this._compare(value, current.value);
+      if (cmp === 0) {
+        return current;
+      }
       if (cmp < 0) {
         if (current.left === null) {
-          current.left = newNode;
-          newNode.parent = current;
-          break;
+          const node = new TreeNode(value);
+          current.left = node;
+          node.parent = current;
+          this._size++;
+          return node;
         }
         current = current.left;
       } else {
         if (current.right === null) {
-          current.right = newNode;
-          newNode.parent = current;
-          break;
+          const node = new TreeNode(value);
+          current.right = node;
+          node.parent = current;
+          this._size++;
+          return node;
         }
         current = current.right;
       }
     }
-
-    this._size++;
-    return newNode;
   }
 
   search(value: T): TreeNode<T> | null {
@@ -411,8 +417,14 @@ export class BinarySearchTree<T> {
     return null;
   }
 
-  static fromSortedArray<T>(values: T[], compare?: Comparator<T>): BinarySearchTree<T> {
+  /**
+   * Build a balanced BST from a sorted array. Repeated values are kept once.
+   */
+  static fromSortedArray<T>(sortedValues: T[], compare?: Comparator<T>): BinarySearchTree<T> {
     const bst = new BinarySearchTree<T>(compare);
+    const values = sortedValues.filter(
+      (value, i) => i === 0 || bst._compare(value, sortedValues[i - 1]) !== 0,
+    );
 
     const build = (
       left: number,

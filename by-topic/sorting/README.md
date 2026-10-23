@@ -4,9 +4,9 @@ Sorting algorithms arrange elements in a specific order (ascending or descending
 
 ## Implementations
 
-| Algorithm | Python | C |
-|-----------|--------|---|
-| All Sorting Algorithms | [sorting.py](../../by-language/python/algorithms/sorting.py) | [sorting.c](../../by-language/c/algorithms/sorting.c) |
+| Algorithm | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| All Sorting Algorithms | [sorting.py](../../by-language/python/algorithms/sorting.py) | [sorting.c](../../by-language/c/algorithms/sorting.c) | [sorting.go](../../by-language/go/algorithms/sorting.go) | [Sorting.java](../../by-language/java/src/main/java/dsa/algorithms/Sorting.java) | [mod.rs](../../by-language/rust/dsa-algorithms/src/sorting/mod.rs) | [sorting.ts](../../by-language/typescript/src/algorithms/sorting.ts) |
 
 ## Complexity Comparison
 
@@ -80,8 +80,10 @@ Build max-heap, repeatedly extract maximum.
 Count occurrences, calculate positions, place elements.
 - **Best for**: Small integer range, many duplicates
 - **Requirement**: Know range of values
-- **C implementation**: Falls back to comparison sorting when the range is
-  too large for practical count storage; this case takes O(n log n).
+- **Wide ranges**: The C, Go, Java, Rust, and TypeScript implementations fall
+  back to comparison sorting when the range is more than 16 times the input
+  length; this case takes O(n log n). The Python version allocates the full
+  range.
 
 #### Radix Sort
 Sort by each digit, from least to most significant.
@@ -89,6 +91,9 @@ Sort by each digit, from least to most significant.
 - **Variants**: LSD (least significant digit first), MSD
 - **Integer implementations**: Stop after the highest required digit so the
   exponent does not overflow after the final pass.
+- **Negative values**: The C, Go, Java, and TypeScript implementations take
+  digits from each value's distance to the minimum, so negative values sort
+  correctly. Python sorts negatives separately; Rust accepts only `u32`.
 
 #### Bucket Sort
 Distribute into buckets, sort each bucket, concatenate.

@@ -1,4 +1,4 @@
-"""
+r"""
 Red-Black Tree Data Structure.
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -147,7 +147,7 @@ class RedBlackTree(Generic[K, V]):
     # =========================================================================
 
     def _rotate_left(self, x: RBNode[K, V]) -> None:
-        """
+        r"""
         Left rotation around node x.
 
             x                y
@@ -179,7 +179,7 @@ class RedBlackTree(Generic[K, V]):
         x.parent = y
 
     def _rotate_right(self, y: RBNode[K, V]) -> None:
-        """
+        r"""
         Right rotation around node y.
 
               y              x

@@ -34,9 +34,10 @@ COMPLEXITY:
 +-----------+------+-------+
 | Get       | O(1) | O(1)  |
 | Put       | O(1) | O(1)  |
-| Delete    | O(1) | O(1)  |
+| Delete    | O(n) | O(1)  |
 +-----------+------+-------+
 Space: O(capacity) for the cache
+Delete is O(n) in the worst case to recompute the minimum frequency.
 
 LEETCODE PROBLEMS:
 - #460 LFU Cache
@@ -242,7 +243,7 @@ class LFUCache(Generic[K, V]):
         Returns:
             True if key was found and deleted
 
-        Time: O(1)
+        Time: O(n) worst case when the minimum frequency must be recomputed
         """
         if key not in self._key_map:
             return False
@@ -253,6 +254,8 @@ class LFUCache(Generic[K, V]):
 
         del self._key_map[key]
         self._size -= 1
+        if node.freq == self._min_freq and freq_list.is_empty():
+            self._min_freq = min((n.freq for n in self._key_map.values()), default=0)
 
         return True
 

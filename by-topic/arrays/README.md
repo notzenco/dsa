@@ -4,9 +4,9 @@ Arrays are contiguous blocks of memory that store elements of the same type, pro
 
 ## Implementations
 
-| Structure | Python | C |
-|-----------|--------|---|
-| Dynamic Array | [dynamic_array.py](../../by-language/python/data_structures/dynamic_array.py) | [dynamic_array.c](../../by-language/c/data-structures/dynamic_array.c) |
+| Structure | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| Dynamic Array | [dynamic_array.py](../../by-language/python/data_structures/dynamic_array.py) | [dynamic_array.c](../../by-language/c/data-structures/dynamic_array.c) | [dynamic_array.go](../../by-language/go/datastructures/dynamic_array.go) | [DynamicArray.java](../../by-language/java/src/main/java/dsa/datastructures/DynamicArray.java) | [dynamic_array.rs](../../by-language/rust/dsa-data-structures/src/linear/dynamic_array.rs) | [dynamic-array.ts](../../by-language/typescript/src/data-structures/dynamic-array.ts) |
 
 ## Complexity
 

@@ -12,7 +12,7 @@
 //! - `hashing` - Hash-based structures (hash table, bloom filter)
 //! - `heaps` - Heap data structures
 //! - `graphs` - Graph representations and algorithms
-//! - `caches` - Cache implementations (LRU, LFU, TTL)
+//! - `caches` - Cache implementations (LRU, LFU)
 //! - `advanced` - Advanced data structures (skip list, etc.)
 
 #![cfg_attr(not(feature = "std"), no_std)]

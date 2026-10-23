@@ -4,10 +4,10 @@ String algorithms handle text processing, pattern matching, and string manipulat
 
 ## Implementations
 
-| Algorithm | Python | C |
-|-----------|--------|---|
-| All String Algorithms | [string_algorithms.py](../../by-language/python/algorithms/string_algorithms.py) | [string_algorithms.c](../../by-language/c/algorithms/string_algorithms.c) |
-| Trie | [trie.py](../../by-language/python/data_structures/trie.py) | [trie.c](../../by-language/c/data-structures/trie.c) |
+| Algorithm | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| All String Algorithms | [string_algorithms.py](../../by-language/python/algorithms/string_algorithms.py) | [string_algorithms.c](../../by-language/c/algorithms/string_algorithms.c) | [string_algorithms.go](../../by-language/go/algorithms/string_algorithms.go) | [StringAlgorithms.java](../../by-language/java/src/main/java/dsa/algorithms/StringAlgorithms.java) | [mod.rs](../../by-language/rust/dsa-algorithms/src/string/mod.rs) | [string-algorithms.ts](../../by-language/typescript/src/algorithms/string-algorithms.ts) |
+| Trie | [trie.py](../../by-language/python/data_structures/trie.py) | [trie.c](../../by-language/c/data-structures/trie.c) | [trie.go](../../by-language/go/datastructures/trie.go) | [Trie.java](../../by-language/java/src/main/java/dsa/datastructures/Trie.java) | [trie.rs](../../by-language/rust/dsa-data-structures/src/trees/trie.rs) | [trie.ts](../../by-language/typescript/src/data-structures/trie.ts) |
 
 ## Complexity Comparison
 

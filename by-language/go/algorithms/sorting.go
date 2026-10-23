@@ -2,6 +2,7 @@ package algorithms
 
 import (
 	"math/rand"
+	"slices"
 )
 
 // Ordered constraint for comparable types.
@@ -165,64 +166,93 @@ func ShellSort[T Ordered](arr []T) {
 	}
 }
 
-// CountingSort sorts integers in O(n + k) where k is the range.
+// CountingSort sorts integers in O(n + k) where k is the range of values.
+// The range is max-min+1, computed with unsigned subtraction so every int
+// value is accepted and MinInt..MaxInt cannot overflow. When that range is
+// wider than 16*n, it falls back to slices.Sort.
 func CountingSort(arr []int) {
-	if len(arr) <= 1 {
+	n := len(arr)
+	if n <= 1 {
 		return
 	}
-	min, max := arr[0], arr[0]
-	for _, v := range arr {
-		if v < min {
-			min = v
+	minVal, maxVal := arr[0], arr[0]
+	for _, v := range arr[1:] {
+		if v < minVal {
+			minVal = v
 		}
-		if v > max {
-			max = v
+		if v > maxVal {
+			maxVal = v
 		}
 	}
-	offset := min
-	count := make([]int, max-min+1)
+	// Two's-complement subtraction yields the mathematical difference for
+	// every pair of int values, including MinInt and MaxInt.
+	span := uint(maxVal) - uint(minVal)
+	tooWide := span == ^uint(0) || uint(n) > ^uint(0)/16
+	var rangeSize uint
+	if !tooWide {
+		rangeSize = span + 1
+		tooWide = rangeSize > uint(n)*16 || rangeSize > ^uint(0)>>1
+	}
+	if tooWide {
+		slices.Sort(arr)
+		return
+	}
+	count := make([]int, rangeSize)
 	for _, v := range arr {
-		count[v-offset]++
+		count[uint(v)-uint(minVal)]++
 	}
 	idx := 0
 	for i, c := range count {
+		value := int(uint(minVal) + uint(i))
 		for j := 0; j < c; j++ {
-			arr[idx] = i + offset
+			arr[idx] = value
 			idx++
 		}
 	}
 }
 
-// RadixSort sorts non-negative integers in O(d*(n+10)).
+// RadixSort sorts integers in O(d*(n+10)). Digits are taken from each
+// value's distance to the minimum, computed as an unsigned key, so negative
+// values are supported and the full int range cannot overflow.
 func RadixSort(arr []int) {
 	if len(arr) <= 1 {
 		return
 	}
-	max := arr[0]
+	minVal, maxVal := arr[0], arr[0]
 	for _, v := range arr {
-		if v > max {
-			max = v
+		if v < minVal {
+			minVal = v
+		}
+		if v > maxVal {
+			maxVal = v
 		}
 	}
 
-	for exp := 1; max/exp > 0; exp *= 10 {
-		countingSortByDigit(arr, exp)
+	output := make([]int, len(arr))
+	maxKey := radixKey(maxVal, minVal)
+	for exp := uint(1); maxKey/exp > 0; exp *= 10 {
+		countingSortByDigit(arr, output, minVal, exp)
+		if exp > maxKey/10 {
+			break
+		}
 	}
 }
 
-func countingSortByDigit(arr []int, exp int) {
-	n := len(arr)
-	output := make([]int, n)
-	count := make([]int, 10)
+func radixKey(v, minVal int) uint {
+	return uint(v) - uint(minVal)
+}
+
+func countingSortByDigit(arr, output []int, minVal int, exp uint) {
+	var count [10]int
 
 	for _, v := range arr {
-		count[(v/exp)%10]++
+		count[(radixKey(v, minVal)/exp)%10]++
 	}
 	for i := 1; i < 10; i++ {
 		count[i] += count[i-1]
 	}
-	for i := n - 1; i >= 0; i-- {
-		digit := (arr[i] / exp) % 10
+	for i := len(arr) - 1; i >= 0; i-- {
+		digit := (radixKey(arr[i], minVal) / exp) % 10
 		count[digit]--
 		output[count[digit]] = arr[i]
 	}

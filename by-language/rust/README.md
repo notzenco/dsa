@@ -17,7 +17,7 @@ rust/
 └── dsa-algorithms/     # All algorithm implementations
 ```
 
-## Data Structures (24)
+## Data Structures
 
 ### Linear Structures
 - `DynamicArray` - Resizable array
@@ -29,10 +29,10 @@ rust/
 - `MonotonicQueue` - Sliding window min/max
 
 ### Trees
-- `BinarySearchTree` - Basic BST
+- `BinarySearchTree` - Basic BST with unique keys
 - `AVLTree` - Self-balancing tree
-- `RedBlackTree` - Color-balanced tree
-- `BTree` - Disk-optimized tree
+- `RedBlackTree` - Color-balanced tree (no removal)
+- `BTree` - Disk-optimized tree (keeps duplicate keys; no removal)
 - `Trie` - Prefix tree
 - `SegmentTree` - Range queries
 - `FenwickTree` - Binary indexed tree
@@ -45,8 +45,7 @@ rust/
 - `BinaryHeap` - Min/max heap
 
 ### Graphs
-- `AdjacencyList` - Sparse graph representation
-- `AdjacencyMatrix` - Dense graph representation
+- `Graph` - Adjacency list (`Vec<Vec<Edge>>` in `dsa_algorithms::graph`)
 - `UnionFind` - Disjoint set
 
 ### Caches
@@ -61,7 +60,8 @@ rust/
 ### Sorting
 - Bubble, Selection, Insertion (comparison)
 - Merge, Quick, Heap (efficient)
-- Counting, Radix (non-comparison)
+- Counting, Radix (non-comparison); counting sort falls back to
+  `sort_unstable` when the value range is more than 16 times the input length
 
 ### Searching
 - Binary Search (and variants)
@@ -81,7 +81,6 @@ rust/
 - LCS, LIS
 - Edit Distance
 - Coin Change
-- Matrix Chain Multiplication
 - Word Break
 
 ### String Algorithms
@@ -136,7 +135,16 @@ cargo test --doc
 
 # Check all crates without the std feature
 cargo check --offline --workspace --no-default-features
+
+# Lints and documentation, as run in CI
+cargo clippy --workspace --all-targets --all-features -- -D warnings
+RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps
 ```
+
+The `tests/models.rs` suites in `dsa-algorithms` and `dsa-data-structures`
+compare each implementation against standard-library reference models with a
+fixed seed. CI also checks the library crates on the declared minimum Rust
+version, 1.70.
 
 ## Path reconstruction
 
@@ -153,12 +161,13 @@ the earlier two-argument form must pass the source explicitly.
 | LinkedList | O(1) | O(1) | O(n) | O(n) |
 | HashTable | O(1)* | O(1)* | O(1)* | O(n) |
 | BST | O(log n)* | O(log n)* | O(log n)* | O(n) |
-| AVL/RB Tree | O(log n) | O(log n) | O(log n) | O(n) |
-| B-Tree | O(log n) | O(log n) | O(log n) | O(n) |
+| AVL Tree | O(log n) | O(log n) | O(log n) | O(n) |
+| Red-Black Tree | O(log n) | - | O(log n) | O(n) |
+| B-Tree | O(log n) | - | O(log n) | O(n) |
 | Heap | O(log n) | O(log n) | O(n) | O(n) |
 | BloomFilter | O(k) | - | O(k) | O(m) |
 
-*Amortized or average case
+*Amortized or average case; - means the operation is not implemented
 
 ## License
 

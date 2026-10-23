@@ -1,4 +1,4 @@
-"""
+r"""
 Binary Search Tree (BST)
 
 ╔════════════════════════════════════════════════════════════════════════════╗
@@ -138,7 +138,7 @@ class BinarySearchTree(Generic[T]):
     """
     A binary search tree implementation.
 
-    Supports duplicate values (stored in right subtree).
+    Stores unique values; inserting a duplicate returns the existing node.
     Maintains parent pointers for efficient operations.
     """
 
@@ -191,7 +191,7 @@ class BinarySearchTree(Generic[T]):
 
     def insert(self, value: T) -> TreeNode[T]:
         """
-        Insert a value into the BST.
+        Insert a unique value into the BST, leaving duplicates unchanged.
 
         Time Complexity: O(log n) average, O(n) worst case
 
@@ -199,7 +199,7 @@ class BinarySearchTree(Generic[T]):
             value: Value to insert.
 
         Returns:
-            The newly created node.
+            The newly created node, or the existing node for a duplicate.
         """
         new_node = TreeNode(value)
 
@@ -210,6 +210,8 @@ class BinarySearchTree(Generic[T]):
 
         current = self._root
         while True:
+            if value == current.value:
+                return current
             if value < current.value:
                 if current.left is None:
                     current.left = new_node
@@ -672,7 +674,7 @@ class BinarySearchTree(Generic[T]):
     @classmethod
     def from_sorted_list(cls, values: List[T]) -> "BinarySearchTree[T]":
         """
-        Create a balanced BST from a sorted list.
+        Create a balanced BST from a sorted list, ignoring duplicates.
 
         Time Complexity: O(n)
 
@@ -682,6 +684,8 @@ class BinarySearchTree(Generic[T]):
         Returns:
             A balanced BST.
         """
+        values = [value for i, value in enumerate(values)
+                  if i == 0 or value != values[i - 1]]
         bst: BinarySearchTree[T] = cls()
 
         def build(left: int, right: int, parent: Optional[TreeNode[T]]) -> Optional[TreeNode[T]]:

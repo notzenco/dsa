@@ -15,8 +15,8 @@
  * Non-Comparison Sorts:
  * | Algorithm       | Time       | Space  | Constraint | Stable |
  * |-----------------|------------|--------|------------|--------|
- * | Counting Sort   | O(n + k)   | O(k)   | Integers   | Yes    |
- * | Radix Sort      | O(d(n+k))  | O(n+k) | Integers   | Yes    |
+ * | Counting Sort   | O(n + k)   | O(k)   | Safe ints  | Yes    |
+ * | Radix Sort      | O(d(n+k))  | O(n+k) | Safe ints  | Yes    |
  * | Bucket Sort     | O(n + k)   | O(n)   | Uniform    | Yes    |
  */
 
@@ -316,21 +316,50 @@ export function shellSort<T>(
 // NON-COMPARISON SORTING ALGORITHMS
 // =============================================================================
 
+function assertSafeIntegers(arr: number[]): void {
+  for (let i = 0; i < arr.length; i++) {
+    if (!Number.isSafeInteger(arr[i])) {
+      throw new RangeError(
+        `expected a safe integer at index ${i}, received ${String(arr[i])}`,
+      );
+    }
+  }
+}
+
+function minMax(arr: number[]): [number, number] {
+  let minVal = arr[0];
+  let maxVal = arr[0];
+  for (let i = 1; i < arr.length; i++) {
+    const value = arr[i];
+    if (value < minVal) minVal = value;
+    if (value > maxVal) maxVal = value;
+  }
+  return [minVal, maxVal];
+}
+
 /**
  * Counting Sort - count occurrences, then reconstruct.
  *
- * Time: O(n + k) where k is range of values
- * Space: O(k)
+ * Time: O(n + k) where k is the range of values. When k > 16n, falls back
+ * to a comparison sort (O(n log n)).
+ * Space: O(k), or O(n) on the fallback path
  * Stable: Yes
  *
- * Only works for integers.
+ * Accepts every safe integer, including negatives, by offsetting counts by
+ * the minimum. Throws RangeError if any value is not a safe integer.
  */
 export function countingSort(arr: number[]): number[] {
   if (arr.length === 0) return [];
+  assertSafeIntegers(arr);
 
-  const minVal = Math.min(...arr);
-  const maxVal = Math.max(...arr);
+  const [minVal, maxVal] = minMax(arr);
+  const n = arr.length;
   const rangeSize = maxVal - minVal + 1;
+
+  // A wide domain would allocate a huge count array for little benefit.
+  if (rangeSize > 16 * n) {
+    return [...arr].sort((a, b) => a - b);
+  }
 
   // Count occurrences
   const count = new Array<number>(rangeSize).fill(0);
@@ -355,14 +384,23 @@ export function countingSort(arr: number[]): number[] {
   return result;
 }
 
-function countingSortByDigit(arr: number[], exp: number): number[] {
+function countingSortByDigit(
+  arr: number[],
+  exp: bigint,
+  minVal: bigint,
+): number[] {
   const n = arr.length;
   const result = new Array<number>(n);
   const count = new Array<number>(10).fill(0);
 
-  for (const num of arr) {
-    const digit = Math.floor(num / exp) % 10;
-    count[digit]++;
+  const digitAt = (num: number): number => {
+    // (value - min) can exceed the safe-integer span, where Number
+    // subtraction is no longer exact.
+    return Number(((BigInt(num) - minVal) / exp) % 10n);
+  };
+
+  for (let i = 0; i < n; i++) {
+    count[digitAt(arr[i])]++;
   }
 
   for (let i = 1; i < 10; i++) {
@@ -371,7 +409,7 @@ function countingSortByDigit(arr: number[], exp: number): number[] {
 
   for (let k = n - 1; k >= 0; k--) {
     const num = arr[k];
-    const digit = Math.floor(num / exp) % 10;
+    const digit = digitAt(num);
     const idx = count[digit] - 1;
     result[idx] = num;
     count[digit]--;
@@ -387,18 +425,24 @@ function countingSortByDigit(arr: number[], exp: number): number[] {
  * Space: O(n + k)
  * Stable: Yes
  *
- * Works for non-negative integers.
+ * Accepts every safe integer, including negatives. Digits are taken from
+ * (value - min), so the keys passed to counting sort are non-negative.
+ * Throws RangeError if any value is not a safe integer.
  */
 export function radixSort(arr: number[]): number[] {
   if (arr.length === 0) return [];
+  assertSafeIntegers(arr);
 
-  const maxVal = Math.max(...arr);
+  const [minVal, maxVal] = minMax(arr);
+  const minBig = BigInt(minVal);
+  const maxShifted = BigInt(maxVal) - minBig;
+
   let result = [...arr];
-  let exp = 1;
+  let exp = 1n;
 
-  while (Math.floor(maxVal / exp) > 0) {
-    result = countingSortByDigit(result, exp);
-    exp *= 10;
+  while (maxShifted / exp > 0n) {
+    result = countingSortByDigit(result, exp, minBig);
+    exp *= 10n;
   }
 
   return result;

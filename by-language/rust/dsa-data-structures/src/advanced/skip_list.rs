@@ -119,18 +119,14 @@ impl<T: Ord + Clone> SkipList<T> {
 
         // Find position
         for i in (0..=self.level).rev() {
-            loop {
-                if let Some(next_idx) = current_forward[i] {
-                    match self.nodes[next_idx].value.as_ref().unwrap().cmp(&value) {
-                        core::cmp::Ordering::Less => {
-                            current = Some(next_idx);
-                            current_forward = &self.nodes[next_idx].forward;
-                        }
-                        core::cmp::Ordering::Equal => return false,
-                        core::cmp::Ordering::Greater => break,
+            while let Some(next_idx) = current_forward[i] {
+                match self.nodes[next_idx].value.as_ref().unwrap().cmp(&value) {
+                    core::cmp::Ordering::Less => {
+                        current = Some(next_idx);
+                        current_forward = &self.nodes[next_idx].forward;
                     }
-                } else {
-                    break;
+                    core::cmp::Ordering::Equal => return false,
+                    core::cmp::Ordering::Greater => break,
                 }
             }
             update[i] = current;
@@ -139,8 +135,8 @@ impl<T: Ord + Clone> SkipList<T> {
         let new_level = self.random_level();
 
         if new_level > self.level {
-            for i in (self.level + 1)..=new_level {
-                update[i] = None; // Head
+            for entry in update.iter_mut().take(new_level + 1).skip(self.level + 1) {
+                *entry = None; // Head
             }
             self.level = new_level;
         }
@@ -149,8 +145,8 @@ impl<T: Ord + Clone> SkipList<T> {
         let new_idx = self.free_indices.pop().unwrap_or(self.nodes.len());
         let mut new_forward = vec![None; new_level + 1];
 
-        for i in 0..=new_level {
-            if let Some(prev_idx) = update[i] {
+        for (i, &previous) in update.iter().enumerate().take(new_level + 1) {
+            if let Some(prev_idx) = previous {
                 new_forward[i] = self.nodes[prev_idx].forward[i];
             } else {
                 new_forward[i] = self.head_forward[i];
@@ -168,8 +164,8 @@ impl<T: Ord + Clone> SkipList<T> {
         }
 
         // Update forward pointers
-        for i in 0..=new_level {
-            if let Some(prev_idx) = update[i] {
+        for (i, &previous) in update.iter().enumerate().take(new_level + 1) {
+            if let Some(prev_idx) = previous {
                 self.nodes[prev_idx].forward[i] = Some(new_idx);
             } else {
                 self.head_forward[i] = Some(new_idx);
@@ -196,17 +192,13 @@ impl<T: Ord + Clone> SkipList<T> {
         let mut current_forward = &self.head_forward;
 
         for i in (0..=self.level).rev() {
-            loop {
-                if let Some(next_idx) = current_forward[i] {
-                    match self.nodes[next_idx].value.as_ref().unwrap().cmp(value) {
-                        core::cmp::Ordering::Less => {
-                            current_forward = &self.nodes[next_idx].forward;
-                        }
-                        core::cmp::Ordering::Equal => return true,
-                        core::cmp::Ordering::Greater => break,
+            while let Some(next_idx) = current_forward[i] {
+                match self.nodes[next_idx].value.as_ref().unwrap().cmp(value) {
+                    core::cmp::Ordering::Less => {
+                        current_forward = &self.nodes[next_idx].forward;
                     }
-                } else {
-                    break;
+                    core::cmp::Ordering::Equal => return true,
+                    core::cmp::Ordering::Greater => break,
                 }
             }
         }
@@ -236,21 +228,17 @@ impl<T: Ord + Clone> SkipList<T> {
         let mut found_idx: Option<usize> = None;
 
         for i in (0..=self.level).rev() {
-            loop {
-                if let Some(next_idx) = current_forward[i] {
-                    match self.nodes[next_idx].value.as_ref().unwrap().cmp(value) {
-                        core::cmp::Ordering::Less => {
-                            current = Some(next_idx);
-                            current_forward = &self.nodes[next_idx].forward;
-                        }
-                        core::cmp::Ordering::Equal => {
-                            found_idx = Some(next_idx);
-                            break;
-                        }
-                        core::cmp::Ordering::Greater => break,
+            while let Some(next_idx) = current_forward[i] {
+                match self.nodes[next_idx].value.as_ref().unwrap().cmp(value) {
+                    core::cmp::Ordering::Less => {
+                        current = Some(next_idx);
+                        current_forward = &self.nodes[next_idx].forward;
                     }
-                } else {
-                    break;
+                    core::cmp::Ordering::Equal => {
+                        found_idx = Some(next_idx);
+                        break;
+                    }
+                    core::cmp::Ordering::Greater => break,
                 }
             }
             update[i] = current;
@@ -258,8 +246,8 @@ impl<T: Ord + Clone> SkipList<T> {
 
         if let Some(target_idx) = found_idx {
             // Update forward pointers
-            for i in 0..=self.level {
-                if let Some(prev_idx) = update[i] {
+            for (i, &previous) in update.iter().enumerate().take(self.level + 1) {
+                if let Some(prev_idx) = previous {
                     if self.nodes[prev_idx].forward[i] == Some(target_idx) {
                         let target_forward = if i < self.nodes[target_idx].forward.len() {
                             self.nodes[target_idx].forward[i]

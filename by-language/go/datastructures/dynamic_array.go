@@ -1,9 +1,9 @@
 package datastructures
 
 const (
-	defaultCapacity  = 8
-	growthFactor     = 2
-	shrinkThreshold  = 0.25
+	defaultCapacity = 8
+	growthFactor    = 2
+	shrinkThreshold = 0.25
 )
 
 // DynamicArray is a resizable array implementation.

@@ -4,6 +4,7 @@
 
 #include "test_framework.h"
 #include "../data-structures/binary_search_tree.h"
+#include <stdint.h>
 #include <stdlib.h>
 
 /* ============== Basic Tests ============== */
@@ -440,6 +441,87 @@ TEST(bst_clear_test) {
     bst_destroy(tree);
 }
 
+/* ============== Randomized Test ============== */
+
+/* xorshift32: a fixed seed reproduces the same operations on every platform */
+static uint32_t next_random(uint32_t *state) {
+    uint32_t x = *state;
+    x ^= x << 13;
+    x ^= x >> 17;
+    x ^= x << 5;
+    *state = x;
+    return x;
+}
+
+#define KEY_MIN (-20)
+#define KEY_COUNT 41
+
+TEST(bst_randomized_against_model) {
+    const uint32_t seed = 20261023u;
+    uint32_t state = seed;
+
+    for (int trial = 0; trial < 200; trial++) {
+        BST *tree = bst_create();
+        bool present[KEY_COUNT] = {false};
+        int values[KEY_COUNT] = {0};
+        size_t model_size = 0;
+
+        for (int step = 0; step < 60; step++) {
+            int slot = (int)(next_random(&state) % KEY_COUNT);
+            int key = KEY_MIN + slot;
+            if (next_random(&state) % 10 < 6) {
+                int value = key * 100 + step;
+                ASSERT_TRUE(bst_insert(tree, key, value));
+                if (!present[slot]) {
+                    present[slot] = true;
+                    model_size++;
+                }
+                values[slot] = value;
+            } else {
+                bool deleted = bst_delete(tree, key);
+                if (deleted != present[slot]) {
+                    printf("    delete mismatch: seed=%u trial=%d step=%d key=%d\n",
+                           (unsigned)seed, trial, step, key);
+                }
+                ASSERT_EQ(present[slot], deleted);
+                if (present[slot]) {
+                    present[slot] = false;
+                    model_size--;
+                }
+            }
+            ASSERT_EQ(model_size, bst_size(tree));
+        }
+
+        ASSERT_TRUE(bst_is_valid(tree));
+        size_t rank = 0;
+        for (int slot = 0; slot < KEY_COUNT; slot++) {
+            int key = KEY_MIN + slot;
+            int found = 0;
+            ASSERT_EQ(present[slot], bst_contains(tree, key));
+            if (!present[slot]) {
+                continue;
+            }
+            ASSERT_TRUE(bst_search(tree, key, &found));
+            ASSERT_EQ(values[slot], found);
+            rank++;
+            ASSERT_TRUE(bst_kth_smallest(tree, rank, &found));
+            ASSERT_EQ(key, found);
+
+            int next = slot + 1;
+            while (next < KEY_COUNT && !present[next]) next++;
+            ASSERT_EQ(next < KEY_COUNT, bst_successor(tree, key, &found));
+            if (next < KEY_COUNT) ASSERT_EQ(KEY_MIN + next, found);
+
+            int prev = slot - 1;
+            while (prev >= 0 && !present[prev]) prev--;
+            ASSERT_EQ(prev >= 0, bst_predecessor(tree, key, &found));
+            if (prev >= 0) ASSERT_EQ(KEY_MIN + prev, found);
+        }
+        ASSERT_EQ(model_size, rank);
+        bst_destroy(tree);
+    }
+}
+
 /* ============== Null Safety Test ============== */
 
 TEST(bst_null_safety) {
@@ -506,6 +588,9 @@ int main(void) {
 
     /* Null safety test */
     RUN_TEST(bst_null_safety);
+
+    /* Randomized test */
+    RUN_TEST(bst_randomized_against_model);
 
     TEST_SUITE_END();
 

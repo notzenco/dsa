@@ -4,9 +4,9 @@ Searching algorithms find elements or determine their absence in data structures
 
 ## Implementations
 
-| Algorithm | Python | C |
-|-----------|--------|---|
-| All Searching Algorithms | [searching.py](../../by-language/python/algorithms/searching.py) | [searching.c](../../by-language/c/algorithms/searching.c) |
+| Algorithm | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| All Searching Algorithms | [searching.py](../../by-language/python/algorithms/searching.py) | [searching.c](../../by-language/c/algorithms/searching.c) | [searching.go](../../by-language/go/algorithms/searching.go) | [Searching.java](../../by-language/java/src/main/java/dsa/algorithms/Searching.java) | [mod.rs](../../by-language/rust/dsa-algorithms/src/searching/mod.rs) | [searching.ts](../../by-language/typescript/src/algorithms/searching.ts) |
 
 ## Complexity Comparison
 

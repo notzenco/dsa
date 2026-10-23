@@ -4,9 +4,9 @@ A heap is a complete binary tree that satisfies the heap property: in a max-heap
 
 ## Implementations
 
-| Structure | Python | C |
-|-----------|--------|---|
-| Binary Heap | [heap.py](../../by-language/python/data_structures/heap.py) | [heap.c](../../by-language/c/data-structures/heap.c) |
+| Structure | Python | C | Go | Java | Rust | TypeScript |
+|-----------|--------|---|---|------|------|------------|
+| Binary Heap | [heap.py](../../by-language/python/data_structures/heap.py) | [heap.c](../../by-language/c/data-structures/heap.c) | [heap.go](../../by-language/go/datastructures/heap.go) | [Heap.java](../../by-language/java/src/main/java/dsa/datastructures/Heap.java) | [binary_heap.rs](../../by-language/rust/dsa-data-structures/src/heaps/binary_heap.rs) | [heap.ts](../../by-language/typescript/src/data-structures/heap.ts) |
 
 ## Complexity
 

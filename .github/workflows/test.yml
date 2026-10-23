@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +25,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov
+
+      - name: Check for invalid escape sequences
+        run: |
+          cd by-language/python
+          python -W error::SyntaxWarning -m compileall -q -f data_structures algorithms tests
 
       - name: Run Python tests
         run: |
@@ -47,6 +52,13 @@ jobs:
           cd by-language/c
           make test
 
+      - name: Run C tests with AddressSanitizer and UBSan
+        run: |
+          cd by-language/c
+          make -B test \
+            CFLAGS='-Wall -Wextra -std=c11 -g -O1 -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer -I.' \
+            LDFLAGS='-fsanitize=address,undefined'
+
   rust-tests:
     runs-on: ubuntu-latest
 
@@ -66,18 +78,44 @@ jobs:
       - name: Run clippy
         run: |
           cd by-language/rust
-          cargo clippy --all-targets -- -W clippy::all
+          cargo clippy --workspace --all-targets --all-features -- -D warnings
 
       - name: Run tests
         run: |
           cd by-language/rust
-          cargo test --all-features
+          cargo test --workspace --all-features
+
+      - name: Check no_std build
+        run: |
+          cd by-language/rust
+          cargo check --workspace --no-default-features
+
+      - name: Check documentation
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: |
+          cd by-language/rust
+          cargo doc --workspace --no-deps
+
+  rust-msrv:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust 1.70 (declared rust-version)
+        uses: dtolnay/rust-toolchain@1.70
+
+      - name: Check library crates
+        run: |
+          cd by-language/rust
+          cargo check -p dsa-core -p dsa-data-structures -p dsa-algorithms --lib
 
   go-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: ['1.21', '1.22']
+        go-version: ['1.21', 'stable']
 
     steps:
       - uses: actions/checkout@v4
@@ -87,10 +125,26 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
+      - name: Check formatting
+        if: matrix.go-version == 'stable'
+        run: |
+          cd by-language/go
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "Files need gofmt:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Run go vet
+        run: |
+          cd by-language/go
+          go vet ./...
+
       - name: Run Go tests
         run: |
           cd by-language/go
-          go test ./...
+          go test -race ./...
 
   typescript-tests:
     runs-on: ubuntu-latest
@@ -104,7 +158,12 @@ jobs:
       - name: Install dependencies
         run: |
           cd by-language/typescript
-          bun install
+          bun install --frozen-lockfile
+
+      - name: Type-check
+        run: |
+          cd by-language/typescript
+          bun run typecheck
 
       - name: Run TypeScript tests
         run: |
@@ -132,4 +191,4 @@ jobs:
       - name: Run Java tests
         run: |
           cd by-language/java
-          gradle test
+          ./gradlew test

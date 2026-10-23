@@ -40,6 +40,20 @@ describe("TreeNode", () => {
     expect(parent.isLeftChild).toBe(false);
     expect(parent.isRightChild).toBe(false);
   });
+
+  test("hasLeftChild and hasRightChild", () => {
+    const node = new TreeNode(5);
+    expect(node.hasLeftChild).toBe(false);
+    expect(node.hasRightChild).toBe(false);
+
+    node.left = new TreeNode(3);
+    expect(node.hasLeftChild).toBe(true);
+    expect(node.hasRightChild).toBe(false);
+
+    node.right = new TreeNode(7);
+    expect(node.hasLeftChild).toBe(true);
+    expect(node.hasRightChild).toBe(true);
+  });
 });
 
 describe("BinarySearchTree", () => {
@@ -157,12 +171,20 @@ describe("BinarySearchTree", () => {
       expect(bst.height).toBe(4); // Skewed
     });
 
-    test("handles duplicate values (stored in right subtree)", () => {
+    test("duplicate key returns the existing node", () => {
       const bst = new BinarySearchTree<number>();
-      bst.insert(10);
-      bst.insert(10);
-      bst.insert(10);
+      const first = bst.insert(10);
+      bst.insert(5);
+      bst.insert(15);
+      const again = bst.insert(10);
+      const third = bst.insert(10);
+
+      expect(again).toBe(first);
+      expect(third).toBe(first);
       expect(bst.size).toBe(3);
+      expect(bst.isValid()).toBe(true);
+      expect(bst.inOrder()).toEqual([5, 10, 15]);
+      expect(bst.preOrder()).toEqual([10, 5, 15]);
     });
   });
 
@@ -452,6 +474,13 @@ describe("BinarySearchTree", () => {
       const bst = BinarySearchTree.fromSortedArray([42]);
       expect(bst.size).toBe(1);
       expect(bst.root).toBe(42);
+    });
+
+    test("keeps repeated values once", () => {
+      const bst = BinarySearchTree.fromSortedArray([1, 1, 2, 3, 3, 3]);
+      expect(bst.size).toBe(3);
+      expect(bst.inOrder()).toEqual([1, 2, 3]);
+      expect(bst.isValid()).toBe(true);
     });
   });
 

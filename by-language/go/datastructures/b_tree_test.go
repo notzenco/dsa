@@ -99,6 +99,34 @@ func TestBTreeUpdate(t *testing.T) {
 	}
 }
 
+func TestBTreeUpdatePromotedKey(t *testing.T) {
+	bt := NewBTree[int, int](2)
+	bt.Insert(10, 1)
+	bt.Insert(20, 2)
+	bt.Insert(5, 3)
+	// The next insert splits a full root and promotes 10. Updating that
+	// internal key must not create a second copy.
+	bt.Insert(10, 4)
+
+	if bt.Size() != 3 {
+		t.Fatalf("size = %d, want 3", bt.Size())
+	}
+	val, ok := bt.Search(10)
+	if !ok || val != 4 {
+		t.Fatalf("search 10 = %d, %v", val, ok)
+	}
+	got := bt.Inorder()
+	want := []int{5, 10, 20}
+	if len(got) != len(want) {
+		t.Fatalf("inorder = %v, want %v", got, want)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("inorder = %v, want %v", got, want)
+		}
+	}
+}
+
 func TestBTreeLargeScale(t *testing.T) {
 	bt := NewBTree[int, int](3)
 

@@ -5,6 +5,7 @@
 #include "test_framework.h"
 #include "../algorithms/sorting.h"
 #include <limits.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -286,6 +287,111 @@ TEST(radix_sort_max_int_exponent) {
     ASSERT_EQ(INT_MAX, arr[2]);
 }
 
+TEST(radix_sort_negative) {
+    int arr[] = {3, -12, 7, -5, 1, 0, -12};
+    radix_sort(arr, 7);
+    ASSERT_TRUE(is_sorted(arr, 7));
+    ASSERT_EQ(-12, arr[0]);
+    ASSERT_EQ(-12, arr[1]);
+    ASSERT_EQ(7, arr[6]);
+}
+
+TEST(radix_sort_all_negative) {
+    int arr[] = {-3, -1, -2};
+    radix_sort(arr, 3);
+    ASSERT_EQ(-3, arr[0]);
+    ASSERT_EQ(-2, arr[1]);
+    ASSERT_EQ(-1, arr[2]);
+}
+
+TEST(radix_sort_extreme_range) {
+    int arr[] = {INT_MAX, -1, INT_MIN, 0, 1};
+    radix_sort(arr, 5);
+    ASSERT_EQ(INT_MIN, arr[0]);
+    ASSERT_EQ(-1, arr[1]);
+    ASSERT_EQ(0, arr[2]);
+    ASSERT_EQ(1, arr[3]);
+    ASSERT_EQ(INT_MAX, arr[4]);
+}
+
+/* ============== Randomized Tests ============== */
+
+static int compare_ints(const void *a, const void *b) {
+    int x = *(const int *)a;
+    int y = *(const int *)b;
+    return (x > y) - (x < y);
+}
+
+/* xorshift32: a fixed seed reproduces the same inputs on every platform */
+static uint32_t next_random(uint32_t *state) {
+    uint32_t x = *state;
+    x ^= x << 13;
+    x ^= x >> 17;
+    x ^= x << 5;
+    *state = x;
+    return x;
+}
+
+static int random_value(uint32_t *state, int trial) {
+    uint32_t r = next_random(state);
+    switch (trial % 3) {
+    case 0:
+        return (int)(r % 41) - 20;
+    case 1:
+        /* Full int range, built without overflow */
+        return (r & 1u) ? INT_MIN + (int)(r >> 1) : INT_MAX - (int)(r >> 1);
+    default:
+        return (int)(r % 2001) - 1000;
+    }
+}
+
+TEST(randomized_sorts_match_qsort) {
+    static const struct {
+        const char *name;
+        void (*sort)(int *, size_t);
+    } sorts[] = {
+        {"bubble_sort", bubble_sort},
+        {"selection_sort", selection_sort},
+        {"insertion_sort", insertion_sort},
+        {"merge_sort", merge_sort},
+        {"quick_sort", quick_sort},
+        {"quick_sort_median", quick_sort_median},
+        {"counting_sort", counting_sort},
+        {"radix_sort", radix_sort},
+        {"shell_sort", shell_sort},
+    };
+    const uint32_t seed = 20261023u;
+    uint32_t state = seed;
+    int input[64];
+    int expected[64];
+    int actual[64];
+
+    for (int trial = 0; trial < 300; trial++) {
+        size_t n = next_random(&state) % 64;
+        for (size_t i = 0; i < n; i++) {
+            input[i] = random_value(&state, trial);
+        }
+        memcpy(expected, input, n * sizeof(int));
+        qsort(expected, n, sizeof(int), compare_ints);
+
+        for (size_t s = 0; s < sizeof(sorts) / sizeof(sorts[0]); s++) {
+            memcpy(actual, input, n * sizeof(int));
+            sorts[s].sort(actual, n);
+            if (!arrays_equal(expected, actual, n)) {
+                printf("    %s mismatch: seed=%u trial=%d n=%zu\n",
+                       sorts[s].name, (unsigned)seed, trial, n);
+            }
+            ASSERT_TRUE(arrays_equal(expected, actual, n));
+        }
+
+        if (n > 0) {
+            size_t k = next_random(&state) % n;
+            memcpy(actual, input, n * sizeof(int));
+            ASSERT_EQ(expected[k], quick_select(actual, n, k));
+        }
+    }
+}
+
 /* ============== Shell Sort Tests ============== */
 
 TEST(shell_sort_basic) {
@@ -525,6 +631,10 @@ int main(void) {
     RUN_TEST(radix_sort_large_numbers);
     RUN_TEST(radix_sort_duplicates);
     RUN_TEST(radix_sort_max_int_exponent);
+    RUN_TEST(radix_sort_negative);
+    RUN_TEST(radix_sort_all_negative);
+    RUN_TEST(radix_sort_extreme_range);
+    RUN_TEST(randomized_sorts_match_qsort);
 
     /* Shell Sort */
     RUN_TEST(shell_sort_basic);

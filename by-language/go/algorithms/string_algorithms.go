@@ -77,7 +77,7 @@ func KMPSearch(text, pattern string) []int {
 func RabinKarpSearch(text, pattern string) []int {
 	var result []int
 	n, m := len(text), len(pattern)
-	if m > n {
+	if m == 0 || m > n {
 		return result
 	}
 
@@ -141,9 +141,12 @@ func ComputeZArray(s string) []int {
 // ZAlgorithmSearch finds all occurrences using Z-algorithm. O(n+m)
 func ZAlgorithmSearch(text, pattern string) []int {
 	var result []int
+	m := len(pattern)
+	if m == 0 || m > len(text) {
+		return result
+	}
 	concat := pattern + "$" + text
 	z := ComputeZArray(concat)
-	m := len(pattern)
 
 	for i := m + 1; i < len(concat); i++ {
 		if z[i] >= m {

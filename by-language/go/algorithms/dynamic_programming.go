@@ -396,8 +396,8 @@ func LongestPalindromicSubstring(s string) string {
 	}
 
 	for i := 0; i < len(s); i++ {
-		expand(i, i)     // odd length
-		expand(i, i+1)   // even length
+		expand(i, i)   // odd length
+		expand(i, i+1) // even length
 	}
 	return s[start : start+maxLen]
 }

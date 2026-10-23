@@ -16,7 +16,7 @@ FAILED=0
 # Rust tests
 if command -v cargo &> /dev/null; then
     echo -e "\n${YELLOW}Running Rust tests...${NC}"
-    if (cd by-language/rust && cargo test --all-features); then
+    if (cd by-language/rust && cargo test --workspace --all-features); then
         echo -e "${GREEN}Rust tests passed!${NC}"
     else
         echo -e "${RED}Rust tests failed!${NC}"
@@ -42,6 +42,39 @@ if command -v make &> /dev/null && [ -f "by-language/c/Makefile" ]; then
         echo -e "${GREEN}C tests passed!${NC}"
     else
         echo -e "${RED}C tests failed!${NC}"
+        FAILED=1
+    fi
+fi
+
+# Go tests
+if command -v go &> /dev/null; then
+    echo -e "\n${YELLOW}Running Go tests...${NC}"
+    if (cd by-language/go && go vet ./... && go test ./...); then
+        echo -e "${GREEN}Go tests passed!${NC}"
+    else
+        echo -e "${RED}Go tests failed!${NC}"
+        FAILED=1
+    fi
+fi
+
+# TypeScript tests
+if command -v bun &> /dev/null; then
+    echo -e "\n${YELLOW}Running TypeScript tests...${NC}"
+    if (cd by-language/typescript && bun install --frozen-lockfile && bun run typecheck && bun test); then
+        echo -e "${GREEN}TypeScript tests passed!${NC}"
+    else
+        echo -e "${RED}TypeScript tests failed!${NC}"
+        FAILED=1
+    fi
+fi
+
+# Java tests (macOS ships a java stub without a runtime, so probe it)
+if java -version &> /dev/null; then
+    echo -e "\n${YELLOW}Running Java tests...${NC}"
+    if (cd by-language/java && ./gradlew test); then
+        echo -e "${GREEN}Java tests passed!${NC}"
+    else
+        echo -e "${RED}Java tests failed!${NC}"
         FAILED=1
     fi
 fi
