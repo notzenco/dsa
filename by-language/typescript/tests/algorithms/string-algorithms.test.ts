@@ -103,12 +103,20 @@ testPatternSearch("naiveSearch", naiveSearch);
 testPatternSearch("kmpSearch", kmpSearch);
 testPatternSearch("rabinKarp", rabinKarp);
 testPatternSearch("zAlgorithm", zAlgorithm);
+test("zAlgorithm matches delimiter characters", () => {
+  expect(zAlgorithm("$$", "$")).toEqual([0, 1]);
+});
 
 // =============================================================================
 // manacher
 // =============================================================================
 
 describe("manacher", () => {
+  test("handles characters used by the transform", () => {
+    const input = "^^$^^^";
+    const result = manacher(input);
+    expect(result).toBe("^^$^^");
+  });
   test("empty string", () => {
     expect(manacher("")).toBe("");
   });

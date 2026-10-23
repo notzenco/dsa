@@ -298,5 +298,8 @@ function testNumberSearch(
 
 testNumberSearch("jumpSearch", jumpSearch);
 testNumberSearch("interpolationSearch", interpolationSearch);
+test("interpolationSearch handles equal endpoints", () => {
+  expect(interpolationSearch([1, 1], 1)).toBe(0);
+});
 testNumberSearch("exponentialSearch", exponentialSearch);
 testNumberSearch("ternarySearch", ternarySearch);

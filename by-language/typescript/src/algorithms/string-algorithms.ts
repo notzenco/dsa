@@ -241,7 +241,7 @@ export function zAlgorithm(text: string, pattern: string): number[] {
 
   const result: number[] = [];
   for (let i = m + 1; i < concat.length; i++) {
-    if (z[i] === m) {
+    if (z[i] >= m) {
       result.push(i - m - 1);
     }
   }
@@ -260,8 +260,15 @@ export function zAlgorithm(text: string, pattern: string): number[] {
 export function manacher(s: string): string {
   if (!s) return "";
 
-  // Transform string: "abc" -> "^#a#b#c#$"
-  const t = "^#" + s.split("").join("#") + "#$";
+  // Symbols cannot collide with any input character.
+  const startSentinel = Symbol();
+  const separator = Symbol();
+  const endSentinel = Symbol();
+  const t: (string | symbol)[] = [startSentinel, separator];
+  for (const char of s.split("")) {
+    t.push(char, separator);
+  }
+  t.push(endSentinel);
   const n = t.length;
   const p = new Array<number>(n).fill(0);
 

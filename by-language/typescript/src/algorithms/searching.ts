@@ -170,6 +170,7 @@ export function interpolationSearch(arr: number[], target: number): number {
     if (low === high) {
       return arr[low] === target ? low : -1;
     }
+    if (arr[low] === arr[high]) return low;
 
     // Estimate position using linear interpolation
     const pos =
