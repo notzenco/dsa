@@ -451,17 +451,15 @@ export function kruskalMST<T>(
 
   // Collect all edges (avoid duplicates for undirected)
   const allEdges: [number, T, T][] = [];
-  const seen = new Set<string>();
+  const seen = new Set<T>();
 
   for (const u of graph.vertices) {
     for (const [v, weight] of graph.neighborsWeighted(u)) {
-      const key =
-        String(u) < String(v) ? `${String(u)}-${String(v)}` : `${String(v)}-${String(u)}`;
-      if (!seen.has(key)) {
-        seen.add(key);
+      if (!seen.has(v)) {
         allEdges.push([weight, u, v]);
       }
     }
+    seen.add(u);
   }
 
   allEdges.sort((a, b) => a[0] - b[0]);
@@ -542,7 +540,9 @@ export function floydWarshall<T>(graph: GraphCore<T>): Map<T, Map<T, number>> {
 
   for (const u of verts) {
     for (const [v, weight] of graph.neighborsWeighted(u)) {
-      dist[index.get(u)!][index.get(v)!] = weight;
+      const i = index.get(u)!;
+      const j = index.get(v)!;
+      dist[i][j] = Math.min(dist[i][j], weight);
     }
   }
 

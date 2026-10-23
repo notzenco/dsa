@@ -623,6 +623,15 @@ describe("Graph Algorithms", () => {
   // Kruskal MST
   // =======================================================================
   describe("kruskalMST", () => {
+    test("keeps edges between distinct object vertices", () => {
+      const a = {}, b = {}, c = {};
+      const graph = new GraphCore<object>();
+      graph.addEdge(a, b, 1);
+      graph.addEdge(b, c, 2);
+      const result = kruskalMST(graph);
+      expect(result.edges.length).toBe(2);
+      expect(result.totalWeight).toBe(3);
+    });
     test("basic MST", () => {
       const g = weightedUndirected();
       const { edges, totalWeight } = kruskalMST(g);
@@ -669,6 +678,11 @@ describe("Graph Algorithms", () => {
   // Floyd-Warshall
   // =======================================================================
   describe("floydWarshall", () => {
+    test("positive self-loop preserves zero distance", () => {
+      const g = new GraphCore<number>(true);
+      g.addEdge(1, 1, 5);
+      expect(floydWarshall(g).get(1)!.get(1)).toBe(0);
+    });
     test("basic directed graph", () => {
       const g = new GraphCore<number>(true);
       g.addEdge(1, 2, 3);
@@ -874,7 +888,7 @@ describe("Graph Algorithms", () => {
       const dijkDist = dijkstra(g, 1);
 
       // Both should give distance 2 from 1 to 3
-      expect(bfsPath!.length - 1).toBe(dijkDist.get(3));
+      expect(bfsPath!.length - 1).toBe(dijkDist.get(3)!);
     });
 
     test("complete graph properties", () => {
