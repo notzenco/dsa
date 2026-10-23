@@ -25,7 +25,11 @@ func (ft *FenwickTree) add(i, delta int) {
 	}
 }
 
+// Update adds delta at a zero-based index and panics for an invalid index.
 func (ft *FenwickTree) Update(idx, delta int) {
+	if idx < 0 || idx >= ft.n {
+		panic("Fenwick index out of bounds")
+	}
 	ft.add(idx+1, delta)
 }
 
@@ -94,7 +98,11 @@ func (ft *FenwickTree2D) add(row, col, delta int) {
 	}
 }
 
+// Update adds delta at zero-based coordinates and panics outside the matrix.
 func (ft *FenwickTree2D) Update(row, col, delta int) {
+	if row < 0 || row >= ft.rows || col < 0 || col >= ft.cols {
+		panic("Fenwick index out of bounds")
+	}
 	ft.add(row+1, col+1, delta)
 }
 

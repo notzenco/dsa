@@ -2,6 +2,27 @@ package datastructures
 
 import "testing"
 
+func TestFenwickInvalidUpdates(t *testing.T) {
+	for _, index := range []int{-2, -1, 2} {
+		func() {
+			defer func() {
+				if recover() == nil {
+					t.Errorf("Update(%d) did not reject invalid index", index)
+				}
+			}()
+			NewFenwickTree([]int{1, 2}).Update(index, 1)
+		}()
+	}
+	func() {
+		defer func() {
+			if recover() == nil {
+				t.Error("2D Update did not reject negative index")
+			}
+		}()
+		NewFenwickTree2D([][]int{{1}}).Update(-1, 0, 1)
+	}()
+}
+
 // --- Segment Tree Tests ---
 
 func TestSegmentTree(t *testing.T) {
@@ -13,7 +34,7 @@ func TestSegmentTree(t *testing.T) {
 		t.Errorf("expected 24, got %d", result)
 	}
 
-	st.Update(2, 10) // set index 2 to 10
+	st.Update(2, 10)        // set index 2 to 10
 	result = st.Query(1, 4) // 3+10+7+9 = 29
 	if result != 29 {
 		t.Errorf("expected 29, got %d", result)
@@ -94,7 +115,7 @@ func TestFenwickTree(t *testing.T) {
 		t.Errorf("expected 14, got %d", result)
 	}
 
-	ft.Update(3, 4) // add 4 to index 3
+	ft.Update(3, 4)            // add 4 to index 3
 	result = ft.RangeSum(2, 5) // -1+10+5+4 = 18
 	if result != 18 {
 		t.Errorf("expected 18, got %d", result)
