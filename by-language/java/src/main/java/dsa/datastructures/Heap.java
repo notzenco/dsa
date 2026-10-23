@@ -485,7 +485,8 @@ public class Heap {
 
             if (maxLeftA <= minRightB && maxLeftB <= minRightA) {
                 if ((m + n) % 2 == 0) {
-                    return (Math.max(maxLeftA, maxLeftB) + Math.min(minRightA, minRightB)) / 2.0;
+                    return ((long) Math.max(maxLeftA, maxLeftB)
+                            + (long) Math.min(minRightA, minRightB)) / 2.0;
                 } else {
                     return Math.max(maxLeftA, maxLeftB);
                 }

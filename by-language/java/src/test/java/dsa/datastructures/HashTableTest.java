@@ -53,6 +53,8 @@ class HashTableTest {
         ht.put("x", 42);
         assertTrue(ht.containsKey("x"));
         assertFalse(ht.containsKey("y"));
+        ht.put("null-value", null);
+        assertTrue(ht.containsKey("null-value"));
     }
 
     @Test

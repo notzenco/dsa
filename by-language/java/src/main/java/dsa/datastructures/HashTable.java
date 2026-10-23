@@ -94,7 +94,13 @@ public class HashTable {
         }
 
         public boolean containsKey(K key) {
-            return get(key) != null;
+            int index = hash(key);
+            for (Entry<K, V> entry : buckets.get(index)) {
+                if (entry.getKey().equals(key)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public List<K> keys() {

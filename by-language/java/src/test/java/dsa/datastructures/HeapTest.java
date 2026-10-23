@@ -546,6 +546,9 @@ class HeapTest {
     @Test
     void findMedianSortedArraysEvenTotal() {
         assertEquals(2.5, Heap.findMedianSortedArrays(new int[]{1, 2}, new int[]{3, 4}));
+        assertEquals((double) Integer.MAX_VALUE,
+                Heap.findMedianSortedArrays(new int[]{Integer.MAX_VALUE},
+                        new int[]{Integer.MAX_VALUE}));
     }
 
     @Test
