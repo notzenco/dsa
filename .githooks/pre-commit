@@ -25,10 +25,26 @@ if command -v cargo &> /dev/null; then
     fi
 
     echo -n "Running Rust clippy... "
-    if (cd by-language/rust && cargo clippy --all-targets -- -D warnings) &> /dev/null 2>&1; then
+    if (cd by-language/rust && cargo clippy --workspace --all-targets --all-features -- -D warnings) &> /dev/null; then
         echo -e "${GREEN}OK${NC}"
     else
-        echo -e "${RED}WARNINGS${NC} (continuing)"
+        echo -e "${RED}FAILED${NC}"
+        echo "Run 'cd by-language/rust && cargo clippy --workspace --all-targets --all-features -- -D warnings' for details"
+        FAILED=1
+    fi
+fi
+
+# Go checks
+if command -v gofmt &> /dev/null; then
+    echo -n "Checking Go formatting... "
+    unformatted=$(cd by-language/go && gofmt -l .)
+    if [ -z "$unformatted" ]; then
+        echo -e "${GREEN}OK${NC}"
+    else
+        echo -e "${RED}FAILED${NC}"
+        echo "$unformatted"
+        echo "Run 'cd by-language/go && gofmt -w .' to fix"
+        FAILED=1
     fi
 fi
 

@@ -13,13 +13,14 @@ NC='\033[0m'
 # Valid prefixes (conventional commits)
 valid_prefixes="feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert"
 
-# Pattern: prefix(optional-scope): description
-pattern="^($valid_prefixes)(\(.+\))?: .+"
+# Pattern: prefix(optional-scope)(optional !): description
+pattern="^($valid_prefixes)(\([^)]+\))?!?: .+"
 
 if ! echo "$commit_msg" | head -1 | grep -qE "$pattern"; then
     echo -e "${RED}Invalid commit message format!${NC}"
     echo ""
     echo "Commit message must follow: <type>(<scope>): <description>"
+    echo "Add ! before the colon for a breaking change: <type>(<scope>)!: <description>"
     echo ""
     echo -e "${YELLOW}Valid prefixes:${NC}"
     echo "  feat:     New feature"
@@ -39,6 +40,7 @@ if ! echo "$commit_msg" | head -1 | grep -qE "$pattern"; then
     echo "  fix(rust): resolve memory leak in linked list"
     echo "  docs: update README with examples"
     echo "  test(python): add edge case tests for sorting"
+    echo "  feat(c)!: require path capacity in shortest_path_reconstruct"
     echo ""
     echo -e "Your message: ${RED}$commit_msg${NC}"
     exit 1
