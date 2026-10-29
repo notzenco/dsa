@@ -71,7 +71,7 @@ typedef struct {
 
 /**
  * Create a new B-Tree with specified minimum degree.
- * @param min_degree Minimum degree t (must be >= 2)
+ * @param min_degree Minimum degree t (must be >= 2 and fit node allocations)
  * @return New tree or NULL on failure
  */
 BTree *btree_create(int min_degree);

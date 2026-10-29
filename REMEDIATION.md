@@ -11,6 +11,9 @@ possible input or deployment has been audited.
 | Area | Current contract |
 |------|------------------|
 | C shortest paths | `shortest_path_reconstruct` takes `path_capacity` in elements and returns `false` for an insufficient buffer, invalid destination, unreachable path, or negative-cycle result. |
+| C segment tree | Both constructors return `NULL` when `4 * n` integer slots cannot fit in `size_t`; callers must check the result before querying or updating. |
+| C B-tree | `btree_create` returns `NULL` when the minimum degree is below 2 or too large for signed arithmetic or node allocations. |
+| Rust LRU cache | Eviction removes the map entry by node identity before freeing the node, including for keys whose clones compare differently. The map is a `BTreeMap`; eviction scans it, so `put` is O(n) in the worst case. |
 | Rust shortest paths | `reconstruct_path(parent, source, target)` requires the actual source and returns `None` for invalid or cyclic parent chains. |
 | Fenwick updates | Rust uses one-based indices; Go, Python, and TypeScript use zero-based indices. Invalid update indices are rejected before entering the update loop. |
 | Python segment tree | Point updates outside `[0, len)` raise `IndexError`. |
@@ -28,15 +31,17 @@ possible input or deployment has been audited.
 
 ## Regression areas
 
-- C allocation arithmetic, trie enumeration, search byte counters, graph path
-  buffers, counting/radix sort, hash tombstones, and B-tree root changes.
+- C allocation arithmetic, including segment-tree sizes and B-tree degree,
+  trie enumeration, search byte counters, graph path buffers, counting/radix
+  sort, hash tombstones, and B-tree root changes.
 - Graph algorithms: absent destinations, negative vertex labels, self-loops,
   parallel edges, object-valued vertices, and path reconstruction from a
   nonzero source.
 - String algorithms: delimiters occurring in input, Unicode boundaries, and
   palindrome sentinels.
 - Data structures: lazy segment-tree logical length, skip-list live length,
-  Fenwick index validation, LFU frequency buckets, and panic-safe LRU clear.
+  Fenwick index validation, LFU frequency buckets, panic-safe LRU clear, and
+  node-identity eviction for non-equivalent Rust key clones.
 - Sorting: negative values, all-negative input, and integer-type extremes for
   every sort, including the counting-sort comparison fallback.
 - Randomized model tests in every language compare sorts, searches, string

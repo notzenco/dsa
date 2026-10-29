@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
+#include <stdint.h>
 
 /* ============== Node Creation/Destruction ============== */
 
@@ -530,7 +532,11 @@ static void print_node(BTreeNode *node, int depth) {
 /* ============== Public Functions ============== */
 
 BTree *btree_create(int min_degree) {
-    if (min_degree < 2) return NULL;
+    if (min_degree < 2 || min_degree > INT_MAX / 2) return NULL;
+
+    size_t max_children = (size_t)min_degree * 2;
+    if (max_children > SIZE_MAX / sizeof(BTreeNode *) ||
+        max_children - 1 > SIZE_MAX / sizeof(int)) return NULL;
 
     BTree *tree = malloc(sizeof(BTree));
     if (!tree) return NULL;

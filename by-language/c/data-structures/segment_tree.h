@@ -72,7 +72,7 @@ typedef struct {
  * @param arr Input array
  * @param n Array size
  * @param type Type of query (SUM, MIN, MAX, GCD)
- * @return New segment tree or NULL on failure
+ * @return New segment tree or NULL if the size is invalid or allocation fails
  */
 SegmentTree *segtree_create(const int *arr, size_t n, SegmentTreeType type);
 
@@ -80,7 +80,7 @@ SegmentTree *segtree_create(const int *arr, size_t n, SegmentTreeType type);
  * Create an empty segment tree.
  * @param n Size
  * @param type Type of query
- * @return New segment tree or NULL on failure
+ * @return New segment tree or NULL if the size is invalid or allocation fails
  */
 SegmentTree *segtree_create_empty(size_t n, SegmentTreeType type);
 

@@ -26,10 +26,10 @@
 //!
 //! | Operation | Time Complexity | Space Complexity |
 //! |-----------|-----------------|------------------|
-//! | get(key)  | O(1)            | O(1)             |
-//! | put(k,v)  | O(1)            | O(1)             |
-//! | peek(key) | O(1)            | O(1)             |
-//! | remove(k) | O(1)            | O(1)             |
+//! | get(key)  | O(log n)        | O(1)             |
+//! | put(k,v)  | O(n) worst case | O(1)             |
+//! | peek(key) | O(log n)        | O(1)             |
+//! | remove(k) | O(log n)        | O(1)             |
 //! | Overall   | -               | O(capacity)      |
 //!
 //! ## LeetCode Problems
@@ -93,8 +93,9 @@ impl<K, V> Node<K, V> {
 
 /// An LRU (Least Recently Used) Cache.
 ///
-/// Provides O(1) get and put operations with automatic eviction of the
-/// least recently used item when capacity is exceeded.
+/// Provides automatic eviction of the least recently used item when capacity
+/// is exceeded. Eviction scans the map to keep raw node pointers sound even
+/// when a key's clone does not compare equal to the original key.
 ///
 /// # Type Parameters
 ///
@@ -556,9 +557,10 @@ where
     /// Evicts the least recently used item.
     fn evict_lru(&mut self) -> Option<(K, V)> {
         if let Some(tail) = self.tail {
+            // Remove by node identity. Looking up a clone of the node key can
+            // miss the map entry and leave a dangling pointer after the free.
+            self.map.retain(|_, node_ptr| *node_ptr != tail);
             unsafe {
-                let key = (*tail.as_ptr()).key.clone();
-                self.map.remove(&key);
                 self.unlink(tail);
                 let node = Box::from_raw(tail.as_ptr());
                 Some((node.key, node.value))
@@ -698,6 +700,35 @@ mod tests {
 
     mod eviction {
         use super::*;
+
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+        struct NonEquivalentCloneKey(u32);
+
+        impl Clone for NonEquivalentCloneKey {
+            fn clone(&self) -> Self {
+                Self(self.0 + 1)
+            }
+        }
+
+        #[test]
+        fn test_eviction_removes_entry_by_node_identity() {
+            let mut cache = LRUCache::new(1);
+            cache.put(NonEquivalentCloneKey(1), 11);
+            cache.put(NonEquivalentCloneKey(3), 33);
+
+            assert!(!cache.contains(&NonEquivalentCloneKey(1)));
+            assert_eq!(cache.peek(&NonEquivalentCloneKey(1)), None);
+            assert_eq!(cache.peek(&NonEquivalentCloneKey(3)), Some(&33));
+            assert_eq!(cache.len(), 1);
+
+            // The tail's cloned key can also match another map entry.
+            let mut cache = LRUCache::new(1);
+            cache.put(NonEquivalentCloneKey(1), 11);
+            cache.put(NonEquivalentCloneKey(2), 22);
+            assert_eq!(cache.peek(&NonEquivalentCloneKey(1)), None);
+            assert_eq!(cache.peek(&NonEquivalentCloneKey(2)), Some(&22));
+            assert_eq!(cache.len(), 1);
+        }
 
         #[test]
         fn test_eviction_on_capacity() {

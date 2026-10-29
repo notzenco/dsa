@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <stdint.h>
 
 /* ============== Helper Functions ============== */
 
@@ -62,8 +63,12 @@ static void build(SegmentTree *st, const int *arr, size_t node,
 
 /* ============== Creation/Destruction ============== */
 
+static bool valid_tree_size(size_t n) {
+    return n > 0 && n <= SIZE_MAX / sizeof(int) / 4;
+}
+
 SegmentTree *segtree_create(const int *arr, size_t n, SegmentTreeType type) {
-    if (arr == NULL || n == 0) return NULL;
+    if (arr == NULL || !valid_tree_size(n)) return NULL;
 
     SegmentTree *st = malloc(sizeof(SegmentTree));
     if (st == NULL) return NULL;
@@ -73,8 +78,9 @@ SegmentTree *segtree_create(const int *arr, size_t n, SegmentTreeType type) {
     st->identity = get_identity(type);
 
     /* Allocate tree array (4*n is safe upper bound) */
-    st->tree = malloc(4 * n * sizeof(int));
-    st->lazy = calloc(4 * n, sizeof(int));
+    size_t capacity = 4 * n;
+    st->tree = malloc(capacity * sizeof(int));
+    st->lazy = calloc(capacity, sizeof(int));
 
     if (st->tree == NULL || st->lazy == NULL) {
         free(st->tree);
@@ -84,7 +90,7 @@ SegmentTree *segtree_create(const int *arr, size_t n, SegmentTreeType type) {
     }
 
     /* Initialize with identity */
-    for (size_t i = 0; i < 4 * n; i++) {
+    for (size_t i = 0; i < capacity; i++) {
         st->tree[i] = st->identity;
     }
 
@@ -93,7 +99,7 @@ SegmentTree *segtree_create(const int *arr, size_t n, SegmentTreeType type) {
 }
 
 SegmentTree *segtree_create_empty(size_t n, SegmentTreeType type) {
-    if (n == 0) return NULL;
+    if (!valid_tree_size(n)) return NULL;
 
     SegmentTree *st = malloc(sizeof(SegmentTree));
     if (st == NULL) return NULL;
@@ -102,8 +108,9 @@ SegmentTree *segtree_create_empty(size_t n, SegmentTreeType type) {
     st->type = type;
     st->identity = get_identity(type);
 
-    st->tree = malloc(4 * n * sizeof(int));
-    st->lazy = calloc(4 * n, sizeof(int));
+    size_t capacity = 4 * n;
+    st->tree = malloc(capacity * sizeof(int));
+    st->lazy = calloc(capacity, sizeof(int));
 
     if (st->tree == NULL || st->lazy == NULL) {
         free(st->tree);
@@ -112,7 +119,7 @@ SegmentTree *segtree_create_empty(size_t n, SegmentTreeType type) {
         return NULL;
     }
 
-    for (size_t i = 0; i < 4 * n; i++) {
+    for (size_t i = 0; i < capacity; i++) {
         st->tree[i] = st->identity;
     }
 
