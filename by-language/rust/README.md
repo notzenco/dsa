@@ -145,6 +145,8 @@ The `tests/models.rs` suites in `dsa-algorithms` and `dsa-data-structures`
 compare each implementation against standard-library reference models with a
 fixed seed. CI also checks the library crates on the declared minimum Rust
 version, 1.70.
+The workspace commits `Cargo.lock` so CI uses the same dependency versions;
+`web-sys` and `js-sys` are held at 0.3.66 for Cargo 1.70 compatibility.
 
 ## Path reconstruction
 

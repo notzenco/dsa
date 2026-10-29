@@ -6,12 +6,21 @@
 #include "../data-structures/segment_tree.h"
 #include "../data-structures/fenwick_tree.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 TEST(fenwick_rejects_overflow_size) {
     ASSERT_TRUE(fenwick_create_empty(SIZE_MAX) == NULL);
 }
-#include <stdlib.h>
 
+TEST(segtree_rejects_overflow_size) {
+    size_t array_length_overflow = SIZE_MAX / 4 + 2;
+    size_t allocation_bytes_overflow = SIZE_MAX / sizeof(int) / 4 + 1;
+    int value = 1;
+    ASSERT_TRUE(segtree_create_empty(array_length_overflow, SEG_SUM) == NULL);
+    ASSERT_TRUE(segtree_create(&value, array_length_overflow, SEG_SUM) == NULL);
+    ASSERT_TRUE(segtree_create_empty(allocation_bytes_overflow, SEG_SUM) == NULL);
+    ASSERT_TRUE(segtree_create(&value, allocation_bytes_overflow, SEG_SUM) == NULL);
+}
 /* ============== Segment Tree Creation Tests ============== */
 
 TEST(segtree_create_sum) {
@@ -281,6 +290,7 @@ int main(void) {
     RUN_TEST(fenwick_rejects_overflow_size);
 
     /* Segment Tree Creation */
+    RUN_TEST(segtree_rejects_overflow_size);
     RUN_TEST(segtree_create_sum);
     RUN_TEST(segtree_create_min);
     RUN_TEST(segtree_create_max);

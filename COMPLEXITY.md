@@ -493,6 +493,10 @@ False Positive Rate ≈ (1 - e^(-kn/m))^k
 Implementation: Hash Map + Doubly Linked List
 ```
 
+The Rust `LRUCache` uses a `BTreeMap` and linked nodes. Its get, peek, and
+remove operations are O(log n); put is O(n) in the worst case because eviction
+scans the map to remove the exact node before freeing it.
+
 **When to Use:**
 
 - Caching with memory limit

@@ -5,6 +5,7 @@
 #include "test_framework.h"
 #include "../data-structures/b_tree.h"
 #include <stdlib.h>
+#include <limits.h>
 
 /* ============== Creation Tests ============== */
 
@@ -31,6 +32,8 @@ TEST(btree_create_with_degree) {
 TEST(btree_create_invalid) {
     ASSERT_TRUE(btree_create(0) == NULL);
     ASSERT_TRUE(btree_create(1) == NULL);
+    ASSERT_TRUE(btree_create(INT_MAX / 2 + 1) == NULL);
+    ASSERT_TRUE(btree_create(INT_MAX) == NULL);
 }
 
 /* ============== Insert Tests ============== */
