@@ -191,7 +191,17 @@ static bool uf_union(UnionFind *uf, int x, int y) {
 /* ============== Edge Comparison for Kruskal ============== */
 
 static int edge_compare(const void *a, const void *b) {
-    return ((EdgeItem *)a)->weight - ((EdgeItem *)b)->weight;
+    int left = ((const EdgeItem *)a)->weight;
+    int right = ((const EdgeItem *)b)->weight;
+    return (left > right) - (left < right);
+}
+
+/* GRAPH_INF is reserved for unreachable paths. A distance must fit below it. */
+static bool add_distance(int left, int right, int *sum_out) {
+    long long sum = (long long)left + right;
+    if (sum < INT_MIN || sum >= GRAPH_INF) return false;
+    *sum_out = (int)sum;
+    return true;
 }
 
 /* ============== Result Allocation Helpers ============== */
@@ -377,7 +387,12 @@ ShortestPathResult *graph_dijkstra(const Graph *g, int source) {
         for (Edge *e = g->adj_list[u]; e != NULL; e = e->next) {
             int v = e->dest;
             if (minpq_contains(pq, v)) {
-                int new_dist = result->distance[u] + e->weight;
+                int new_dist;
+                if (!add_distance(result->distance[u], e->weight, &new_dist)) {
+                    minpq_destroy(pq);
+                    shortest_path_result_free(result);
+                    return NULL;
+                }
                 if (new_dist < result->distance[v]) {
                     result->distance[v] = new_dist;
                     result->parent[v] = u;
@@ -411,7 +426,11 @@ ShortestPathResult *graph_bellman_ford(const Graph *g, int source) {
 
             for (Edge *e = g->adj_list[u]; e != NULL; e = e->next) {
                 int v = e->dest;
-                int new_dist = result->distance[u] + e->weight;
+                int new_dist;
+                if (!add_distance(result->distance[u], e->weight, &new_dist)) {
+                    shortest_path_result_free(result);
+                    return NULL;
+                }
                 if (new_dist < result->distance[v]) {
                     result->distance[v] = new_dist;
                     result->parent[v] = u;
@@ -426,7 +445,12 @@ ShortestPathResult *graph_bellman_ford(const Graph *g, int source) {
 
         for (Edge *e = g->adj_list[u]; e != NULL; e = e->next) {
             int v = e->dest;
-            if (result->distance[u] + e->weight < result->distance[v]) {
+            int new_dist;
+            if (!add_distance(result->distance[u], e->weight, &new_dist)) {
+                shortest_path_result_free(result);
+                return NULL;
+            }
+            if (new_dist < result->distance[v]) {
                 result->has_negative_cycle = true;
                 return result;
             }
@@ -497,9 +521,11 @@ bool graph_floyd_warshall(const Graph *g, int **dist, int **next) {
     /* Set distances from adjacency list */
     for (int u = 0; u < n; u++) {
         for (Edge *e = g->adj_list[u]; e != NULL; e = e->next) {
-            dist[u][e->dest] = e->weight;
-            if (next != NULL) {
-                next[u][e->dest] = e->dest;
+            if (e->weight < dist[u][e->dest]) {
+                dist[u][e->dest] = e->weight;
+                if (next != NULL) {
+                    next[u][e->dest] = e->dest;
+                }
             }
         }
     }
@@ -509,7 +535,10 @@ bool graph_floyd_warshall(const Graph *g, int **dist, int **next) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (dist[i][k] != GRAPH_INF && dist[k][j] != GRAPH_INF) {
-                    int new_dist = dist[i][k] + dist[k][j];
+                    int new_dist;
+                    if (!add_distance(dist[i][k], dist[k][j], &new_dist)) {
+                        return false;
+                    }
                     if (new_dist < dist[i][j]) {
                         dist[i][j] = new_dist;
                         if (next != NULL) {
@@ -532,32 +561,45 @@ bool graph_floyd_warshall(const Graph *g, int **dist, int **next) {
 }
 
 bool graph_floyd_warshall_path(int **next, int n, int src, int dest,
-                                int *path_out, int *path_len_out) {
+                                int *path_out, size_t path_capacity,
+                                int *path_len_out) {
+    if (path_len_out != NULL) *path_len_out = 0;
     if (next == NULL || path_out == NULL || path_len_out == NULL) {
         return false;
     }
-    if (src < 0 || src >= n || dest < 0 || dest >= n) {
+    if (n <= 0 || src < 0 || src >= n || dest < 0 || dest >= n) {
         return false;
     }
+    if (src == dest) {
+        if (path_capacity == 0) return false;
+        path_out[0] = src;
+        *path_len_out = 1;
+        return true;
+    }
     if (next[src][dest] == -1) {
-        *path_len_out = 0;
         return false;  /* No path */
     }
 
-    int len = 0;
+    /* Validate the entire chain and capacity before writing to path_out. */
+    size_t len = 1;
     int current = src;
-    path_out[len++] = current;
-
     while (current != dest) {
         current = next[current][dest];
-        if (current == -1 || len >= n) {
-            *path_len_out = 0;
+        if (current < 0 || current >= n || len >= (size_t)n) {
             return false;
         }
-        path_out[len++] = current;
+        len++;
+    }
+    if (len > path_capacity) return false;
+
+    current = src;
+    path_out[0] = current;
+    for (size_t i = 1; i < len; i++) {
+        current = next[current][dest];
+        path_out[i] = current;
     }
 
-    *path_len_out = len;
+    *path_len_out = (int)len;
     return true;
 }
 
@@ -707,6 +749,7 @@ MSTResult *graph_mst_kruskal(const Graph *g) {
     result->edges = NULL;
     result->num_edges = 0;
     result->total_weight = 0;
+    long long total_weight = 0;
 
     /* Count edges and create edge array */
     int edge_count = graph_edge_count(g);
@@ -771,13 +814,18 @@ MSTResult *graph_mst_kruskal(const Graph *g) {
             result->edges[result->num_edges][0] = u;
             result->edges[result->num_edges][1] = v;
             result->edges[result->num_edges][2] = edges[i].weight;
-            result->total_weight += edges[i].weight;
+            total_weight += edges[i].weight;
             result->num_edges++;
         }
     }
 
     free(edges);
     uf_destroy(uf);
+    if (total_weight < INT_MIN || total_weight > INT_MAX) {
+        mst_result_free(result);
+        return NULL;
+    }
+    result->total_weight = (int)total_weight;
     return result;
 }
 
@@ -793,6 +841,7 @@ MSTResult *graph_mst_prim(const Graph *g) {
     result->edges = malloc((n - 1) * sizeof(int *));
     result->num_edges = 0;
     result->total_weight = 0;
+    long long total_weight = 0;
 
     if (result->edges == NULL) {
         free(result);
@@ -833,13 +882,19 @@ MSTResult *graph_mst_prim(const Graph *g) {
         /* Add edge to MST */
         if (parent[u] != -1) {
             result->edges[result->num_edges] = malloc(3 * sizeof(int));
-            if (result->edges[result->num_edges] != NULL) {
-                result->edges[result->num_edges][0] = parent[u];
-                result->edges[result->num_edges][1] = u;
-                result->edges[result->num_edges][2] = key[u];
-                result->total_weight += key[u];
-                result->num_edges++;
+            if (result->edges[result->num_edges] == NULL) {
+                free(key);
+                free(parent);
+                free(in_mst);
+                minpq_destroy(pq);
+                mst_result_free(result);
+                return NULL;
             }
+            result->edges[result->num_edges][0] = parent[u];
+            result->edges[result->num_edges][1] = u;
+            result->edges[result->num_edges][2] = key[u];
+            total_weight += key[u];
+            result->num_edges++;
         }
 
         for (Edge *e = g->adj_list[u]; e != NULL; e = e->next) {
@@ -858,6 +913,11 @@ MSTResult *graph_mst_prim(const Graph *g) {
     free(parent);
     free(in_mst);
     minpq_destroy(pq);
+    if (total_weight < INT_MIN || total_weight > INT_MAX) {
+        mst_result_free(result);
+        return NULL;
+    }
+    result->total_weight = (int)total_weight;
     return result;
 }
 

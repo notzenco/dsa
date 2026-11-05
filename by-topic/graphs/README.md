@@ -162,9 +162,13 @@ vertex objects have no ordering. The Python graph copy preserves isolated
 vertices, and undirected self-loops count as one edge.
 
 For path reconstruction, C callers must pass the output array capacity to
-`shortest_path_reconstruct`. Rust callers must pass the source to
-`reconstruct_path(parent, source, target)`. Reject a Bellman-Ford result with
-a negative cycle before reconstructing a path.
+`shortest_path_reconstruct` and `graph_floyd_warshall_path`. Only use a C
+Floyd-Warshall next-hop matrix after `graph_floyd_warshall` returns `true`.
+C graph weights reserve `GRAPH_INF` (`INT_MAX`), and its shortest-path and MST
+algorithms reject results outside their documented integer ranges. Go, Java,
+and TypeScript count an undirected self-loop as one edge. Rust callers must
+pass the source to `reconstruct_path(parent, source, target)`. Reject a
+Bellman-Ford result with a negative cycle before reconstructing a path.
 
 ### Topological Sort (Kahn's Algorithm)
 ```python

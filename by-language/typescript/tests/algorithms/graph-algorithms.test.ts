@@ -234,6 +234,20 @@ describe("Graph Algorithms", () => {
       const distances = dijkstra(g, 1);
       expect(distances.get(1)).toBe(0);
     });
+
+    test("decreases priorities for object vertices", () => {
+      const a = {}, b = {}, c = {}, d = {};
+      const g = new GraphCore<object>(true);
+      g.addEdge(a, b, 9);
+      g.addEdge(a, c, 1);
+      g.addEdge(a, d, 8);
+      g.addEdge(c, b, 2);
+      g.addEdge(b, d, 1);
+
+      const distances = dijkstra(g, a);
+      expect(distances.get(b)).toBe(3);
+      expect(distances.get(d)).toBe(4);
+    });
   });
 
   // =======================================================================
@@ -309,6 +323,14 @@ describe("Graph Algorithms", () => {
       expect(path!.length).toBe(3); // 1 -> 2 -> 3 or 1 -> 4 -> 3
       expect(path![0]).toBe(1);
       expect(path![path!.length - 1]).toBe(3);
+    });
+
+    test("reconstructs a path through object vertices", () => {
+      const a = {}, b = {}, c = {};
+      const g = new GraphCore<object>(true);
+      g.addEdge(a, b);
+      g.addEdge(b, c);
+      expect(shortestPathBfs(g, a, c)).toEqual([a, b, c]);
     });
 
     test("same start and end", () => {
@@ -616,6 +638,20 @@ describe("Graph Algorithms", () => {
       const { edges, totalWeight } = primMST(g);
       expect(edges.length).toBe(1);
       expect(totalWeight).toBe(5);
+    });
+
+    test("decreases the selected edge for object vertices", () => {
+      const a = {}, b = {}, c = {}, d = {};
+      const g = new GraphCore<object>();
+      g.addEdge(a, b, 9);
+      g.addEdge(a, c, 1);
+      g.addEdge(c, b, 2);
+      g.addEdge(b, d, 1);
+      g.addEdge(c, d, 10);
+
+      const result = primMST(g);
+      expect(result.edges.length).toBe(3);
+      expect(result.totalWeight).toBe(4);
     });
   });
 

@@ -229,11 +229,16 @@ public class GraphCore {
      */
     public int numEdges() {
         int count = 0;
-        for (Map<String, Double> neighbors : adjacencyList.values()) {
+        int loops = 0;
+        for (Map.Entry<String, Map<String, Double>> entry : adjacencyList.entrySet()) {
+            Map<String, Double> neighbors = entry.getValue();
             count += neighbors.size();
+            if (neighbors.containsKey(entry.getKey())) {
+                loops++;
+            }
         }
         if (!directed) {
-            count /= 2;
+            count = (count + loops) / 2;
         }
         return count;
     }

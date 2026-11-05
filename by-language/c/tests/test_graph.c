@@ -4,6 +4,7 @@
 
 #include "test_framework.h"
 #include "../data-structures/graph.h"
+#include <limits.h>
 #include <stdlib.h>
 
 /* ============== Graph Creation Tests ============== */
@@ -186,6 +187,73 @@ TEST(dijkstra_path_reconstruction) {
     graph_destroy(g);
 }
 
+TEST(graph_rejects_reserved_weight) {
+    Graph *g = graph_create(2, false);
+    ASSERT_NOT_NULL(g);
+    ASSERT_FALSE(graph_add_edge(g, 0, 1, GRAPH_INF));
+    ASSERT_EQ(0, graph_edge_count(g));
+    graph_destroy(g);
+}
+
+TEST(shortest_paths_reject_unrepresentable_distance) {
+    Graph *g = graph_create(3, true);
+    ASSERT_NOT_NULL(g);
+    ASSERT_TRUE(graph_add_edge(g, 0, 1, INT_MAX - 1));
+    ASSERT_TRUE(graph_add_edge(g, 1, 2, 2));
+    ASSERT_EQ(NULL, graph_dijkstra(g, 0));
+    ASSERT_EQ(NULL, graph_bellman_ford(g, 0));
+
+    int dist_data[3][3], next_data[3][3];
+    int *dist[] = {dist_data[0], dist_data[1], dist_data[2]};
+    int *next[] = {next_data[0], next_data[1], next_data[2]};
+    ASSERT_FALSE(graph_floyd_warshall(g, dist, next));
+    graph_destroy(g);
+
+    g = graph_create(3, true);
+    ASSERT_NOT_NULL(g);
+    graph_add_edge(g, 0, 1, INT_MIN);
+    graph_add_edge(g, 1, 2, -1);
+    ASSERT_EQ(NULL, graph_bellman_ford(g, 0));
+    ASSERT_FALSE(graph_floyd_warshall(g, dist, next));
+    graph_destroy(g);
+}
+
+TEST(floyd_warshall_parallel_edges_and_path_capacity) {
+    Graph *g = graph_create(3, true);
+    ASSERT_NOT_NULL(g);
+    graph_add_edge(g, 0, 1, 10);
+    graph_add_edge(g, 0, 1, 1);
+    graph_add_edge(g, 0, 0, 5);
+    graph_add_edge(g, 1, 2, 2);
+
+    int dist_data[3][3], next_data[3][3];
+    int *dist[] = {dist_data[0], dist_data[1], dist_data[2]};
+    int *next[] = {next_data[0], next_data[1], next_data[2]};
+    ASSERT_TRUE(graph_floyd_warshall(g, dist, next));
+    ASSERT_EQ(0, dist[0][0]);
+    ASSERT_EQ(1, dist[0][1]);
+    ASSERT_EQ(3, dist[0][2]);
+
+    int short_path[2] = {-7, -7};
+    int path_len = -1;
+    ASSERT_FALSE(graph_floyd_warshall_path(next, 3, 0, 2,
+                                           short_path, 2, &path_len));
+    ASSERT_EQ(0, path_len);
+    ASSERT_EQ(-7, short_path[0]);
+    ASSERT_EQ(-7, short_path[1]);
+
+    int path[3];
+    ASSERT_TRUE(graph_floyd_warshall_path(next, 3, 0, 2, path, 3, &path_len));
+    ASSERT_EQ(3, path_len);
+    ASSERT_EQ(0, path[0]);
+    ASSERT_EQ(1, path[1]);
+    ASSERT_EQ(2, path[2]);
+    ASSERT_TRUE(graph_floyd_warshall_path(next, 3, 0, 0, path, 1, &path_len));
+    ASSERT_EQ(1, path_len);
+    ASSERT_EQ(0, path[0]);
+    graph_destroy(g);
+}
+
 /* ============== Bellman-Ford Tests ============== */
 
 TEST(bellman_ford_simple) {
@@ -355,6 +423,57 @@ TEST(mst_kruskal_self_loop) {
     ASSERT_EQ(1, result->num_edges);
     ASSERT_EQ(3, result->total_weight);
     mst_result_free(result);
+    graph_destroy(g);
+}
+
+TEST(mst_integer_extremes) {
+    Graph *g = graph_create(3, false);
+    ASSERT_NOT_NULL(g);
+    graph_add_edge(g, 0, 1, INT_MIN);
+    graph_add_edge(g, 0, 2, 0);
+    graph_add_edge(g, 1, 2, 1);
+    MSTResult *kruskal = graph_mst_kruskal(g);
+    MSTResult *prim = graph_mst_prim(g);
+    ASSERT_NOT_NULL(kruskal);
+    ASSERT_NOT_NULL(prim);
+    ASSERT_EQ(INT_MIN, kruskal->total_weight);
+    ASSERT_EQ(INT_MIN, prim->total_weight);
+    mst_result_free(kruskal);
+    mst_result_free(prim);
+    graph_destroy(g);
+
+    /* The intermediate sum is below INT_MIN, but the final MST fits. */
+    g = graph_create(4, false);
+    ASSERT_NOT_NULL(g);
+    graph_add_edge(g, 0, 1, INT_MIN);
+    graph_add_edge(g, 1, 2, -1);
+    graph_add_edge(g, 2, 3, INT_MAX - 1);
+    kruskal = graph_mst_kruskal(g);
+    prim = graph_mst_prim(g);
+    ASSERT_NOT_NULL(kruskal);
+    ASSERT_NOT_NULL(prim);
+    ASSERT_EQ(-3, kruskal->total_weight);
+    ASSERT_EQ(-3, prim->total_weight);
+    mst_result_free(kruskal);
+    mst_result_free(prim);
+    graph_destroy(g);
+}
+
+TEST(mst_rejects_unrepresentable_total) {
+    Graph *g = graph_create(3, false);
+    ASSERT_NOT_NULL(g);
+    graph_add_edge(g, 0, 1, INT_MAX - 1);
+    graph_add_edge(g, 1, 2, 2);
+    ASSERT_EQ(NULL, graph_mst_kruskal(g));
+    ASSERT_EQ(NULL, graph_mst_prim(g));
+    graph_destroy(g);
+
+    g = graph_create(3, false);
+    ASSERT_NOT_NULL(g);
+    graph_add_edge(g, 0, 1, INT_MIN);
+    graph_add_edge(g, 1, 2, -1);
+    ASSERT_EQ(NULL, graph_mst_kruskal(g));
+    ASSERT_EQ(NULL, graph_mst_prim(g));
     graph_destroy(g);
 }
 
@@ -587,6 +706,9 @@ int main(void) {
     RUN_TEST(dijkstra_simple);
     RUN_TEST(dijkstra_unreachable);
     RUN_TEST(dijkstra_path_reconstruction);
+    RUN_TEST(graph_rejects_reserved_weight);
+    RUN_TEST(shortest_paths_reject_unrepresentable_distance);
+    RUN_TEST(floyd_warshall_parallel_edges_and_path_capacity);
 
     /* Bellman-Ford tests */
     RUN_TEST(bellman_ford_simple);
@@ -602,6 +724,8 @@ int main(void) {
     /* MST tests */
     RUN_TEST(mst_kruskal_simple);
     RUN_TEST(mst_kruskal_self_loop);
+    RUN_TEST(mst_integer_extremes);
+    RUN_TEST(mst_rejects_unrepresentable_total);
     RUN_TEST(mst_prim_simple);
     RUN_TEST(mst_complete_graph);
 

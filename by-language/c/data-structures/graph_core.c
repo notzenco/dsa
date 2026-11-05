@@ -45,24 +45,29 @@ void graph_destroy(Graph *g) {
 
 bool graph_add_edge(Graph *g, int src, int dest, int weight) {
     if (g == NULL || src < 0 || src >= g->num_vertices ||
-        dest < 0 || dest >= g->num_vertices) {
+        dest < 0 || dest >= g->num_vertices || weight == GRAPH_INF) {
         return false;
     }
 
-    /* Add edge src -> dest */
     Edge *e = malloc(sizeof(Edge));
     if (e == NULL) return false;
 
+    Edge *e2 = NULL;
+    if (!g->directed) {
+        e2 = malloc(sizeof(Edge));
+        if (e2 == NULL) {
+            free(e);
+            return false;
+        }
+    }
+
+    /* Allocate both directions before changing the graph. */
     e->dest = dest;
     e->weight = weight;
     e->next = g->adj_list[src];
     g->adj_list[src] = e;
 
-    /* If undirected, add reverse edge */
-    if (!g->directed) {
-        Edge *e2 = malloc(sizeof(Edge));
-        if (e2 == NULL) return false;
-
+    if (e2 != NULL) {
         e2->dest = src;
         e2->weight = weight;
         e2->next = g->adj_list[dest];

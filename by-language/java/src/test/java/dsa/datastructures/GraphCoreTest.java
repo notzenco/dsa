@@ -44,6 +44,15 @@ class GraphCoreTest {
     }
 
     @Test
+    void countUndirectedSelfLoops() {
+        GraphCore g = new GraphCore(false);
+        g.addEdge("A", "A", 1.0);
+        assertEquals(1, g.numEdges());
+        g.addEdge("A", "B", 2.0);
+        assertEquals(2, g.numEdges());
+    }
+
+    @Test
     void addEdgeDirected() {
         GraphCore g = new GraphCore(true);
         g.addEdge("A", "B", 2.0);

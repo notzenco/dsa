@@ -21,11 +21,15 @@ func (g *GraphCore) NumVertices() int { return len(g.adj) }
 
 func (g *GraphCore) EdgeCount() int {
 	count := 0
-	for _, neighbors := range g.adj {
+	loops := 0
+	for vertex, neighbors := range g.adj {
 		count += len(neighbors)
+		if _, ok := neighbors[vertex]; ok {
+			loops++
+		}
 	}
 	if !g.directed {
-		count /= 2
+		count = (count + loops) / 2
 	}
 	return count
 }

@@ -91,8 +91,8 @@ void graph_destroy(Graph *g);
  * @param g Graph
  * @param src Source vertex
  * @param dest Destination vertex
- * @param weight Edge weight (use 1 for unweighted)
- * @return true on success
+ * @param weight Edge weight (use 1 for unweighted); GRAPH_INF is reserved
+ * @return true on success, false for an invalid edge or allocation failure
  */
 bool graph_add_edge(Graph *g, int src, int dest, int weight);
 
