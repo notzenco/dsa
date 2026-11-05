@@ -11,6 +11,10 @@ possible input or deployment has been audited.
 | Area | Current contract |
 |------|------------------|
 | C shortest paths | `shortest_path_reconstruct` takes `path_capacity` in elements and returns `false` for an insufficient buffer, invalid destination, unreachable path, or negative-cycle result. |
+| C Floyd-Warshall paths | `graph_floyd_warshall_path` also takes `path_capacity` in elements and leaves the output array untouched when it is too small. A path from a vertex to itself contains that one vertex. Use the next-hop matrix only after `graph_floyd_warshall` returns `true`. |
+| C graph weights | `GRAPH_INF` (`INT_MAX`) is reserved and `graph_add_edge` rejects it. Dijkstra and Bellman-Ford return `NULL`, and Floyd-Warshall returns `false`, when a computed distance cannot fit below `GRAPH_INF`. Kruskal and Prim return `NULL` if a total MST weight overflows `int`. |
+| Undirected graph edge counts | Go, Java, and TypeScript count each self-loop once, alongside ordinary edges. |
+| TypeScript graph paths | Dijkstra and Prim use an indexed binary min-heap, and unweighted BFS reconstructs its final path from parent links. |
 | C segment tree | Both constructors return `NULL` when `4 * n` integer slots cannot fit in `size_t`; callers must check the result before querying or updating. |
 | C B-tree | `btree_create` returns `NULL` when the minimum degree is below 2 or too large for signed arithmetic or node allocations. |
 | Rust LRU cache | Eviction removes the map entry by node identity before freeing the node, including for keys whose clones compare differently. The map is a `BTreeMap`; eviction scans it, so `put` is O(n) in the worst case. |
@@ -35,8 +39,8 @@ possible input or deployment has been audited.
   trie enumeration, search byte counters, graph path buffers, counting/radix
   sort, hash tombstones, and B-tree root changes.
 - Graph algorithms: absent destinations, negative vertex labels, self-loops,
-  parallel edges, object-valued vertices, and path reconstruction from a
-  nonzero source.
+  parallel edges, object-valued vertices, integer-range boundaries, bounded
+  path reconstruction, and path reconstruction from a nonzero source.
 - String algorithms: delimiters occurring in input, Unicode boundaries, and
   palindrome sentinels.
 - Data structures: lazy segment-tree logical length, skip-list live length,

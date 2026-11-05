@@ -21,6 +21,74 @@
 
 import { GraphCore } from "../data-structures/graph-core";
 
+/** Min-priority queue with one entry per vertex and O(log V) decreases. */
+class IndexedMinQueue<T> {
+  private items: { vertex: T; priority: number }[] = [];
+  private positions = new Map<T, number>();
+
+  get size(): number {
+    return this.items.length;
+  }
+
+  upsert(vertex: T, priority: number): boolean {
+    const position = this.positions.get(vertex);
+    if (position !== undefined) {
+      if (priority >= this.items[position].priority) return false;
+      this.items[position].priority = priority;
+      this.siftUp(position);
+      return true;
+    }
+
+    const index = this.items.length;
+    this.items.push({ vertex, priority });
+    this.positions.set(vertex, index);
+    this.siftUp(index);
+    return true;
+  }
+
+  pop(): { vertex: T; priority: number } {
+    const minimum = this.items[0];
+    const last = this.items.pop()!;
+    this.positions.delete(minimum.vertex);
+    if (this.items.length > 0) {
+      this.items[0] = last;
+      this.positions.set(last.vertex, 0);
+      this.siftDown(0);
+    }
+    return minimum;
+  }
+
+  private swap(left: number, right: number): void {
+    [this.items[left], this.items[right]] = [this.items[right], this.items[left]];
+    this.positions.set(this.items[left].vertex, left);
+    this.positions.set(this.items[right].vertex, right);
+  }
+
+  private siftUp(index: number): void {
+    while (index > 0) {
+      const parent = Math.floor((index - 1) / 2);
+      if (this.items[parent].priority <= this.items[index].priority) break;
+      this.swap(parent, index);
+      index = parent;
+    }
+  }
+
+  private siftDown(index: number): void {
+    while (2 * index + 1 < this.items.length) {
+      const left = 2 * index + 1;
+      const right = left + 1;
+      let smallest = left;
+      if (right < this.items.length &&
+          this.items[right].priority < this.items[left].priority) {
+        smallest = right;
+      }
+      if (this.items[index].priority <= this.items[smallest].priority) break;
+      this.swap(index, smallest);
+      index = smallest;
+    }
+  }
+}
+
 // =========================================================================
 // GRAPH TRAVERSAL
 // =========================================================================
@@ -108,20 +176,11 @@ export function dijkstra<T>(graph: GraphCore<T>, start: T): Map<T, number> {
 
   const visited = new Set<T>();
 
-  // Simple priority queue using array (adequate for correctness;
-  // production code would use a proper min-heap)
-  const pq: [number, T][] = [[0, start]];
+  const pq = new IndexedMinQueue<T>();
+  pq.upsert(start, 0);
 
-  while (pq.length > 0) {
-    // Find minimum distance entry
-    let minIdx = 0;
-    for (let i = 1; i < pq.length; i++) {
-      if (pq[i][0] < pq[minIdx][0]) {
-        minIdx = i;
-      }
-    }
-    const [dist, vertex] = pq[minIdx];
-    pq.splice(minIdx, 1);
+  while (pq.size > 0) {
+    const { priority: dist, vertex } = pq.pop();
 
     if (visited.has(vertex)) continue;
     visited.add(vertex);
@@ -132,7 +191,7 @@ export function dijkstra<T>(graph: GraphCore<T>, start: T): Map<T, number> {
       const newDist = dist + weight;
       if (newDist < distances.get(neighbor)!) {
         distances.set(neighbor, newDist);
-        pq.push([newDist, neighbor]);
+        pq.upsert(neighbor, newDist);
       }
     }
   }
@@ -207,20 +266,27 @@ export function shortestPathBfs<T>(
 
   const visited = new Set<T>();
   visited.add(start);
-  const queue: [T, T[]][] = [[start, [start]]];
+  const parent = new Map<T, T>();
+  const queue: T[] = [start];
   let front = 0;
 
   while (front < queue.length) {
-    const [vertex, path] = queue[front++];
+    const vertex = queue[front++];
 
     for (const neighbor of graph.neighbors(vertex)) {
+      if (visited.has(neighbor)) continue;
+      visited.add(neighbor);
+      parent.set(neighbor, vertex);
       if (neighbor === end) {
-        return [...path, neighbor];
+        const path = [end];
+        let current = end;
+        while (current !== start) {
+          current = parent.get(current)!;
+          path.push(current);
+        }
+        return path.reverse();
       }
-      if (!visited.has(neighbor)) {
-        visited.add(neighbor);
-        queue.push([neighbor, [...path, neighbor]]);
-      }
+      queue.push(neighbor);
     }
   }
 
@@ -400,32 +466,24 @@ export function primMST<T>(
   const mstEdges: [T, T, number][] = [];
   let totalWeight = 0;
   const visited = new Set<T>();
-  visited.add(start);
+  const parent = new Map<T, T>();
+  const pq = new IndexedMinQueue<T>();
+  pq.upsert(start, 0);
 
-  // Priority queue: [weight, from, to]
-  let edgesPq: [number, T, T][] = [];
-  for (const [neighbor, weight] of graph.neighborsWeighted(start)) {
-    edgesPq.push([weight, start, neighbor]);
-  }
-  edgesPq.sort((a, b) => a[0] - b[0]);
-
-  while (edgesPq.length > 0 && visited.size < graph.size) {
-    // Extract min
-    const [weight, u, v] = edgesPq.shift()!;
-
-    if (visited.has(v)) continue;
+  while (pq.size > 0) {
+    const { vertex: v, priority: weight } = pq.pop();
 
     visited.add(v);
-    mstEdges.push([u, v, weight]);
-    totalWeight += weight;
+    if (parent.has(v)) {
+      mstEdges.push([parent.get(v)!, v, weight]);
+      totalWeight += weight;
+    }
 
-    // Add edges from newly added vertex
     for (const [neighbor, edgeWeight] of graph.neighborsWeighted(v)) {
-      if (!visited.has(neighbor)) {
-        edgesPq.push([edgeWeight, v, neighbor]);
+      if (!visited.has(neighbor) && pq.upsert(neighbor, edgeWeight)) {
+        parent.set(neighbor, v);
       }
     }
-    edgesPq.sort((a, b) => a[0] - b[0]);
   }
 
   return { edges: mstEdges, totalWeight };

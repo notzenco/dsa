@@ -123,6 +123,18 @@ func TestGraphCoreDirected(t *testing.T) {
 	}
 }
 
+func TestGraphCoreUndirectedSelfLoopCount(t *testing.T) {
+	g := NewGraphCore(false)
+	g.AddEdge(1, 1, 1)
+	if got := g.EdgeCount(); got != 1 {
+		t.Fatalf("one self-loop: got %d edges, want 1", got)
+	}
+	g.AddEdge(1, 2, 1)
+	if got := g.EdgeCount(); got != 2 {
+		t.Fatalf("self-loop plus ordinary edge: got %d edges, want 2", got)
+	}
+}
+
 func TestGraphCoreRemove(t *testing.T) {
 	g := NewGraphCore(false)
 	g.AddEdge(0, 1, 1)

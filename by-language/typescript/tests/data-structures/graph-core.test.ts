@@ -261,6 +261,9 @@ describe("GraphCore", () => {
       g.addEdge(1, 1);
       expect(g.hasEdge(1, 1)).toBe(true);
       expect(g.size).toBe(1);
+      expect(g.edgeCount).toBe(1);
+      g.addEdge(1, 2);
+      expect(g.edgeCount).toBe(2);
     });
   });
 

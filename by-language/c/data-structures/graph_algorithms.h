@@ -69,7 +69,8 @@ TraversalResult *graph_dfs_full(const Graph *g);
  * Requires non-negative edge weights.
  * @param g Graph
  * @param source Starting vertex
- * @return Shortest path result (caller must free)
+ * @return Shortest path result (caller must free), or NULL if a computed
+ *         distance cannot be represented below GRAPH_INF
  */
 ShortestPathResult *graph_dijkstra(const Graph *g, int source);
 
@@ -78,7 +79,8 @@ ShortestPathResult *graph_dijkstra(const Graph *g, int source);
  * Handles negative edge weights, detects negative cycles.
  * @param g Graph
  * @param source Starting vertex
- * @return Shortest path result (caller must free)
+ * @return Shortest path result (caller must free), or NULL if a computed
+ *         distance cannot be represented below GRAPH_INF
  */
 ShortestPathResult *graph_bellman_ford(const Graph *g, int source);
 
@@ -88,7 +90,7 @@ ShortestPathResult *graph_bellman_ford(const Graph *g, int source);
  * @param g Graph
  * @param dist_out 2D array to store distances (caller allocates V*V ints)
  * @param next_out 2D array for path reconstruction (caller allocates V*V ints, can be NULL)
- * @return true on success, false if negative cycle detected
+ * @return true on success, false for a negative cycle or unrepresentable distance
  */
 bool graph_floyd_warshall(const Graph *g, int **dist_out, int **next_out);
 
@@ -99,12 +101,15 @@ bool graph_floyd_warshall(const Graph *g, int **dist_out, int **next_out);
  * @param src Source vertex
  * @param dest Destination vertex
  * @param path_out Array to store path (caller allocates)
+ * @param path_capacity Number of int elements in path_out
  * @param path_len_out Pointer to store path length
  * @return true if a path fits; false for an invalid or unreachable destination,
- *         a negative-cycle result, or insufficient output capacity
+ *         a malformed next-hop chain, or insufficient output capacity. Use only
+ *         after graph_floyd_warshall returns true.
  */
 bool graph_floyd_warshall_path(int **next, int n, int src, int dest,
-                                int *path_out, int *path_len_out);
+                                int *path_out, size_t path_capacity,
+                                int *path_len_out);
 
 /**
  * Reconstruct path from source to destination.
@@ -141,7 +146,7 @@ TopoSortResult *graph_topo_sort_dfs(const Graph *g);
  * Kruskal's algorithm for MST.
  * Uses Union-Find for cycle detection.
  * @param g Graph (should be undirected)
- * @return MST result (caller must free)
+ * @return MST result (caller must free), or NULL if the total weight overflows int
  */
 MSTResult *graph_mst_kruskal(const Graph *g);
 
@@ -149,7 +154,7 @@ MSTResult *graph_mst_kruskal(const Graph *g);
  * Prim's algorithm for MST.
  * Uses min-heap for efficient implementation.
  * @param g Graph (should be undirected)
- * @return MST result (caller must free)
+ * @return MST result (caller must free), or NULL if the total weight overflows int
  */
 MSTResult *graph_mst_prim(const Graph *g);
 

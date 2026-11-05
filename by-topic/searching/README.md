@@ -102,6 +102,9 @@ def two_sum_sorted(arr, target):
     return []
 ```
 
+The C two-sum and three-sum implementations use wider intermediate sums so
+inputs near `INT_MIN` and `INT_MAX` do not overflow during comparisons.
+
 ### Same Direction (Fast/Slow)
 ```python
 # Remove duplicates in-place

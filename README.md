@@ -213,10 +213,12 @@ bun test
 ## Correctness and API contracts
 
 The [remediation notes](REMEDIATION.md) record the boundary cases covered by
-the regression suites and the commands used to verify them. Two path APIs now
-require an explicit bound: C `shortest_path_reconstruct` takes the output array
-capacity, and Rust `reconstruct_path` takes the source vertex. Callers of those
-APIs should update their arguments before using the revised implementations.
+the regression suites and the commands used to verify them. C
+`shortest_path_reconstruct` and `graph_floyd_warshall_path` take the output
+array capacity; Rust `reconstruct_path` takes the source vertex. Callers of
+those APIs should update their arguments before using the revised
+implementations. C graph weights reserve `GRAPH_INF` (`INT_MAX`), and graph
+algorithms reject unrepresentable path distances or MST totals.
 
 ### Git Hooks (Optional)
 ```bash

@@ -475,7 +475,9 @@ int kth_missing(const int *arr, size_t n, int k) {
 
 /* Helper for sorting used by three_sum */
 static int compare_ints(const void *a, const void *b) {
-    return (*(int *)a - *(int *)b);
+    int left = *(const int *)a;
+    int right = *(const int *)b;
+    return (left > right) - (left < right);
 }
 
 bool two_sum_sorted(const int *arr, size_t n, int target, size_t *i_out, size_t *j_out) {
@@ -485,7 +487,7 @@ bool two_sum_sorted(const int *arr, size_t n, int target, size_t *i_out, size_t 
     size_t right = n - 1;
 
     while (left < right) {
-        int sum = arr[left] + arr[right];
+        long long sum = (long long)arr[left] + arr[right];
 
         if (sum == target) {
             if (i_out) *i_out = left;
@@ -516,7 +518,7 @@ size_t three_sum(int *arr, size_t n, int target, int (*triplets)[3], size_t max_
         size_t right = n - 1;
 
         while (left < right && count < max_triplets) {
-            int sum = arr[i] + arr[left] + arr[right];
+            long long sum = (long long)arr[i] + arr[left] + arr[right];
 
             if (sum == target) {
                 triplets[count][0] = arr[i];

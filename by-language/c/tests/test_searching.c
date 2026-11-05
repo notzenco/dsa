@@ -4,6 +4,7 @@
 
 #include "test_framework.h"
 #include "../algorithms/searching.h"
+#include <limits.h>
 #include <stdlib.h>
 
 /* ============== Linear Search Tests ============== */
@@ -378,6 +379,26 @@ TEST(three_sum_basic) {
     ASSERT_TRUE(count >= 1);  /* At least one triplet */
 }
 
+TEST(two_sum_sorted_integer_extremes) {
+    int no_pair[] = {INT_MAX, INT_MAX};
+    ASSERT_FALSE(two_sum_sorted(no_pair, 2, -2, NULL, NULL));
+
+    int pair[] = {INT_MIN, INT_MAX};
+    size_t i = 2, j = 2;
+    ASSERT_TRUE(two_sum_sorted(pair, 2, -1, &i, &j));
+    ASSERT_EQ(0, i);
+    ASSERT_EQ(1, j);
+}
+
+TEST(three_sum_integer_extremes) {
+    int arr[] = {0, INT_MIN, INT_MAX};
+    int triplets[1][3];
+    ASSERT_EQ(1, three_sum(arr, 3, -1, triplets, 1));
+    ASSERT_EQ(INT_MIN, triplets[0][0]);
+    ASSERT_EQ(0, triplets[0][1]);
+    ASSERT_EQ(INT_MAX, triplets[0][2]);
+}
+
 TEST(remove_duplicates_basic) {
     int arr[] = {1, 1, 2, 2, 2, 3, 4, 4, 5};
     size_t new_len = remove_duplicates(arr, 9);
@@ -609,7 +630,9 @@ int main(void) {
     /* Two Pointers */
     RUN_TEST(two_sum_sorted_found);
     RUN_TEST(two_sum_sorted_not_found);
+    RUN_TEST(two_sum_sorted_integer_extremes);
     RUN_TEST(three_sum_basic);
+    RUN_TEST(three_sum_integer_extremes);
     RUN_TEST(remove_duplicates_basic);
     RUN_TEST(move_zeros_basic);
     RUN_TEST(max_water_container_basic);

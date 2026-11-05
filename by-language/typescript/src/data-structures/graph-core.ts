@@ -38,10 +38,12 @@ export class GraphCore<T> {
 
   get edgeCount(): number {
     let count = 0;
-    for (const neighbors of this._adj.values()) {
+    let loops = 0;
+    for (const [vertex, neighbors] of this._adj) {
       count += neighbors.size;
+      if (neighbors.has(vertex)) loops++;
     }
-    return this._directed ? count : Math.floor(count / 2);
+    return this._directed ? count : (count + loops) / 2;
   }
 
   get size(): number {
